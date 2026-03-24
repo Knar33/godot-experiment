@@ -22,7 +22,7 @@ ambient_light_energy = 0.8
 albedo_color = Color(0.22, 0.6, 0.22, 1)
 
 [sub_resource type="BoxShape3D" id=5]
-size = Vector3(60, 1, 60)
+size = Vector3(500, 1, 500)
 
 [sub_resource type="StandardMaterial3D" id=6]
 albedo_color = Color(0.45, 0.28, 0.16, 1)
@@ -55,7 +55,7 @@ position = Vector3(0, -0.5, 0)
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
 mesh = SubResource(8)
 position = Vector3(0, -0.5, 0)
-scale = Vector3(60, 1, 60)
+scale = Vector3(500, 1, 500)
 material_override = SubResource(4)
 
 [node name="JumpBoxes" type="Node3D" parent="."]
