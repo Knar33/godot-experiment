@@ -108,10 +108,10 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="CrosshairVertical" type="ColorRect" parent="UI/CrosshairRoot"]
-offset_left = -0.5
-offset_top = -5.0
-offset_right = 0.5
-offset_bottom = 5.0
+offset_left = -0.75
+offset_top = -7.0
+offset_right = 0.75
+offset_bottom = 7.0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -119,10 +119,10 @@ anchor_bottom = 0.5
 color = Color(0.2, 0.2, 0.2, 1)
 
 [node name="CrosshairHorizontal" type="ColorRect" parent="UI/CrosshairRoot"]
-offset_left = -5.0
-offset_top = -0.5
-offset_right = 5.0
-offset_bottom = 0.5
+offset_left = -7.0
+offset_top = -0.75
+offset_right = 7.0
+offset_bottom = 0.75
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5

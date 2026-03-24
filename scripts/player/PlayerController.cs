@@ -14,6 +14,8 @@ public partial class PlayerController : CharacterBody3D
     [Export] public float CameraZoomStep = 0.5f;
     [Export] public PackedScene OrbProjectileScene = null!;
     [Export] public float OrbSpeed = 25.0f;
+    [Export] public float OrbSpawnForwardOffset = 0.9f;
+    [Export] public float OrbSpawnHeightOffset = 1.0f;
 
     private Node3D _cameraPivot = null!;
     private SpringArm3D _springArm = null!;
@@ -156,7 +158,8 @@ public partial class PlayerController : CharacterBody3D
             return;
         }
 
-        var origin = _camera.GlobalPosition + (-_camera.GlobalTransform.Basis.Z * 0.8f);
+        var playerForward = -GlobalTransform.Basis.Z;
+        var origin = GlobalPosition + (playerForward * OrbSpawnForwardOffset) + (Vector3.Up * OrbSpawnHeightOffset);
         var direction = -_camera.GlobalTransform.Basis.Z;
 
         projectile.GlobalPosition = origin;
