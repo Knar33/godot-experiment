@@ -12,10 +12,13 @@ public partial class PlayerController : CharacterBody3D
     [Export] public float CameraMinDistance = 1.5f;
     [Export] public float CameraMaxDistance = 8.0f;
     [Export] public float CameraZoomStep = 0.5f;
+    [Export] public float ShoulderOffsetX = 0.9f;
+    [Export] public float ShoulderOffsetY = 0.2f;
+    [Export] public float CameraPivotBaseHeight = 1.4f;
     [Export] public PackedScene OrbProjectileScene = null!;
     [Export] public float OrbSpeed = 25.0f;
     [Export] public float OrbSpawnForwardOffset = 0.9f;
-    [Export] public float OrbSpawnHeightOffset = 1.0f;
+    [Export] public float OrbSpawnHeightOffset = 1.55f;
 
     private Node3D _cameraPivot = null!;
     private SpringArm3D _springArm = null!;
@@ -39,6 +42,8 @@ public partial class PlayerController : CharacterBody3D
         _visualMesh = GetNode<MeshInstance3D>("MeshInstance3D");
 
         _gravity = (float)ProjectSettings.GetSetting("physics/3d/default_gravity");
+        _cameraPivot.Position = new Vector3(ShoulderOffsetX, CameraPivotBaseHeight + ShoulderOffsetY, 0.0f);
+        _camera.Position = Vector3.Zero;
 
         if (_collisionShape.Shape is CapsuleShape3D capsule)
         {
