@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bplayer3d001"]
 
-[ext_resource type="Script" path="res://Player.cs" id="1_player"]
+[ext_resource type="Script" path="res://player.gd" id="1_player"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_shape"]
 radius = 0.35
