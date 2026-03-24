@@ -93,6 +93,17 @@ mesh = SubResource(9)
 scale = Vector3(2, 1, 2)
 material_override = SubResource(6)
 
+[node name="BoxD" type="StaticBody3D" parent="JumpBoxes"]
+position = Vector3(13, 2.0, -8)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="JumpBoxes/BoxD"]
+shape = SubResource(7)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="JumpBoxes/BoxD"]
+mesh = SubResource(9)
+scale = Vector3(2, 1, 2)
+material_override = SubResource(6)
+
 [node name="Player" parent="." instance=ExtResource(1)]
 position = Vector3(0, 0.1, 4)
 
