@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cydaa8fa3lvuq"]
 
 [ext_resource type="PackedScene" uid="uid://bplayer3d001" path="res://player.tscn" id="1_player_scene"]
-[ext_resource type="Script" path="res://camera_follow.gd" id="2_cam_script"]
+[ext_resource type="Script" path="res://CameraFollow.cs" id="2_cam_script"]
 
 [sub_resource type="Environment" id="Environment_main"]
 background_mode = 1
@@ -120,4 +120,4 @@ transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, 
 current = true
 fov = 55.0
 script = ExtResource("2_cam_script")
-target_path = NodePath("../Player")
+TargetPath = NodePath("../Player")

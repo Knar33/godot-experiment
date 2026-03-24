@@ -10,7 +10,10 @@ export_credentials.cfg
 # Imported translations (automatically generated from CSV files)
 *.translation
 
-# Mono-specific ignores
+# Mono / .NET (Godot C#)
 .mono/
 data_*/
 mono_crash.*.json
+bin/
+obj/
+*.csproj.user
