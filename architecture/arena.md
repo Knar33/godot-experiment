@@ -8,7 +8,7 @@
 Arena (Node3D) [scripts/Arena.cs]
 ├── Floor (StaticBody3D)
 │   ├── FloorMesh (MeshInstance3D) — PlaneMesh 50x50 with grid shader
-│   └── FloorCollision (CollisionShape3D) — BoxShape3D 52x1x52, centered at y=-0.5
+│   └── FloorCollision (CollisionShape3D) — CylinderShape3D radius=25 height=1, centered at y=-0.5
 ├── SpawnPoint_0..11 (Marker3D) — generated at runtime by Arena.cs
 └── Killbox (Area3D) — generated at runtime, kills player/enemies that fall off
 ```
@@ -23,7 +23,7 @@ The floor uses a `PlaneMesh` (50x50) with a custom spatial shader that:
 - Adds a red emissive glow ring at the arena edge to mark the boundary
 - Discards fragments outside the arena radius (25 units) to create a circular shape from the square mesh
 
-The floor collision is a large flat `BoxShape3D` (52x1x52) centered below y=0 so its top face aligns with the mesh surface.
+The floor collision is a `CylinderShape3D` (radius=25, height=1) centered below y=0 so its top face aligns with the mesh surface. This matches the circular visual shape created by the shader's fragment discard.
 
 ## Arena Edge
 
@@ -87,7 +87,7 @@ An `AudioStreamPlayer` node (`AmbientAudio`) on the Arena, output to the `Ambien
 Arena (Node3D) [scripts/Arena.cs]
 ├── Floor (StaticBody3D)
 │   ├── FloorMesh (MeshInstance3D) — PlaneMesh 50x50 with grid + edge warning shader
-│   └── FloorCollision (CollisionShape3D) — BoxShape3D 52x1x52, centered at y=-0.5
+│   └── FloorCollision (CollisionShape3D) — CylinderShape3D radius=25 height=1, centered at y=-0.5
 ├── SpawnPoint_0..11 (Marker3D) — generated at runtime
 ├── Killbox (Area3D) — generated at runtime, lethal to player and enemies
 ├── AmbientParticles (GpuParticles3D) — Dust/ember particles

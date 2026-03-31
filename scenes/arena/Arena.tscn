@@ -50,8 +50,9 @@ shader = SubResource("Shader_1")
 [sub_resource type="PlaneMesh" id="PlaneMesh_1"]
 size = Vector2(50, 50)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
-size = Vector3(52, 1, 52)
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_1"]
+radius = 25.0
+height = 1.0
 
 [node name="Arena" type="Node3D"]
 script = ExtResource("1")
@@ -64,4 +65,4 @@ surface_material_override/0 = SubResource("ShaderMaterial_1")
 
 [node name="FloorCollision" type="CollisionShape3D" parent="Floor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
-shape = SubResource("BoxShape3D_1")
+shape = SubResource("CylinderShape3D_1")
