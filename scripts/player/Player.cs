@@ -25,6 +25,8 @@ public partial class Player : CharacterBody3D
     private PackedScene _projectileScene = null!;
     private PlayerCamera? _playerCamera;
     private Node3D? _projectilesContainer;
+    private AudioStreamPlayer3D? _fireAudio;
+    private RandomNumberGenerator _rng = new();
 
     private static readonly Vector3 MuzzleOffset = new(0f, 1.2f, 0f);
 
@@ -149,6 +151,17 @@ public partial class Player : CharacterBody3D
         _projectilesContainer.AddChild(projectile);
         projectile.GlobalPosition = spawnPos;
         projectile.Initialize(direction);
+
+        PlayFireSound();
+    }
+
+    private void PlayFireSound()
+    {
+        _fireAudio ??= GetNodeOrNull<AudioStreamPlayer3D>("FireAudio");
+        if (_fireAudio == null) return;
+
+        _fireAudio.PitchScale = 1.0f + _rng.RandfRange(-0.05f, 0.05f);
+        _fireAudio.Play();
     }
 
     private void ApplyAirStrafe(ref Vector3 velocity, float dt)

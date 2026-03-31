@@ -1,6 +1,8 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/PlayerProjectile.cs" id="1"]
+[ext_resource type="AudioStream" path="res://assets/audio/player/impact_surface.wav" id="2"]
+[ext_resource type="AudioStream" path="res://assets/audio/player/impact_enemy.wav" id="3"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_1"]
 radius = 0.15
@@ -17,9 +19,11 @@ emission_energy_multiplier = 3.0
 
 [node name="PlayerProjectile" type="Area3D"]
 collision_layer = 4
-collision_mask = 8
+collision_mask = 9
 monitorable = false
 script = ExtResource("1")
+SurfaceImpactSound = ExtResource("2")
+EnemyImpactSound = ExtResource("3")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("SphereShape3D_1")
@@ -27,3 +31,6 @@ shape = SubResource("SphereShape3D_1")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("SphereMesh_1")
 surface_material_override/0 = SubResource("StandardMaterial3D_1")
+
+[node name="ImpactAudio" type="AudioStreamPlayer3D" parent="."]
+max_distance = 40.0

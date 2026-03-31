@@ -4,14 +4,6 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 
 ---
 
-## 2. Projectile Collision & Audio
-
-- [ ] Update `PlayerProjectile.tscn` collision mask to include layer 1 (arena geometry) so projectiles collide with walls and floor
-- [ ] Update `PlayerProjectile.cs` to detect arena geometry collisions in `BodyEntered` and destroy the projectile on impact
-- [ ] Add an `AudioStreamPlayer3D` (`FireAudio`) to the player for firing sounds; play a short punchy sound on each shot with slight pitch randomization (±5%)
-- [ ] Add an `AudioStreamPlayer3D` (`ImpactAudio`) to the projectile scene for impact sounds; reparent to a temp node on collision so it finishes playing after projectile is freed; distinct sounds for enemy hits vs. surface hits
-- [ ] Source or create placeholder audio assets for the firing sound and both impact sound types
-
 ## 3. Player Death & I-Frames
 
 - [ ] Implement one-hit player death: any enemy damage source (contact, projectile, explosion, ground hazard) triggers instant player death when the player is not in i-frames
@@ -409,3 +401,11 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 - [x] Update `Player.cs` to only call `AutoFireState.Update(dt)` and spawn projectiles while the `shoot` action is held; stop firing when released
 - [x] Reset the `AutoFireState` timer when the fire input is first pressed so the first shot fires immediately on click
 - [x] Update `AutoFireState` unit tests to cover the hold-to-fire behavior (timer reset on press, no accumulation while not firing)
+
+### Projectile Collision & Audio
+
+- [x] Update `PlayerProjectile.tscn` collision mask to include layer 1 (arena geometry) so projectiles collide with walls and floor
+- [x] Update `PlayerProjectile.cs` to detect arena geometry collisions in `BodyEntered` and destroy the projectile on impact
+- [x] Add an `AudioStreamPlayer3D` (`FireAudio`) to the player for firing sounds; play a short punchy sound on each shot with slight pitch randomization (±5%)
+- [x] Add an `AudioStreamPlayer3D` (`ImpactAudio`) to the projectile scene for impact sounds; reparent to a temp node on collision so it finishes playing after projectile is freed; distinct sounds for enemy hits vs. surface hits
+- [x] Source or create placeholder audio assets for the firing sound and both impact sound types
