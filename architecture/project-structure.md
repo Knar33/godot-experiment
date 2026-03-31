@@ -25,11 +25,11 @@ The main Godot project references Core via `<ProjectReference>` and excludes `sr
   - `scripts/arena/` — Arena node scripts
   - `scripts/managers/` — Autoload and manager scripts (GameManager, HitStopManager, MusicManager, SettingsManager)
   - `scripts/player/` — Player, camera, and projectile scripts (ScreenShake)
-  - `scripts/ui/` — HUD and UI element scripts (Crosshair, HitMarker, SpeedLines, BhopCounter, ThreatIndicator, SettingsMenu)
+  - `scripts/ui/` — HUD and UI element scripts (Crosshair, CountdownUI, SurvivalTimerUI, DeathScreen, PauseMenu, HitMarker, SpeedLines, BhopCounter, ThreatIndicator, SettingsMenu)
 - `src/GodotExperiment.Core/` — Pure C# classes: enums, state machines, data models, calculations
   - `PlayerMovement/` — Player movement state (BhopState, DodgeRollState) — namespace `GodotExperiment.PlayerMovement`
   - `Combat/` — Combat mechanics (AutoFireState, ProjectileState, DamageSource, PlayerHealthState) — namespace `GodotExperiment.Combat`
-  - `GameLoop/` — Game state management (GameState, GameStateMachine) — namespace `GodotExperiment.GameLoop`
+  - `GameLoop/` — Game state management (GameState, GameStateMachine, SurvivalTimerState, CountdownState) — namespace `GodotExperiment.GameLoop`
   - `GameFeel/` — Screen shake and hit stop state (ScreenShakeState, HitStopState) — namespace `GodotExperiment.GameFeel`
   - `Settings/` — Settings data model (SettingsData) — namespace `GodotExperiment.Settings`
 - `tests/GodotExperiment.Tests/` — xUnit tests for Core classes
@@ -50,7 +50,15 @@ Countdown → Playing → Dead → Countdown (restart)
 
 Valid transitions are enforced; invalid transitions return `false` and leave state unchanged. The machine fires a `StateChanged` event on valid transitions and on `Reset()`.
 
-`GameManager` (scripts/managers/) is a Godot `Node` autoload that wraps `GameStateMachine` and re-emits state changes as Godot signals so other nodes can connect via the editor or code.
+`GameManager` (scripts/managers/) is a Godot `Node` autoload (`ProcessMode = Always`) that wraps `GameStateMachine`, `CountdownState`, and `SurvivalTimerState`. It orchestrates:
+
+- **Countdown**: on `_Ready()` and on restart, starts a 3-second countdown via `CountdownState`. Player movement is locked during countdown. Emits `CountdownTick(int)` and `CountdownFinished` signals.
+- **Playing**: on countdown finish, transitions to Playing and starts the survival timer. Emits `SurvivalTimeUpdated(string)` each frame.
+- **Death**: `TriggerPlayerDeath()` freezes the timer on the exact death frame. After the camera freeze (0.3s), `PlayerCamera` transitions to Dead.
+- **Pause**: Escape during Playing pauses the tree (`GetTree().Paused = true`) and shows the PauseMenu. Resume unpauses and re-captures the mouse.
+- **Restart**: R key from Dead state (or restart button from pause menu) clears all enemies/projectiles/gems, resets player position/state, and starts a new countdown.
+
+State changes are re-emitted as Godot signals via `StateChanged(int, int)` so UI nodes can react.
 
 ## Input Actions
 

@@ -57,6 +57,7 @@ public partial class Player : CharacterBody3D
         StopAllAudio();
         HidePlayerMesh();
         Velocity = Vector3.Zero;
+        GameManager.Instance?.TriggerPlayerDeath();
         EmitSignal(SignalName.PlayerDied);
     }
 
@@ -79,6 +80,14 @@ public partial class Player : CharacterBody3D
     public override void _PhysicsProcess(double delta)
     {
         if (!Health.IsAlive) return;
+
+        var state = GameManager.Instance?.CurrentState;
+        if (state == GameState.Countdown)
+        {
+            Velocity = Vector3.Zero;
+            MoveAndSlide();
+            return;
+        }
 
         float dt = (float)delta;
         DodgeRoll.Update(dt);

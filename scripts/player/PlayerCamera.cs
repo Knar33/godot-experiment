@@ -70,12 +70,7 @@ public partial class PlayerCamera : Node3D
             }
         }
 
-        if (@event.IsActionPressed("pause"))
-        {
-            Input.MouseMode = Input.MouseMode == Input.MouseModeEnum.Captured
-                ? Input.MouseModeEnum.Visible
-                : Input.MouseModeEnum.Captured;
-        }
+        // Pause input is handled by GameManager, which also controls mouse mode
     }
 
     public override void _PhysicsProcess(double delta)

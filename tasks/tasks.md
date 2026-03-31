@@ -4,14 +4,6 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 
 ---
 
-## 4. Core Game Loop
-
-- [ ] Implement the countdown sequence: on game start or restart, show a 3-2-1 countdown UI with percussive audio beats while the player is locked at arena center, then transition GameManager to Playing
-- [ ] Implement the survival timer: starts at 0:00.000 when the countdown finishes, counts up in real time, freezes on the exact frame of player death; this is the player's score
-- [ ] Implement the restart flow: a single button press from the death screen despawns all enemies, clears all projectiles and gems, resets the timer, resets player position to center, clears all upgrades, and starts the countdown; total time from restart press to gameplay must be under 3 seconds
-- [ ] Implement a pause menu: pressing escape during Playing state pauses the game (freezes physics and timer) and shows a menu with resume, restart, quit, and settings options
-- [ ] Add unit tests for GameManager state transitions (Countdown -> Playing -> Dead -> Countdown) and survival timer accuracy
-
 ## 5. HUD Foundation
 
 - [ ] Create the HUD as a CanvasLayer scene with all gameplay UI elements layered over the 3D viewport
@@ -377,6 +369,14 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 
 - [x] Offset the camera horizontally to an over-the-shoulder position so the crosshair targets the world ahead of the player rather than the player's back
 - [x] Implement scroll-wheel zoom: mouse scroll adjusts the camera distance between a configurable min and max, with smooth interpolation toward the target distance
+
+### Core Game Loop
+
+- [x] Implement the countdown sequence: on game start or restart, show a 3-2-1 countdown UI with percussive audio beats while the player is locked at arena center, then transition GameManager to Playing
+- [x] Implement the survival timer: starts at 0:00.000 when the countdown finishes, counts up in real time, freezes on the exact frame of player death; this is the player's score
+- [x] Implement the restart flow: a single button press from the death screen despawns all enemies, clears all projectiles and gems, resets the timer, resets player position to center, clears all upgrades, and starts the countdown; total time from restart press to gameplay must be under 3 seconds
+- [x] Implement a pause menu: pressing escape during Playing state pauses the game (freezes physics and timer) and shows a menu with resume, restart, quit, and settings options
+- [x] Add unit tests for GameManager state transitions (Countdown -> Playing -> Dead -> Countdown) and survival timer accuracy
 
 ### Player Shooting
 

@@ -1,9 +1,13 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/arena/Arena.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/player/PlayerCamera.tscn" id="3"]
 [ext_resource type="Script" path="res://scripts/ui/Crosshair.cs" id="4"]
+[ext_resource type="Script" path="res://scripts/ui/CountdownUI.cs" id="5"]
+[ext_resource type="Script" path="res://scripts/ui/SurvivalTimerUI.cs" id="6"]
+[ext_resource type="Script" path="res://scripts/ui/PauseMenu.cs" id="7"]
+[ext_resource type="Script" path="res://scripts/ui/DeathScreen.cs" id="8"]
 
 [sub_resource type="Environment" id="Environment_1"]
 background_mode = 1
@@ -32,6 +36,143 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("4")
+
+[node name="CountdownUI" type="Control" parent="UI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("5")
+
+[node name="CountdownLabel" type="Label" parent="UI/CountdownUI"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -60.0
+offset_right = 100.0
+offset_bottom = 60.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 96
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SurvivalTimerUI" type="Control" parent="UI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("6")
+
+[node name="TimerLabel" type="Label" parent="UI/SurvivalTimerUI"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -80.0
+offset_top = 16.0
+offset_right = 80.0
+offset_bottom = 48.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PauseMenu" type="Control" parent="UI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("7")
+
+[node name="Panel" type="PanelContainer" parent="UI/PauseMenu"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -120.0
+offset_top = -120.0
+offset_right = 120.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/PauseMenu/Panel"]
+layout_mode = 2
+
+[node name="PauseTitle" type="Label" parent="UI/PauseMenu/Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "PAUSED"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="UI/PauseMenu/Panel/VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 16)
+
+[node name="ResumeButton" type="Button" parent="UI/PauseMenu/Panel/VBoxContainer"]
+layout_mode = 2
+text = "Resume"
+
+[node name="RestartButton" type="Button" parent="UI/PauseMenu/Panel/VBoxContainer"]
+layout_mode = 2
+text = "Restart"
+
+[node name="QuitButton" type="Button" parent="UI/PauseMenu/Panel/VBoxContainer"]
+layout_mode = 2
+text = "Quit"
+
+[node name="DeathScreen" type="Control" parent="UI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("8")
+
+[node name="Panel" type="PanelContainer" parent="UI/DeathScreen"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -80.0
+offset_right = 160.0
+offset_bottom = 80.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/DeathScreen/Panel"]
+layout_mode = 2
+
+[node name="DeathTitle" type="Label" parent="UI/DeathScreen/Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "YOU DIED"
+horizontal_alignment = 1
+
+[node name="TimeLabel" type="Label" parent="UI/DeathScreen/Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "00:00.000"
+horizontal_alignment = 1
+
+[node name="RestartHint" type="Label" parent="UI/DeathScreen/Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Press R to restart"
+horizontal_alignment = 1
 
 [node name="PlayerCamera" parent="." instance=ExtResource("3")]
 
