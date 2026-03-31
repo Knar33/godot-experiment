@@ -8,13 +8,6 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 
 ## 12.5. Enemy Boid Separation System
 
-- [ ] Create `SeparationState` in `src/GodotExperiment.Core/Enemies/SeparationState.cs`: pure C# class that takes a detection radius and separation weight, and computes a 2D separation steering vector from a list of neighbor positions using inverse-distance falloff
-- [ ] Add unit tests for `SeparationState`: no neighbors returns zero, single neighbor produces force away, multiple neighbors average correctly, out-of-range neighbors ignored, force scales inversely with distance, overlapping positions break symmetry, weight scales output magnitude
-- [ ] Add `SeparationRadius` (float, default 2.5) and `SeparationWeight` (float, default 4.0) exported properties to `BaseEnemy`; compose a `SeparationState` instance in `_Ready()`
-- [ ] Update `BaseEnemy.MoveTowardPlayer()` to query the `"enemy"` group for neighbors within `SeparationRadius`, compute the separation force via `SeparationState`, and blend it with the player-seeking direction before applying velocity
-- [ ] Add a protected `SeparationEnabled` bool property (default true) to `BaseEnemy` so subclasses can disable separation during specific states
-- [ ] Update `Charger.cs` to disable separation during charge and recovery phases (set `SeparationEnabled = false` during those states)
-- [ ] Configure per-enemy-type separation values in each enemy scene: Crawler (2.0 / 4.0), Spitter (3.0 / 5.0), Charger (3.5 / 5.0); future enemy scenes will be configured as they are created
 - [ ] Playtest separation tuning: verify enemies spread visibly without losing their pack/swarm feel, and that no enemy type's core AI is broken by separation forces
 
 ## 13. Drone (Enemy — Wave 5+)
@@ -422,3 +415,13 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 - [x] Implement Charger recovery: stunned and stationary for 1s after charge ends before resuming
 - [x] Configure Charger stats: 8-10 shot health, slow normal / very fast charge speed, 3 gem drop; spawns solo or in pairs
 - [x] Add Charger audio: heavy footsteps/snorting ambient, loud scraping/revving 1.5s telegraph (high priority mix), heavy crash death sound
+
+### Enemy Boid Separation System
+
+- [x] Create `SeparationState` in `src/GodotExperiment.Core/Enemies/SeparationState.cs`: pure C# class that takes a detection radius and separation weight, and computes a 2D separation steering vector from a list of neighbor positions using inverse-distance falloff
+- [x] Add unit tests for `SeparationState`: no neighbors returns zero, single neighbor produces force away, multiple neighbors average correctly, out-of-range neighbors ignored, force scales inversely with distance, overlapping positions break symmetry, weight scales output magnitude
+- [x] Add `SeparationRadius` (float, default 2.5) and `SeparationWeight` (float, default 4.0) exported properties to `BaseEnemy`; compose a `SeparationState` instance in `_Ready()`
+- [x] Update `BaseEnemy.MoveTowardPlayer()` to query the `"enemy"` group for neighbors within `SeparationRadius`, compute the separation force via `SeparationState`, and blend it with the player-seeking direction before applying velocity
+- [x] Add a protected `SeparationEnabled` bool property (default true) to `BaseEnemy` so subclasses can disable separation during specific states
+- [x] Update `Charger.cs` to disable separation during charge and recovery phases (set `SeparationEnabled = false` during those states)
+- [x] Configure per-enemy-type separation values in each enemy scene: Crawler (2.0 / 4.0), Spitter (3.0 / 5.0), Charger (3.5 / 5.0); future enemy scenes will be configured as they are created

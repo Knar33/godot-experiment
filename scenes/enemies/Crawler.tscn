@@ -28,6 +28,8 @@ GemDropCount = 1
 DeathParticleColor = Color(0.3, 0.55, 0.2, 1)
 DeathParticleCount = 12
 DeathParticleExplosiveness = 0.9
+SeparationRadius = 2.0
+SeparationWeight = 4.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)

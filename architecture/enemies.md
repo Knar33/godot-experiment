@@ -28,12 +28,12 @@ Uses flat 2D positions (X/Z plane — all enemies move on the arena floor).
 Algorithm:
 1. For each neighbor within `detectionRadius`:
    - Compute the vector **away** from the neighbor: `myPosition - neighborPosition`
-   - Normalize it, then scale by `1.0 / distance` (inverse-linear falloff). If distance < `epsilon` (0.001), use a random unit vector to break symmetry.
+   - Normalize it, then scale by `(1 - distance / detectionRadius)` (linear falloff — full strength at overlap, zero at detection edge). If distance < `epsilon` (0.001), use a random unit vector at full strength to break symmetry.
    - Accumulate into a running sum.
-2. If any neighbors were found, normalize the accumulated vector and multiply by `separationWeight`.
+2. If any neighbors were found, divide the accumulated vector by the neighbor count (average), then multiply by `separationWeight`.
 3. Return the resulting 2D force vector. Returns zero if no neighbors are within range.
 
-The return value is a **steering direction with magnitude** — the Godot layer blends it into the enemy's velocity.
+The linear falloff ensures smooth, gradual separation — enemies can partially overlap and push apart over time rather than snapping rigidly. The averaged output means single distant neighbors produce a gentle nudge while dense clusters build up meaningful pressure.
 
 ### Per-Type Configuration
 

@@ -42,19 +42,19 @@ public partial class Charger : BaseEnemy
         if (transition == ChargerAIState.Phase.Charging)
             _chargeDirection = ComputeLeadDirection(player, distance);
 
+        SeparationEnabled = !_aiState.IsCharging && !_aiState.IsRecovering;
+
         if (!_aiState.ShouldMove) return;
 
         if (_aiState.IsCharging)
         {
             Velocity = _chargeDirection * MoveSpeed * _aiState.ChargeSpeedMultiplier;
+            MoveAndSlide();
         }
         else
         {
-            if (toPlayer.LengthSquared() < 0.25f) return;
-            Velocity = toPlayer.Normalized() * MoveSpeed;
+            base.MoveTowardPlayer(dt);
         }
-
-        MoveAndSlide();
     }
 
     private Vector3 ComputeLeadDirection(Node3D player, float distance)

@@ -1,3 +1,4 @@
+using System;
 using Godot;
 using GodotExperiment.Combat;
 using GodotExperiment.Enemies;
@@ -16,7 +17,14 @@ public partial class BaseEnemy : CharacterBody3D
     [Export] public int DeathParticleCount { get; set; } = 20;
     [Export] public float DeathParticleExplosiveness { get; set; } = 0.8f;
 
+    [Export] public float SeparationRadius { get; set; } = 2.5f;
+    [Export] public float SeparationWeight { get; set; } = 4.0f;
+
     public EnemyHealthState Health { get; private set; } = null!;
+
+    protected bool SeparationEnabled { get; set; } = true;
+
+    private SeparationState _separation = null!;
 
     private MeshInstance3D? _mesh;
     private ShaderMaterial? _flashMaterial;
@@ -38,6 +46,8 @@ public partial class BaseEnemy : CharacterBody3D
         Health = new EnemyHealthState(MaxHealth);
         Health.Damaged += OnDamaged;
         Health.Died += OnDied;
+
+        _separation = new SeparationState(SeparationRadius, SeparationWeight);
 
         _mesh = GetNodeOrNull<MeshInstance3D>("MeshInstance3D");
         SetupFlashMaterial();
@@ -89,14 +99,45 @@ public partial class BaseEnemy : CharacterBody3D
         var player = GetTree().GetFirstNodeInGroup("player") as Node3D;
         if (player == null) return;
 
-        Vector3 direction = player.GlobalPosition - GlobalPosition;
-        direction.Y = 0;
+        Vector3 toPlayer = player.GlobalPosition - GlobalPosition;
+        toPlayer.Y = 0;
 
-        if (direction.LengthSquared() < 0.25f) return;
+        if (toPlayer.LengthSquared() < 0.25f) return;
 
-        direction = direction.Normalized();
+        Vector3 direction = toPlayer.Normalized();
+
+        if (SeparationEnabled)
+        {
+            var sepForce = ComputeSeparationFromGroup();
+            Vector3 separation3D = new(sepForce.X, 0, sepForce.Y);
+            direction = (direction + separation3D).Normalized();
+        }
+
         Velocity = direction * MoveSpeed;
         MoveAndSlide();
+    }
+
+    private System.Numerics.Vector2 ComputeSeparationFromGroup()
+    {
+        var enemies = GetTree().GetNodesInGroup("enemy");
+        Span<System.Numerics.Vector2> neighbors = stackalloc System.Numerics.Vector2[enemies.Count - 1];
+        int count = 0;
+
+        var myPos2D = new System.Numerics.Vector2(GlobalPosition.X, GlobalPosition.Z);
+
+        foreach (var node in enemies)
+        {
+            if (node == this) continue;
+            if (node is not Node3D other) continue;
+
+            var otherPos2D = new System.Numerics.Vector2(other.GlobalPosition.X, other.GlobalPosition.Z);
+            float dist = System.Numerics.Vector2.Distance(myPos2D, otherPos2D);
+            if (dist > SeparationRadius) continue;
+
+            neighbors[count++] = otherPos2D;
+        }
+
+        return _separation.ComputeSeparationForce(myPos2D, neighbors[..count]);
     }
 
     private void OnContactBodyEntered(Node3D body)
