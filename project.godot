@@ -16,7 +16,7 @@ config/features=PackedStringArray("4.6", "C#", "Forward Plus")
 
 [autoload]
 
-GameManager="*res://scripts/GameManager.cs"
+GameManager="*res://scripts/managers/GameManager.cs"
 
 [display]
 

@@ -1,4 +1,4 @@
-namespace GodotExperiment;
+namespace GodotExperiment.Player;
 
 public class BhopState
 {

@@ -4,15 +4,6 @@ Ordered by urgency (dependencies first, polish last). Completed tasks are checke
 
 ---
 
-## File Structure
-
-- [ ] Organize the `scripts/` directory into subdirectories by domain (e.g. `scripts/player/`, `scripts/enemies/`, `scripts/ui/`, `scripts/managers/`, `scripts/arena/`) and move existing scripts into the appropriate folders
-- [ ] Organize the `scenes/` directory into subdirectories by domain (e.g. `scenes/player/`, `scenes/enemies/`, `scenes/ui/`, `scenes/arena/`) and move existing scenes into the appropriate folders
-- [ ] Organize the `src/GodotExperiment.Core/` directory into subdirectories by domain (e.g. `Player/`, `Enemies/`, `GameLoop/`) and update namespaces to match
-- [ ] Update all scene resource paths, script references, and project references after reorganizing to ensure nothing is broken
-- [ ] Update `architecture/project-structure.md` to reflect the new directory layout
-- [ ] Create the `design/` directory referenced in the project rules (currently missing from the repository)
-
 ## Camera
 
 - [ ] Create a third-person camera attached to the player, positioned behind and above the character with smooth follow
@@ -266,3 +257,12 @@ Ordered by urgency (dependencies first, polish last). Completed tasks are checke
 - [x] Implement player air strafing: while airborne, left/right strafe input subtly curves the player's horizontal trajectory for mid-air direction control
 - [x] Implement player dodge roll: a short, fast ground-only roll on a 1.5s cooldown with ~0.3s of invulnerability during the ~0.5s animation; cannot activate while airborne
 - [x] Add unit tests for player bhop timing window detection, speed stacking/cap, speed decay rate, and dodge roll cooldown enforcement
+
+### File Structure
+
+- [x] Organize the `scripts/` directory into subdirectories by domain (e.g. `scripts/player/`, `scripts/enemies/`, `scripts/ui/`, `scripts/managers/`, `scripts/arena/`) and move existing scripts into the appropriate folders
+- [x] Organize the `scenes/` directory into subdirectories by domain (e.g. `scenes/player/`, `scenes/enemies/`, `scenes/ui/`, `scenes/arena/`) and move existing scenes into the appropriate folders
+- [x] Organize the `src/GodotExperiment.Core/` directory into subdirectories by domain (e.g. `Player/`, `Enemies/`, `GameLoop/`) and update namespaces to match
+- [x] Update all scene resource paths, script references, and project references after reorganizing to ensure nothing is broken
+- [x] Update `architecture/project-structure.md` to reflect the new directory layout
+- [x] Create the `design/` directory referenced in the project rules (currently missing from the repository)

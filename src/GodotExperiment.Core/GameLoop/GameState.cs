@@ -1,4 +1,4 @@
-namespace GodotExperiment;
+namespace GodotExperiment.GameLoop;
 
 public enum GameState
 {

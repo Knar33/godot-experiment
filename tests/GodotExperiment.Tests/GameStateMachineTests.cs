@@ -1,4 +1,4 @@
-using GodotExperiment;
+using GodotExperiment.GameLoop;
 using Xunit;
 
 namespace GodotExperiment.Tests;

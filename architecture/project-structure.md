@@ -17,9 +17,17 @@ The main Godot project references Core via `<ProjectReference>` and excludes `sr
 
 ## Key Directories
 
-- `scenes/` — Godot `.tscn` scene files
-- `scripts/` — Godot-specific C# scripts (nodes, autoloads) that reference Core types
+- `scenes/` — Godot `.tscn` scene files, organized by domain
+  - `scenes/arena/` — Arena scene
+  - `scenes/player/` — Player scene
+  - `scenes/Game.tscn` — Root game scene (main scene)
+- `scripts/` — Godot-specific C# scripts (nodes, autoloads) that reference Core types, organized by domain
+  - `scripts/arena/` — Arena node scripts
+  - `scripts/managers/` — Autoload and manager scripts (GameManager)
+  - `scripts/player/` — Player node scripts
 - `src/GodotExperiment.Core/` — Pure C# classes: enums, state machines, data models, calculations
+  - `Player/` — Player movement state (BhopState, DodgeRollState) — namespace `GodotExperiment.Player`
+  - `GameLoop/` — Game state management (GameState, GameStateMachine) — namespace `GodotExperiment.GameLoop`
 - `tests/GodotExperiment.Tests/` — xUnit tests for Core classes
 - `design/` — Game design documents (source of truth for gameplay intent)
 - `architecture/` — Technical implementation documents
@@ -27,7 +35,7 @@ The main Godot project references Core via `<ProjectReference>` and excludes `sr
 
 ## Game State Management
 
-`GameStateMachine` (Core) is a pure C# state machine with four states:
+`GameStateMachine` (Core, `GodotExperiment.GameLoop`) is a pure C# state machine with four states:
 
 ```
 Countdown → Playing → Dead → Countdown (restart)
@@ -37,7 +45,7 @@ Countdown → Playing → Dead → Countdown (restart)
 
 Valid transitions are enforced; invalid transitions return `false` and leave state unchanged. The machine fires a `StateChanged` event on valid transitions and on `Reset()`.
 
-`GameManager` (scripts/) is a Godot `Node` autoload that wraps `GameStateMachine` and re-emits state changes as Godot signals so other nodes can connect via the editor or code.
+`GameManager` (scripts/managers/) is a Godot `Node` autoload that wraps `GameStateMachine` and re-emits state changes as Godot signals so other nodes can connect via the editor or code.
 
 ## Input Actions
 
@@ -58,4 +66,4 @@ Mouse look is handled directly in code (Input.MouseMode capture), not via input 
 
 ## Godot SDK Version
 
-The `GodotExperiment.csproj` specifies `Godot.NET.Sdk/4.6.0`. This version must match the installed Godot editor version exactly. Update the SDK version in the `.csproj` if using a different Godot version (e.g., `4.6.1`).
+The `GodotExperiment.csproj` specifies `Godot.NET.Sdk/4.6.1`. This version must match the installed Godot editor version exactly. Update the SDK version in the `.csproj` if using a different Godot version.
