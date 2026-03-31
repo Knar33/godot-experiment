@@ -4,13 +4,6 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 
 ---
 
-## 1. Shooting — Hold-to-Fire
-
-- [ ] Add a `shoot` input action mapped to left mouse button (and right trigger for gamepad) in the Godot project input map
-- [ ] Update `Player.cs` to only call `AutoFireState.Update(dt)` and spawn projectiles while the `shoot` action is held; stop firing when released
-- [ ] Reset the `AutoFireState` timer when the fire input is first pressed so the first shot fires immediately on click
-- [ ] Update `AutoFireState` unit tests to cover the hold-to-fire behavior (timer reset on press, no accumulation while not firing)
-
 ## 2. Projectile Collision & Audio
 
 - [ ] Update `PlayerProjectile.tscn` collision mask to include layer 1 (arena geometry) so projectiles collide with walls and floor
@@ -409,3 +402,10 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 - [x] Implement projectile-enemy collision: when a player projectile contacts an enemy, deal damage to the enemy and destroy the projectile (default pre-upgrade behavior)
 - [x] Ensure player projectiles are visually distinct from enemy projectiles (Spitter) using a consistent bright color unique to the player
 - [x] Add unit tests for player fire rate timing interval and projectile range-based despawn
+
+### Shooting — Hold-to-Fire
+
+- [x] Add a `shoot` input action mapped to left mouse button (and right trigger for gamepad) in the Godot project input map
+- [x] Update `Player.cs` to only call `AutoFireState.Update(dt)` and spawn projectiles while the `shoot` action is held; stop firing when released
+- [x] Reset the `AutoFireState` timer when the fire input is first pressed so the first shot fires immediately on click
+- [x] Update `AutoFireState` unit tests to cover the hold-to-fire behavior (timer reset on press, no accumulation while not firing)

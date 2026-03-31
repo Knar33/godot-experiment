@@ -112,10 +112,16 @@ public partial class Player : CharacterBody3D
 
     private void UpdateShooting(float dt)
     {
-        AutoFire.Update(dt);
-
         if (GameManager.Instance?.CurrentState != GameState.Playing)
             return;
+
+        if (Input.IsActionJustPressed("shoot"))
+            AutoFire.ResetToReady();
+
+        if (!Input.IsActionPressed("shoot"))
+            return;
+
+        AutoFire.Update(dt);
 
         if (AutoFire.TryFire())
             SpawnProjectile();

@@ -191,7 +191,7 @@ PlayerCamera (Node3D) [scripts/player/PlayerCamera.cs]
 
 `tests/GodotExperiment.Tests/DodgeRollStateTests.cs` — 18 tests covering roll initiation, i-frame window, roll duration, cooldown lifecycle, full sequences, and reset.
 
-`tests/GodotExperiment.Tests/AutoFireStateTests.cs` — 14 tests covering fire interval timing, CanFire/TryFire behavior, timer reset, custom intervals, and shots-per-second accuracy.
+`tests/GodotExperiment.Tests/AutoFireStateTests.cs` — 21 tests covering fire interval timing, CanFire/TryFire behavior, timer reset, custom intervals, shots-per-second accuracy, ResetToReady for immediate first shot on press, and hold-to-fire simulation.
 
 `tests/GodotExperiment.Tests/ProjectileStateTests.cs` — 9 tests covering distance accumulation, max range expiry, small-increment simulation, and travel time accuracy.
 

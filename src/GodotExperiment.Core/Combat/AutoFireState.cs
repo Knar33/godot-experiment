@@ -25,4 +25,9 @@ public class AutoFireState
     {
         TimeSinceLastShot = 0f;
     }
+
+    public void ResetToReady()
+    {
+        TimeSinceLastShot = FireInterval;
+    }
 }

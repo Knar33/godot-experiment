@@ -153,4 +153,84 @@ public class AutoFireStateTests
 
         Assert.InRange(shotCount, 60, 68);
     }
+
+    [Fact]
+    public void ResetToReady_SetsTimeSinceLastShotToFireInterval()
+    {
+        var state = new AutoFireState();
+        state.ResetToReady();
+        Assert.Equal(state.FireInterval, state.TimeSinceLastShot);
+    }
+
+    [Fact]
+    public void ResetToReady_AllowsImmediateFire()
+    {
+        var state = new AutoFireState();
+        Assert.False(state.CanFire);
+        state.ResetToReady();
+        Assert.True(state.CanFire);
+        Assert.True(state.TryFire());
+    }
+
+    [Fact]
+    public void ResetToReady_FirstShotFiresImmediately_WithoutUpdate()
+    {
+        var state = new AutoFireState();
+        state.ResetToReady();
+        Assert.True(state.TryFire());
+        Assert.Equal(0f, state.TimeSinceLastShot);
+    }
+
+    [Fact]
+    public void ResetToReady_AfterPartialAccumulation_AllowsImmediateFire()
+    {
+        var state = new AutoFireState();
+        state.Update(0.05f);
+        Assert.False(state.CanFire);
+        state.ResetToReady();
+        Assert.True(state.CanFire);
+    }
+
+    [Fact]
+    public void ResetToReady_WithCustomInterval_SetsCorrectValue()
+    {
+        var state = new AutoFireState { FireInterval = 0.25f };
+        state.ResetToReady();
+        Assert.Equal(0.25f, state.TimeSinceLastShot);
+        Assert.True(state.CanFire);
+    }
+
+    [Fact]
+    public void NoUpdate_NoTimeAccumulation()
+    {
+        var state = new AutoFireState();
+        Assert.Equal(0f, state.TimeSinceLastShot);
+        Assert.False(state.CanFire);
+    }
+
+    [Fact]
+    public void HoldToFire_SimulatesHoldAndRelease()
+    {
+        var state = new AutoFireState();
+        float dt = 1f / 60f;
+        int shotCount = 0;
+
+        state.ResetToReady();
+        for (int frame = 0; frame < 60; frame++)
+        {
+            state.Update(dt);
+            if (state.TryFire())
+                shotCount++;
+        }
+        Assert.InRange(shotCount, 7, 9);
+
+        float timeAfterHold = state.TimeSinceLastShot;
+        for (int frame = 0; frame < 60; frame++)
+        {
+        }
+        Assert.Equal(timeAfterHold, state.TimeSinceLastShot);
+
+        state.ResetToReady();
+        Assert.True(state.TryFire());
+    }
 }
