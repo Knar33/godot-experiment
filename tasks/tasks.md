@@ -4,6 +4,11 @@ Ordered by urgency (dependencies first, polish last). Completed tasks are checke
 
 ---
 
+## Camera Enhancements
+
+- [ ] Offset the camera horizontally to an over-the-shoulder position so the crosshair targets the world ahead of the player rather than the player's back
+- [ ] Implement scroll-wheel zoom: mouse scroll adjusts the camera distance between a configurable min and max, with smooth interpolation toward the target distance
+
 ## Player Shooting
 
 - [ ] Create a player projectile scene: a fast-moving Area3D or RigidBody3D with a bright visually distinct mesh, CollisionShape3D, and a script that moves it forward each physics frame
