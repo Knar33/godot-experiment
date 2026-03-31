@@ -2,23 +2,23 @@
 
 ## Scene Structure
 
-`scenes/Player.tscn` is a standalone scene instanced into `Game.tscn`.
+`scenes/player/Player.tscn` is a standalone scene instanced into `Game.tscn`.
 
 ```
-Player (CharacterBody3D) [scripts/Player.cs]
+Player (CharacterBody3D) [scripts/player/Player.cs]
 ├── CollisionShape3D — CapsuleShape3D (radius 0.4, height 1.8), centered at y=0.9
 └── MeshInstance3D — CapsuleMesh placeholder (same dimensions), light blue material
 ```
 
-The capsule bottom sits at y=0 so the player stands flush on the arena floor.
+The capsule bottom sits at y=0 so the player stands flush on the arena floor. The player is added to the `"player"` group at runtime for camera and other systems to locate it.
 
 ## Code Split
 
 Player mechanics are split across two layers:
 
-- **`src/GodotExperiment.Core/BhopState.cs`** — Pure C# bhop timing, speed stacking, decay logic. No Godot dependency, fully unit-testable.
-- **`src/GodotExperiment.Core/DodgeRollState.cs`** — Pure C# dodge roll state machine (rolling, i-frames, cooldown). No Godot dependency, fully unit-testable.
-- **`scripts/Player.cs`** — Godot `CharacterBody3D` script. Reads input, queries camera for direction, delegates to `BhopState`/`DodgeRollState` for logic, applies physics via `MoveAndSlide()`.
+- **`src/GodotExperiment.Core/Player/BhopState.cs`** — Pure C# bhop timing, speed stacking, decay logic. No Godot dependency, fully unit-testable.
+- **`src/GodotExperiment.Core/Player/DodgeRollState.cs`** — Pure C# dodge roll state machine (rolling, i-frames, cooldown). No Godot dependency, fully unit-testable.
+- **`scripts/player/Player.cs`** — Godot `CharacterBody3D` script. Reads input, queries camera for direction, delegates to `BhopState`/`DodgeRollState` for logic, applies physics via `MoveAndSlide()`.
 
 ## Movement System
 
@@ -56,8 +56,62 @@ Player mechanics are split across two layers:
 | `AirStrafeInfluence` | 8 | Lateral force while airborne (units/s²) |
 | `DodgeRollSpeed` | 18 | Movement speed during dodge roll (units/s) |
 
+## Camera
+
+`scenes/player/PlayerCamera.tscn` is instanced into `Game.tscn` separately from the player.
+
+```
+PlayerCamera (Node3D) [scripts/player/PlayerCamera.cs]
+└── Camera3D
+```
+
+### Orbit & Mouse-Look
+- The camera orbits around an **orbit center** that smoothly follows the player's position plus a vertical offset (default 1.5 units, roughly head height).
+- Mouse X input rotates **yaw** (unlimited horizontal rotation).
+- Mouse Y input rotates **pitch** (clamped between -80° and +60° to prevent flipping).
+- Mouse is captured on startup. Pressing Escape toggles captured/visible mode (placeholder until pause menu is implemented). Clicking while uncaptured re-captures.
+
+### Positioning
+- The camera faces the direction defined by (pitch, yaw) — this is the **aim direction**.
+- The camera is positioned **behind** the aim direction at a configurable distance (default 8 units) from the orbit center.
+- The player character is visible near the bottom of the screen; the crosshair at screen center targets the world ahead.
+
+### Smooth Follow
+- Orbit center position uses framerate-independent exponential interpolation: `lerp(current, target, 1 - exp(-speed * dt))` with a default speed of 20.
+- Initial orbit center snaps to the player on the first frame.
+
+### Collision Avoidance
+- Each physics frame, a raycast is cast from the orbit center toward the desired camera position.
+- If the ray hits arena geometry (walls, floor), the camera is pulled forward to the hit point plus a small margin (0.3 units along the hit normal).
+- The player's own collision is excluded from this raycast.
+
+### Aim Point
+- A raycast is cast from the camera center (screen center) into the world each physics frame.
+- The hit point (or a far fallback point at 100 units) is stored as `AimPoint` for shooting systems to use.
+- The player's collision is excluded so the aim ray passes through the character.
+
+### Crosshair
+- A `Control` node (`scripts/ui/Crosshair.cs`) draws a small cross at screen center using `_Draw()`.
+- The crosshair has 4 arms (default 8px length, 2px thick) separated by a small gap (3px) from center.
+- Added as a full-rect child of the UI CanvasLayer in `Game.tscn` with `mouse_filter = IGNORE`.
+
+### Camera Exported Properties
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `MouseSensitivity` | 0.002 | Radians per pixel of mouse movement |
+| `Distance` | 8 | Distance from orbit center to camera (units) |
+| `MinPitch` | -80 | Minimum vertical angle (degrees) |
+| `MaxPitch` | 60 | Maximum vertical angle (degrees) |
+| `FollowSpeed` | 20 | Exponential follow rate (higher = snappier) |
+| `VerticalOffset` | 1.5 | Height above player position for orbit center (units) |
+| `AimRayLength` | 100 | Maximum distance for aim raycast (units) |
+| `ClipMargin` | 0.3 | Offset from geometry surface when camera clips (units) |
+
 ## Tests
 
 `tests/GodotExperiment.Tests/BhopStateTests.cs` — 20 tests covering timing window edge cases, speed stacking, cap enforcement, decay rate, chain tracking, and reset.
 
 `tests/GodotExperiment.Tests/DodgeRollStateTests.cs` — 18 tests covering roll initiation, i-frame window, roll duration, cooldown lifecycle, full sequences, and reset.
+
+Camera and crosshair are Godot-dependent (Node3D, Camera3D, raycasts, Control drawing) and are not covered by pure unit tests.

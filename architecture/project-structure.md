@@ -19,12 +19,13 @@ The main Godot project references Core via `<ProjectReference>` and excludes `sr
 
 - `scenes/` — Godot `.tscn` scene files, organized by domain
   - `scenes/arena/` — Arena scene
-  - `scenes/player/` — Player scene
+  - `scenes/player/` — Player and camera scenes
   - `scenes/Game.tscn` — Root game scene (main scene)
 - `scripts/` — Godot-specific C# scripts (nodes, autoloads) that reference Core types, organized by domain
   - `scripts/arena/` — Arena node scripts
   - `scripts/managers/` — Autoload and manager scripts (GameManager)
-  - `scripts/player/` — Player node scripts
+  - `scripts/player/` — Player and camera scripts
+  - `scripts/ui/` — HUD and UI element scripts (Crosshair)
 - `src/GodotExperiment.Core/` — Pure C# classes: enums, state machines, data models, calculations
   - `Player/` — Player movement state (BhopState, DodgeRollState) — namespace `GodotExperiment.Player`
   - `GameLoop/` — Game state management (GameState, GameStateMachine) — namespace `GodotExperiment.GameLoop`

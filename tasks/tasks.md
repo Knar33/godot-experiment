@@ -4,13 +4,6 @@ Ordered by urgency (dependencies first, polish last). Completed tasks are checke
 
 ---
 
-## Camera
-
-- [ ] Create a third-person camera attached to the player, positioned behind and above the character with smooth follow
-- [ ] Implement camera mouse-look: horizontal and vertical rotation orbiting around the player, with vertical angle clamped to prevent flipping
-- [ ] Ensure the camera does not clip into arena geometry and maintains clear visibility of the surrounding play area at all times
-- [ ] Implement a screen-center crosshair using a raycast from the camera into the world to determine the player's exact aim point
-
 ## Player Shooting
 
 - [ ] Create a player projectile scene: a fast-moving Area3D or RigidBody3D with a bright visually distinct mesh, CollisionShape3D, and a script that moves it forward each physics frame
@@ -266,3 +259,10 @@ Ordered by urgency (dependencies first, polish last). Completed tasks are checke
 - [x] Update all scene resource paths, script references, and project references after reorganizing to ensure nothing is broken
 - [x] Update `architecture/project-structure.md` to reflect the new directory layout
 - [x] Create the `design/` directory referenced in the project rules (currently missing from the repository)
+
+### Camera
+
+- [x] Create a third-person camera attached to the player, positioned behind and above the character with smooth follow
+- [x] Implement camera mouse-look: horizontal and vertical rotation orbiting around the player, with vertical angle clamped to prevent flipping
+- [x] Ensure the camera does not clip into arena geometry and maintains clear visibility of the surrounding play area at all times
+- [x] Implement a screen-center crosshair using a raycast from the camera into the world to determine the player's exact aim point

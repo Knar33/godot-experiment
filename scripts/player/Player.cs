@@ -19,6 +19,11 @@ public partial class Player : CharacterBody3D
     private float _jumpBufferTime = float.MaxValue;
     private Vector3 _dodgeRollDirection;
 
+    public override void _Ready()
+    {
+        AddToGroup("player");
+    }
+
     public override void _PhysicsProcess(double delta)
     {
         float dt = (float)delta;
