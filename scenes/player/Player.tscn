@@ -1,31 +1,98 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=18 format=3]
 
-[ext_resource type="Script" path="res://scripts/player/PlayerController.cs" id=1]
-[ext_resource type="PackedScene" path="res://scenes/projectiles/OrbProjectile.tscn" id=2]
+[ext_resource type="Script" path="res://scripts/player/PlayerController.cs" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/projectiles/OrbProjectile.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://assets/characters/godot_platformer_player.glb" id="3"]
+[ext_resource type="Script" path="res://scripts/player/platformer_animation_tree.gd" id="4"]
 
-[sub_resource type="CapsuleShape3D" id=1]
+[sub_resource type="CapsuleShape3D" id="1"]
 radius = 0.35
 height = 1.8
 
-[sub_resource type="StandardMaterial3D" id=2]
-albedo_color = Color(0.8, 0.8, 0.82, 1)
+[sub_resource type="AnimationNodeAnimation" id="2"]
+animation = &"idle"
 
-[sub_resource type="CapsuleMesh" id=3]
-radius = 0.35
-mid_height = 1.1
+[sub_resource type="AnimationNodeAnimation" id="3"]
+animation = &"run"
+
+[sub_resource type="AnimationNodeAnimation" id="4"]
+animation = &"walk"
+
+[sub_resource type="AnimationNodeAnimation" id="5"]
+animation = &"jump"
+
+[sub_resource type="AnimationNodeAnimation" id="6"]
+animation = &"falling"
+
+[sub_resource type="AnimationNodeAnimation" id="7"]
+animation = &"shooting_standing"
+
+[sub_resource type="AnimationNodeBlend2" id="8"]
+
+[sub_resource type="AnimationNodeBlend2" id="9"]
+filter_enabled = true
+filters = ["Skeleton/Skeleton3D:MASTER", "Skeleton/Skeleton3D:chest", "Skeleton/Skeleton3D:head", "Skeleton/Skeleton3D:headtracker", "Skeleton/Skeleton3D:hip", "Skeleton/Skeleton3D:l-arm", "Skeleton/Skeleton3D:l-forearm", "Skeleton/Skeleton3D:r-arm", "Skeleton/Skeleton3D:r-forearm", "Skeleton/Skeleton3D:vent", "Skeleton/Skeleton3D:waist"]
+
+[sub_resource type="AnimationNodeBlend2" id="10"]
+
+[sub_resource type="AnimationNodeTimeScale" id="11"]
+
+[sub_resource type="AnimationNodeBlend2" id="12"]
+
+[sub_resource type="AnimationNodeBlend2" id="13"]
+
+[sub_resource type="AnimationNodeBlendTree" id="14"]
+graph_offset = Vector2(-221.364, -194.029)
+nodes/Animation/node = SubResource("2")
+nodes/Animation/position = Vector2(-260, -400)
+"nodes/Animation 2/node" = SubResource("3")
+"nodes/Animation 2/position" = Vector2(-260, -160)
+"nodes/Animation 3/node" = SubResource("5")
+"nodes/Animation 3/position" = Vector2(-260, -40)
+"nodes/Animation 4/node" = SubResource("6")
+"nodes/Animation 4/position" = Vector2(-260, 80)
+"nodes/Animation 5/node" = SubResource("7")
+"nodes/Animation 5/position" = Vector2(-260, 200)
+"nodes/Animation 6/node" = SubResource("4")
+"nodes/Animation 6/position" = Vector2(-260, -280)
+nodes/air_dir/node = SubResource("8")
+nodes/air_dir/position = Vector2(110, 20)
+nodes/gun/node = SubResource("9")
+nodes/gun/position = Vector2(680, 140)
+nodes/output/position = Vector2(880, 140)
+nodes/run/node = SubResource("10")
+nodes/run/position = Vector2(80, -260)
+nodes/scale/node = SubResource("11")
+nodes/scale/position = Vector2(260, -120)
+nodes/speed/node = SubResource("12")
+nodes/speed/position = Vector2(-80, -200)
+nodes/state/node = SubResource("13")
+nodes/state/position = Vector2(460, 10)
+node_connections = [&"air_dir", 0, &"Animation 3", &"air_dir", 1, &"Animation 4", &"gun", 0, &"state", &"gun", 1, &"Animation 5", &"output", 0, &"gun", &"run", 0, &"Animation", &"run", 1, &"speed", &"scale", 0, &"run", &"speed", 0, &"Animation 6", &"speed", 1, &"Animation 2", &"state", 0, &"scale", &"state", 1, &"air_dir"]
 
 [node name="Player" type="CharacterBody3D"]
-script = ExtResource(1)
-OrbProjectileScene = ExtResource(2)
+script = ExtResource("1")
+OrbProjectileScene = ExtResource("2")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 position = Vector3(0, 1, 0)
-shape = SubResource(1)
+shape = SubResource("1")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-position = Vector3(0, 1, 0)
-mesh = SubResource(3)
-material_override = SubResource(2)
+[node name="Character" parent="." instance=ExtResource("3")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="AnimationTree" type="AnimationTree" parent="."]
+script = ExtResource("4")
+active = true
+root_node = NodePath("../Character")
+anim_player = NodePath("../Character/AnimationPlayer")
+tree_root = SubResource("14")
+parameters/air_dir/blend_amount = 0.0
+parameters/gun/blend_amount = 0.0
+parameters/run/blend_amount = 0.0
+parameters/scale/scale = 1.0
+parameters/speed/blend_amount = 0.0
+parameters/state/blend_amount = 0.0
 
 [node name="CameraPivot" type="Node3D" parent="."]
 position = Vector3(0, 1.4, 0)

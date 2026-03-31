@@ -19,18 +19,29 @@ public partial class InputActions : Node
         EnsureDefaultBindings();
     }
 
+    /// <summary>
+    /// Merges default keys into each action. Unlike a one-shot fill, this always adds a physical
+    /// key if it is missing, so a half-configured project.godot (events: [...] with bad data) still works.
+    /// </summary>
     public static void EnsureDefaultBindings()
     {
-        EnsureAction(MoveForward, new InputEvent[] { KeyEvent(Key.W), KeyEvent(Key.Up) });
-        EnsureAction(MoveBack, new InputEvent[] { KeyEvent(Key.S), KeyEvent(Key.Down) });
-        EnsureAction(MoveLeft, new InputEvent[] { KeyEvent(Key.A), KeyEvent(Key.Left) });
-        EnsureAction(MoveRight, new InputEvent[] { KeyEvent(Key.D), KeyEvent(Key.Right) });
-        EnsureAction(Jump, new InputEvent[] { KeyEvent(Key.Space) });
-        EnsureAction(Sprint, new InputEvent[] { KeyEvent(Key.Shift) });
-        EnsureAction(Crouch, new InputEvent[] { KeyEvent(Key.C) });
-        EnsureAction(Fire, new InputEvent[] { MouseButtonEvent(MouseButton.Left) });
-        EnsureAction(CameraZoomIn, new InputEvent[] { MouseButtonEvent(MouseButton.WheelUp) });
-        EnsureAction(CameraZoomOut, new InputEvent[] { MouseButtonEvent(MouseButton.WheelDown) });
+        AddPhysicalKeyToAction(MoveForward, Key.W);
+        AddPhysicalKeyToAction(MoveForward, Key.Up);
+        AddPhysicalKeyToAction(MoveBack, Key.S);
+        AddPhysicalKeyToAction(MoveBack, Key.Down);
+        AddPhysicalKeyToAction(MoveLeft, Key.A);
+        AddPhysicalKeyToAction(MoveLeft, Key.Left);
+        AddPhysicalKeyToAction(MoveRight, Key.D);
+        AddPhysicalKeyToAction(MoveRight, Key.Right);
+        AddPhysicalKeyToAction(Jump, Key.Space);
+        // Shift is a modifier: IsActionPressed can misbehave; E is a non-modifier sprint alternate.
+        AddPhysicalKeyToAction(Sprint, Key.Shift);
+        AddPhysicalKeyToAction(Sprint, Key.E);
+        AddPhysicalKeyToAction(Crouch, Key.C);
+        AddPhysicalKeyToAction(Crouch, Key.Ctrl);
+        AddMouseButtonToAction(Fire, MouseButton.Left);
+        AddMouseButtonToAction(CameraZoomIn, MouseButton.WheelUp);
+        AddMouseButtonToAction(CameraZoomOut, MouseButton.WheelDown);
     }
 
     public static void RebindAction(string actionName, IEnumerable<InputEvent> events)
@@ -47,37 +58,70 @@ public partial class InputActions : Node
         }
     }
 
-    private static void EnsureAction(string actionName, IEnumerable<InputEvent> defaults)
+    private static void AddPhysicalKeyToAction(string actionName, Key physicalKey)
     {
         if (!InputMap.HasAction(actionName))
         {
             InputMap.AddAction(actionName);
         }
 
-        if (InputMap.ActionGetEvents(actionName).Count > 0)
+        if (ActionHasPhysicalKey(actionName, physicalKey))
         {
             return;
         }
 
-        foreach (var inputEvent in defaults)
-        {
-            InputMap.ActionAddEvent(actionName, inputEvent);
-        }
+        InputMap.ActionAddEvent(actionName, PhysicalKeyEvent(physicalKey));
     }
 
-    private static InputEventKey KeyEvent(Key key)
+    private static void AddMouseButtonToAction(string actionName, MouseButton button)
     {
-        return new InputEventKey
+        if (!InputMap.HasAction(actionName))
         {
-            PhysicalKeycode = key
-        };
+            InputMap.AddAction(actionName);
+        }
+
+        if (ActionHasMouseButton(actionName, button))
+        {
+            return;
+        }
+
+        InputMap.ActionAddEvent(actionName, MouseButtonEvent(button));
+    }
+
+    private static bool ActionHasPhysicalKey(string action, Key physicalKey)
+    {
+        foreach (var e in InputMap.ActionGetEvents(action))
+        {
+            if (e is InputEventKey k && k.PhysicalKeycode == physicalKey)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool ActionHasMouseButton(string action, MouseButton button)
+    {
+        foreach (var e in InputMap.ActionGetEvents(action))
+        {
+            if (e is InputEventMouseButton m && m.ButtonIndex == button)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>Maps by physical location (WASD). Only physical_keycode is set per Godot docs.</summary>
+    private static InputEventKey PhysicalKeyEvent(Key physicalKey)
+    {
+        return new InputEventKey { PhysicalKeycode = physicalKey };
     }
 
     private static InputEventMouseButton MouseButtonEvent(MouseButton button)
     {
-        return new InputEventMouseButton
-        {
-            ButtonIndex = button
-        };
+        return new InputEventMouseButton { ButtonIndex = button };
     }
 }
