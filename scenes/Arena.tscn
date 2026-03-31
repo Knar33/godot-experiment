@@ -1,0 +1,67 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/Arena.cs" id="1"]
+
+[sub_resource type="Shader" id="Shader_1"]
+code = "shader_type spatial;
+
+uniform float arena_radius = 25.0;
+uniform float plane_size = 50.0;
+uniform float grid_spacing = 2.0;
+uniform float grid_line_width = 0.04;
+uniform vec3 base_color : source_color = vec3(0.1, 0.1, 0.13);
+uniform vec3 grid_color : source_color = vec3(0.2, 0.2, 0.25);
+uniform vec3 edge_color : source_color = vec3(0.5, 0.15, 0.12);
+uniform vec3 center_color : source_color = vec3(0.12, 0.18, 0.4);
+
+void fragment() {
+    vec2 world_pos = (UV - 0.5) * plane_size;
+    float dist = length(world_pos);
+
+    if (dist > arena_radius) {
+        discard;
+    }
+
+    // Grid lines
+    vec2 grid_pos = abs(fract(world_pos / grid_spacing + 0.5) - 0.5) * grid_spacing;
+    float line_dist = min(grid_pos.x, grid_pos.y);
+    float grid_mask = 1.0 - smoothstep(grid_line_width, grid_line_width + 0.06, line_dist);
+
+    // Center glow
+    float center_glow = exp(-dist * dist * 0.012) * 0.5;
+
+    // Edge glow ring
+    float edge_proximity = arena_radius - dist;
+    float edge_glow = exp(-edge_proximity * edge_proximity * 1.5) * 0.9;
+
+    // Compose
+    vec3 final_color = mix(base_color, grid_color, grid_mask * 0.7);
+    final_color += center_color * center_glow;
+    final_color += edge_color * edge_glow;
+
+    ALBEDO = final_color;
+    EMISSION = center_color * center_glow * 0.3 + edge_color * edge_glow * 0.5;
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1"]
+shader = SubResource("Shader_1")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_1"]
+size = Vector2(50, 50)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
+size = Vector3(52, 1, 52)
+
+[node name="Arena" type="Node3D"]
+script = ExtResource("1")
+
+[node name="Floor" type="StaticBody3D" parent="."]
+
+[node name="FloorMesh" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("PlaneMesh_1")
+surface_material_override/0 = SubResource("ShaderMaterial_1")
+
+[node name="FloorCollision" type="CollisionShape3D" parent="Floor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("BoxShape3D_1")

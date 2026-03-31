@@ -4,34 +4,6 @@ Ordered by urgency (dependencies first, polish last). Completed tasks are checke
 
 ---
 
-## Project Setup
-
-- [ ] Create the main Godot scene and configure the project for C# (.NET), with a root Game node and children for Arena, Player, Enemies, UI, and Camera
-- [ ] Configure project input mappings for move forward/back/left/right, jump, dodge roll, aim (mouse), pause (escape), and restart
-- [ ] Create a GameManager autoload singleton that tracks game state enum (Countdown, Playing, Dead, Paused) and exposes state-change signals
-- [ ] Set up a unit test project (e.g. GdUnit4 or xUnit) alongside the main Godot project
-
-## Arena
-
-- [ ] Build the arena floor as a StaticBody3D with a circular mesh (diameter ~40-50 units) and flat CollisionShape3D for the ground plane
-- [ ] Add arena boundary walls around the perimeter with collision shapes so the player and enemies cannot leave the play area
-- [ ] Apply a subtle grid or line texture to the arena floor so the player can read their movement speed and position at a glance
-- [ ] Place a center landmark on the arena floor (subtle glow or floor marking) so the player can orient relative to the center during combat
-- [ ] Set up arena lighting: bright functional illumination on the play area with a dark, undistracting background/skybox to keep the mood hostile and minimal
-- [ ] Define enemy spawn point positions evenly distributed along the arena perimeter edge, stored as markers or coordinates for the spawner system to use
-
-## Player Character
-
-- [ ] Create the player scene as a CharacterBody3D with a placeholder capsule mesh, CollisionShape3D, and a C# script for movement
-- [ ] Implement player ground movement: 8-directional via WASD, instant full-speed with no acceleration ramp, direction relative to the camera's facing
-- [ ] Implement player jump with modest height — enough to clear ground-level attacks (Titan shockwave, Burrower eruption) but not enough to fly over enemies
-- [ ] Implement bunny hopping on the player: if jump is pressed within ~100ms of landing, preserve current horizontal speed and add a small speed boost
-- [ ] Implement bhop speed stacking on the player: each successive well-timed bhop increases speed, capping at ~1.8x base movement speed
-- [ ] Implement bhop speed decay on the player: when grounded without a successful bhop, horizontal speed rapidly decays back to base
-- [ ] Implement player air strafing: while airborne, left/right strafe input subtly curves the player's horizontal trajectory for mid-air direction control
-- [ ] Implement player dodge roll: a short, fast ground-only roll on a 1.5s cooldown with ~0.3s of invulnerability during the ~0.5s animation; cannot activate while airborne
-- [ ] Add unit tests for player bhop timing window detection, speed stacking/cap, speed decay rate, and dodge roll cooldown enforcement
-
 ## Camera
 
 - [ ] Create a third-person camera attached to the player, positioned behind and above the character with smooth follow
@@ -253,3 +225,35 @@ Ordered by urgency (dependencies first, polish last). Completed tasks are checke
 - [ ] Add ambient audio for the arena to establish a hostile, tense atmosphere
 - [ ] Add sound effects for the player's auto-fire shots, dodge roll, and bunny hop landing impacts
 - [ ] Replace all placeholder meshes with final art assets for the player character, all 10 enemy types, the arena, gems, and projectiles
+
+---
+
+## Completed
+
+### Project Setup
+
+- [x] Create the main Godot scene and configure the project for C# (.NET), with a root Game node and children for Arena, Player, Enemies, UI, and Camera
+- [x] Configure project input mappings for move forward/back/left/right, jump, dodge roll, aim (mouse), pause (escape), and restart
+- [x] Create a GameManager autoload singleton that tracks game state enum (Countdown, Playing, Dead, Paused) and exposes state-change signals
+- [x] Set up a unit test project (e.g. GdUnit4 or xUnit) alongside the main Godot project
+
+### Arena
+
+- [x] Build the arena floor as a StaticBody3D with a circular mesh (diameter ~40-50 units) and flat CollisionShape3D for the ground plane
+- [x] Add arena boundary walls around the perimeter with collision shapes so the player and enemies cannot leave the play area
+- [x] Apply a subtle grid or line texture to the arena floor so the player can read their movement speed and position at a glance
+- [x] Place a center landmark on the arena floor (subtle glow or floor marking) so the player can orient relative to the center during combat
+- [x] Set up arena lighting: bright functional illumination on the play area with a dark, undistracting background/skybox to keep the mood hostile and minimal
+- [x] Define enemy spawn point positions evenly distributed along the arena perimeter edge, stored as markers or coordinates for the spawner system to use
+
+### Player Character
+
+- [x] Create the player scene as a CharacterBody3D with a placeholder capsule mesh, CollisionShape3D, and a C# script for movement
+- [x] Implement player ground movement: 8-directional via WASD, instant full-speed with no acceleration ramp, direction relative to the camera's facing
+- [x] Implement player jump with modest height — enough to clear ground-level attacks (Titan shockwave, Burrower eruption) but not enough to fly over enemies
+- [x] Implement bunny hopping on the player: if jump is pressed within ~100ms of landing, preserve current horizontal speed and add a small speed boost
+- [x] Implement bhop speed stacking on the player: each successive well-timed bhop increases speed, capping at ~1.8x base movement speed
+- [x] Implement bhop speed decay on the player: when grounded without a successful bhop, horizontal speed rapidly decays back to base
+- [x] Implement player air strafing: while airborne, left/right strafe input subtly curves the player's horizontal trajectory for mid-air direction control
+- [x] Implement player dodge roll: a short, fast ground-only roll on a 1.5s cooldown with ~0.3s of invulnerability during the ~0.5s animation; cannot activate while airborne
+- [x] Add unit tests for player bhop timing window detection, speed stacking/cap, speed decay rate, and dodge roll cooldown enforcement
