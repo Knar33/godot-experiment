@@ -27,7 +27,8 @@
 ## Restart Flow
 
 - From the results screen, the player presses a single button to restart
-- The arena resets completely: all enemies despawn, all projectiles clear, the timer resets
+- The arena resets completely: all enemies despawn, all projectiles clear, all gems clear, the timer resets
+- **Enemy despawn**: Every living enemy must be immediately removed from the scene tree on restart. No enemies from a previous run should persist into the countdown or the next run. This includes enemies that are mid-spawn, mid-attack, or in any special state (burrowed, charging, etc.).
 - The player spawns at center and the countdown begins again
 - Total time from death to gameplay should be under 3 seconds (excluding the countdown)
 

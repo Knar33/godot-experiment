@@ -4,7 +4,7 @@
 
 Enemies are designed as an ecosystem. Each type applies a different kind of pressure, and their danger comes from how they combine. Early waves introduce simple enemies in isolation. Later waves layer types together, creating situations that demand priority targeting, spatial awareness, and split-second decision-making.
 
-All enemies spawn at the edges of the arena and move inward toward the player. All enemies drop gems on death (see `player.md` for gem values per enemy type).
+All enemies spawn at the edges of the arena and move inward toward the player. All enemies drop gems on death (see `player.md` for gem values per enemy type). All living enemies are immediately despawned when the game restarts — no enemy from a previous run should ever carry over into the next run, regardless of its current state.
 
 ## Visual & Audio Identity
 

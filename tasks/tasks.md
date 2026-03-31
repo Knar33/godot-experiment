@@ -4,17 +4,7 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 
 ---
 
-## 7. Enemy Foundation
 
-(All items completed — see Completed section below)
-
-## 8. Crawler (Enemy — Wave 1+)
-
-(All items completed — see Completed section below)
-
-## 9. Gem Pickups
-
-(All items completed — see Completed section below)
 
 ## 10. Wave System
 
