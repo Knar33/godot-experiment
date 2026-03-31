@@ -4,15 +4,6 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 
 ---
 
-## 5. HUD Foundation
-
-- [ ] Create the HUD as a CanvasLayer scene with all gameplay UI elements layered over the 3D viewport
-- [ ] Display the survival timer on the HUD in MM:SS.mmm format, visible during gameplay, frozen on death
-- [ ] Display the crosshair at screen center on the HUD, visible during gameplay
-- [ ] Display the gem count and upgrade meter progress on the HUD as a progress bar showing gems collected toward the next upgrade threshold
-- [ ] Display the countdown text (3-2-1) on the HUD at the start of each run, then hide it when gameplay begins
-- [ ] Ensure all HUD elements are small and unobtrusive so they don't obscure enemies or compete with gameplay readability
-
 ## 6. Death Screen & Run Statistics
 
 - [ ] Implement the death/results screen UI: displays the run's survival time (large, left side) and the leaderboard table (right side); shown when GameManager enters Dead state
@@ -409,3 +400,12 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 - [x] Implement player death sequence: freeze the survival timer on the exact frame of death, cut all audio abruptly, play a death effect (ragdoll or disintegration) on the player character
 - [x] Implement death camera freeze: hold the camera position for ~0.3s after player death, then play the death sting sound and transition GameManager to Dead
 - [x] Add unit tests for player i-frame protection during dodge roll and death triggering from different damage source types (contact, projectile, AoE)
+
+### HUD Foundation
+
+- [x] Create the HUD as a CanvasLayer scene with all gameplay UI elements layered over the 3D viewport
+- [x] Display the survival timer on the HUD in MM:SS.mmm format, visible during gameplay, frozen on death
+- [x] Display the crosshair at screen center on the HUD, visible during gameplay
+- [x] Display the gem count and upgrade meter progress on the HUD as a progress bar showing gems collected toward the next upgrade threshold
+- [x] Display the countdown text (3-2-1) on the HUD at the start of each run, then hide it when gameplay begins
+- [x] Ensure all HUD elements are small and unobtrusive so they don't obscure enemies or compete with gameplay readability

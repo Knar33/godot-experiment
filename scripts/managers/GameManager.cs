@@ -10,6 +10,7 @@ public partial class GameManager : Node
     public GameStateMachine StateMachine { get; } = new();
     public SurvivalTimerState SurvivalTimer { get; } = new();
     public CountdownState Countdown { get; } = new();
+    public UpgradeMeterState UpgradeMeter { get; } = new();
 
     [Signal]
     public delegate void StateChangedEventHandler(int previousState, int newState);
@@ -23,6 +24,9 @@ public partial class GameManager : Node
     [Signal]
     public delegate void SurvivalTimeUpdatedEventHandler(string formattedTime);
 
+    [Signal]
+    public delegate void GemCountChangedEventHandler(int current, int threshold);
+
     public GameState CurrentState => StateMachine.Current;
 
     public override void _Ready()
@@ -32,6 +36,7 @@ public partial class GameManager : Node
         StateMachine.StateChanged += OnStateMachineStateChanged;
         Countdown.NumberChanged += OnCountdownNumberChanged;
         Countdown.Finished += OnCountdownFinished;
+        UpgradeMeter.GemsChanged += OnGemsChanged;
 
         StartCountdown();
     }
@@ -41,6 +46,7 @@ public partial class GameManager : Node
         StateMachine.StateChanged -= OnStateMachineStateChanged;
         Countdown.NumberChanged -= OnCountdownNumberChanged;
         Countdown.Finished -= OnCountdownFinished;
+        UpgradeMeter.GemsChanged -= OnGemsChanged;
 
         if (Instance == this)
             Instance = null;
@@ -85,10 +91,16 @@ public partial class GameManager : Node
         EmitSignal(SignalName.SurvivalTimeUpdated, SurvivalTimer.Format());
     }
 
+    public void AddGems(int count)
+    {
+        UpgradeMeter.AddGems(count);
+    }
+
     public void RestartRun()
     {
         SurvivalTimer.Reset();
         Countdown.Reset();
+        UpgradeMeter.Reset();
 
         ClearArena();
         ResetPlayer();
@@ -123,6 +135,7 @@ public partial class GameManager : Node
 
         SurvivalTimer.Reset();
         Countdown.Reset();
+        UpgradeMeter.Reset();
         ClearArena();
         ResetPlayer();
 
@@ -158,6 +171,11 @@ public partial class GameManager : Node
             Input.MouseMode = Input.MouseModeEnum.Visible;
 
         EmitSignal(SignalName.StateChanged, (int)previous, (int)current);
+    }
+
+    private void OnGemsChanged(int current, int threshold)
+    {
+        EmitSignal(SignalName.GemCountChanged, current, threshold);
     }
 
     private void ClearArena()
