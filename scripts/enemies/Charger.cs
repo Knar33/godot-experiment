@@ -37,12 +37,10 @@ public partial class Charger : BaseEnemy
         var transition = _aiState.Update(dt, distance);
 
         if (transition == ChargerAIState.Phase.Telegraph)
-        {
-            _chargeDirection = toPlayer.LengthSquared() > 0.01f
-                ? toPlayer.Normalized()
-                : GlobalTransform.Basis.Z.Normalized();
             _telegraphAudio?.Play();
-        }
+
+        if (transition == ChargerAIState.Phase.Charging)
+            _chargeDirection = ComputeLeadDirection(player, distance);
 
         if (!_aiState.ShouldMove) return;
 
@@ -57,5 +55,26 @@ public partial class Charger : BaseEnemy
         }
 
         MoveAndSlide();
+    }
+
+    private Vector3 ComputeLeadDirection(Node3D player, float distance)
+    {
+        float chargeSpeed = MoveSpeed * ChargeSpeedMultiplier;
+        float timeToReach = distance / chargeSpeed;
+
+        Vector3 playerVel = Vector3.Zero;
+        if (player is CharacterBody3D charBody)
+        {
+            playerVel = charBody.Velocity;
+            playerVel.Y = 0;
+        }
+
+        Vector3 predictedPos = player.GlobalPosition + playerVel * timeToReach;
+        Vector3 toTarget = predictedPos - GlobalPosition;
+        toTarget.Y = 0;
+
+        return toTarget.LengthSquared() > 0.01f
+            ? toTarget.Normalized()
+            : GlobalTransform.Basis.Z.Normalized();
     }
 }

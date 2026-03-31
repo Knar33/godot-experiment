@@ -177,6 +177,33 @@ A massive enemy that appears in late waves. The Titan is slow but relentless. It
 
 ---
 
+## Separation Behavior (Boid Algorithm)
+
+All enemies use a boid-inspired separation system to maintain spacing from each other. Without it, enemies moving toward the player collapse into a single overlapping blob — unreadable, unfair, and visually ugly. Separation ensures every enemy occupies its own space, creating a readable swarm that the player can parse and prioritize.
+
+### Rules
+
+1. **Separation only** — enemies do not use alignment or cohesion from the classic boid model. Each enemy already has its own AI driving it toward the player (or to a preferred range, or along a flanking path). Separation is an additional steering force layered on top of existing movement, pushing enemies away from nearby neighbors.
+
+2. **Distance-based force** — the separation force is inversely proportional to distance. Enemies that are very close push hard; enemies near the edge of detection barely push at all. This prevents hard snapping while still keeping tight formations from collapsing into clumps.
+
+3. **All enemies participate** — every enemy type emits and responds to separation. A Crawler avoids other Crawlers, but also avoids a Charger, a Spitter, or a Titan. The system is universal.
+
+4. **Per-type tuning** — different enemy types have different separation radii and weights. Small swarm enemies (Crawlers, Drones) use a smaller radius and lighter force — they're meant to feel like a pack, just not a single overlapping pile. Large enemies (Titan, Bloater, Sentinel) use a wider radius and heavier force so they don't clip through each other or smaller enemies.
+
+5. **Never overrides core AI** — separation adjusts an enemy's path but never overrides critical behaviors. A Charger mid-charge ignores separation. A Burrower underground ignores separation. A Sentinel drifting passively still separates. The separation force is blended as a steering influence, not a hard constraint.
+
+6. **Performance at scale** — the system must handle 30-50+ active enemies without hitching. Spatial partitioning or neighbor-query optimization keeps the per-frame cost manageable.
+
+### Gameplay Impact
+
+- **Readability**: The player can visually distinguish individual enemies even in large waves. No "death blob" of overlapping hitboxes.
+- **Fairness**: Contact-damage enemies spread out rather than stacking into an instant-kill wall. The player always has a sliver of space to weave through.
+- **Tactical depth**: Because enemies spread, the player must actively manage positioning — there's no single chokepoint where all enemies funnel. Explosions (Bloater) and AoE (upgrades) can hit clustered-but-separated groups effectively without feeling like they hit nothing or everything.
+- **Visual quality**: Distinct silhouettes remain readable. Enemy color coding and audio signatures work as designed because enemies aren't buried inside each other.
+
+---
+
 ## Enemy Interaction Matrix
 
 The real difficulty comes from enemy combinations:

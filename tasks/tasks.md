@@ -6,6 +6,17 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 
 
 
+## 12.5. Enemy Boid Separation System
+
+- [ ] Create `SeparationState` in `src/GodotExperiment.Core/Enemies/SeparationState.cs`: pure C# class that takes a detection radius and separation weight, and computes a 2D separation steering vector from a list of neighbor positions using inverse-distance falloff
+- [ ] Add unit tests for `SeparationState`: no neighbors returns zero, single neighbor produces force away, multiple neighbors average correctly, out-of-range neighbors ignored, force scales inversely with distance, overlapping positions break symmetry, weight scales output magnitude
+- [ ] Add `SeparationRadius` (float, default 2.5) and `SeparationWeight` (float, default 4.0) exported properties to `BaseEnemy`; compose a `SeparationState` instance in `_Ready()`
+- [ ] Update `BaseEnemy.MoveTowardPlayer()` to query the `"enemy"` group for neighbors within `SeparationRadius`, compute the separation force via `SeparationState`, and blend it with the player-seeking direction before applying velocity
+- [ ] Add a protected `SeparationEnabled` bool property (default true) to `BaseEnemy` so subclasses can disable separation during specific states
+- [ ] Update `Charger.cs` to disable separation during charge and recovery phases (set `SeparationEnabled = false` during those states)
+- [ ] Configure per-enemy-type separation values in each enemy scene: Crawler (2.0 / 4.0), Spitter (3.0 / 5.0), Charger (3.5 / 5.0); future enemy scenes will be configured as they are created
+- [ ] Playtest separation tuning: verify enemies spread visibly without losing their pack/swarm feel, and that no enemy type's core AI is broken by separation forces
+
 ## 13. Drone (Enemy — Wave 5+)
 
 - [ ] Create the Drone scene: a small flying enemy with a distinct placeholder mesh, positioned above ground, inheriting the base enemy class

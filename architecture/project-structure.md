@@ -33,7 +33,7 @@ The main Godot project references Core via `<ProjectReference>` and excludes `sr
 - `src/GodotExperiment.Core/` — Pure C# classes: enums, state machines, data models, calculations
   - `PlayerMovement/` — Player movement state (BhopState, DodgeRollState) — namespace `GodotExperiment.PlayerMovement`
   - `Combat/` — Combat mechanics (AutoFireState, ProjectileState, DamageSource, PlayerHealthState) — namespace `GodotExperiment.Combat`
-  - `Enemies/` — Enemy logic (EnemyHealthState, SpawnPointSelector, SpitterAIState) — namespace `GodotExperiment.Enemies`
+  - `Enemies/` — Enemy logic (EnemyHealthState, SpawnPointSelector, SpitterAIState, SeparationState) — namespace `GodotExperiment.Enemies`
   - `GameLoop/` — Game state management (GameState, GameStateMachine, SurvivalTimerState, CountdownState, UpgradeMeterState, RunStatistics, PersonalBestState) — namespace `GodotExperiment.GameLoop`
   - `Waves/` — Wave system (WaveEnemyGroup, WaveDefinition, WaveCompositions, WaveManagerState) — namespace `GodotExperiment.Waves`
   - `GameFeel/` — Screen shake and hit stop state (ScreenShakeState, HitStopState) — namespace `GodotExperiment.GameFeel`
