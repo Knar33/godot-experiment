@@ -6,15 +6,6 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 
 
 
-## 12. Charger (Enemy — Wave 4+)
-
-- [ ] Create the Charger scene: a medium-sized enemy with a distinct placeholder mesh, inheriting the base enemy class
-- [ ] Implement Charger AI: moves slowly toward the player, periodically stops to enter a 1.5s telegraph state (visible glow/animation)
-- [ ] Implement the Charger's charge attack: after telegraph, launch in a straight line at very high speed for ~0.5s, dealing lethal contact damage
-- [ ] Implement Charger recovery: stunned and stationary for 1s after charge ends before resuming
-- [ ] Configure Charger stats: 8-10 shot health, slow normal / very fast charge speed, 3 gem drop; spawns solo or in pairs
-- [ ] Add Charger audio: heavy footsteps/snorting ambient, loud scraping/revving 1.5s telegraph (high priority mix), heavy crash death sound
-
 ## 13. Drone (Enemy — Wave 5+)
 
 - [ ] Create the Drone scene: a small flying enemy with a distinct placeholder mesh, positioned above ground, inheriting the base enemy class
@@ -411,3 +402,12 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 - [x] Implement Spitter ground hazard: projectile impact leaves a small damage zone for 1.5s that kills on contact, then despawns
 - [x] Configure Spitter stats: 4-5 shot health, slow speed, 2 gem drop; spawns 1-3 at a time spread apart
 - [x] Add Spitter audio: low gurgling ambient, brief spit/hiss telegraph, wet burst death sound
+
+### Charger (Enemy — Wave 4+)
+
+- [x] Create the Charger scene: a medium-sized enemy with a distinct placeholder mesh, inheriting the base enemy class
+- [x] Implement Charger AI: moves slowly toward the player, periodically stops to enter a 1.5s telegraph state (visible glow/animation)
+- [x] Implement the Charger's charge attack: after telegraph, launch in a straight line at very high speed for ~0.5s, dealing lethal contact damage
+- [x] Implement Charger recovery: stunned and stationary for 1s after charge ends before resuming
+- [x] Configure Charger stats: 8-10 shot health, slow normal / very fast charge speed, 3 gem drop; spawns solo or in pairs
+- [x] Add Charger audio: heavy footsteps/snorting ambient, loud scraping/revving 1.5s telegraph (high priority mix), heavy crash death sound

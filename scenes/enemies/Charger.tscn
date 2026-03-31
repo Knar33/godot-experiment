@@ -1,0 +1,70 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/Charger.cs" id="1"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/charger_ambient.wav" id="2"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/charger_telegraph.wav" id="3"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/charger_death.wav" id="4"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
+radius = 0.5
+height = 1.6
+
+[sub_resource type="BoxMesh" id="BoxMesh_1"]
+size = Vector3(1.0, 1.2, 1.4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1"]
+albedo_color = Color(0.85, 0.4, 0.15, 1)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_1"]
+radius = 0.7
+
+[node name="Charger" type="CharacterBody3D"]
+collision_layer = 8
+collision_mask = 1
+script = ExtResource("1")
+MaxHealth = 9
+MoveSpeed = 5.0
+GemDropCount = 3
+DeathParticleColor = Color(0.85, 0.4, 0.15, 1)
+DeathParticleCount = 24
+DeathParticleExplosiveness = 0.75
+ChargeRange = 20.0
+TelegraphDuration = 1.5
+ChargeDuration = 0.7
+RecoveryDuration = 0.75
+ChargeSpeedMultiplier = 8.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("CapsuleShape3D_1")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+mesh = SubResource("BoxMesh_1")
+surface_material_override/0 = SubResource("StandardMaterial3D_1")
+
+[node name="ContactArea" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 1
+monitoring = true
+monitorable = false
+
+[node name="ContactShape" type="CollisionShape3D" parent="ContactArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("SphereShape3D_1")
+
+[node name="AmbientAudio" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("2")
+volume_db = -8.0
+max_distance = 25.0
+bus = &"EnemySFX"
+
+[node name="TelegraphAudio" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("3")
+max_distance = 50.0
+bus = &"EnemySFX"
+
+[node name="DeathAudio" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("4")
+max_distance = 35.0
+bus = &"EnemySFX"
