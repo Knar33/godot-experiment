@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/arena/Arena.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="2"]
@@ -10,6 +10,8 @@
 [ext_resource type="Script" path="res://scripts/ui/DeathScreen.cs" id="8"]
 [ext_resource type="Script" path="res://scripts/ui/GemCounterUI.cs" id="9"]
 [ext_resource type="AudioStream" path="res://assets/audio/ui/new_best_fanfare.wav" id="10"]
+[ext_resource type="Script" path="res://scripts/enemies/EnemySpawner.cs" id="11"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/Crawler.tscn" id="12"]
 
 [sub_resource type="Environment" id="Environment_1"]
 background_mode = 1
@@ -25,6 +27,11 @@ ambient_light_energy = 0.6
 [node name="Player" parent="." instance=ExtResource("2")]
 
 [node name="Enemies" type="Node3D" parent="."]
+
+[node name="EnemySpawner" type="Node3D" parent="."]
+script = ExtResource("11")
+SpawnInterval = 2.0
+EnemyScene = ExtResource("12")
 
 [node name="Projectiles" type="Node3D" parent="."]
 

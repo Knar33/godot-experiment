@@ -30,14 +30,26 @@ public partial class Player : CharacterBody3D
     private PlayerCamera? _playerCamera;
     private Node3D? _projectilesContainer;
     private AudioStreamPlayer3D? _fireAudio;
+    private AudioStreamPlayer3D? _collectAudio;
     private RandomNumberGenerator _rng = new();
 
+    private int _rapidGemCount;
+    private float _rapidGemTimer;
+    private const float RapidGemWindow = 0.3f;
+    private const float RapidGemPitchStep = 0.05f;
+    private const float RapidGemPitchCap = 0.5f;
+
     private static readonly Vector3 MuzzleOffset = new(0f, 1.2f, 0f);
+    private static readonly Color GemParticleColor = new(0.2f, 1.0f, 0.4f);
 
     public override void _Ready()
     {
         AddToGroup("player");
         _projectileScene = GD.Load<PackedScene>("res://scenes/player/PlayerProjectile.tscn");
+
+        var collectionArea = GetNodeOrNull<Area3D>("GemCollectionArea");
+        if (collectionArea != null)
+            collectionArea.AreaEntered += OnGemEnteredCollectionArea;
     }
 
     /// <summary>
@@ -161,6 +173,7 @@ public partial class Player : CharacterBody3D
         MoveAndSlide();
 
         UpdateShooting(dt);
+        UpdateGemPitchTimer(dt);
     }
 
     private void UpdateShooting(float dt)
@@ -274,5 +287,76 @@ public partial class Player : CharacterBody3D
         Vector3 right = camera.GlobalTransform.Basis.X;
         right.Y = 0;
         return right.Normalized();
+    }
+
+    private void OnGemEnteredCollectionArea(Area3D area)
+    {
+        if (area is not GemPickup gem) return;
+
+        gem.Collected += () => OnGemCollected(gem);
+        gem.StartMagnetism(this);
+    }
+
+    private void OnGemCollected(GemPickup gem)
+    {
+        GameManager.Instance?.AddGems(1);
+        PlayCollectSound();
+        SpawnCollectParticles();
+    }
+
+    private void PlayCollectSound()
+    {
+        _collectAudio ??= GetNodeOrNull<AudioStreamPlayer3D>("CollectAudio");
+        if (_collectAudio == null) return;
+
+        if (_rapidGemTimer > 0f)
+            _rapidGemCount++;
+        else
+            _rapidGemCount = 0;
+
+        _rapidGemTimer = RapidGemWindow;
+
+        float pitchOffset = Mathf.Min(_rapidGemCount * RapidGemPitchStep, RapidGemPitchCap);
+        _collectAudio.PitchScale = 1.0f + pitchOffset;
+        _collectAudio.Play();
+    }
+
+    private void UpdateGemPitchTimer(float dt)
+    {
+        if (_rapidGemTimer > 0f)
+        {
+            _rapidGemTimer -= dt;
+            if (_rapidGemTimer <= 0f)
+                _rapidGemCount = 0;
+        }
+    }
+
+    private void SpawnCollectParticles()
+    {
+        var particles = new GpuParticles3D();
+        var material = new ParticleProcessMaterial
+        {
+            Direction = new Vector3(0, 1, 0),
+            Spread = 120f,
+            InitialVelocityMin = 2f,
+            InitialVelocityMax = 4f,
+            Gravity = new Vector3(0, -5f, 0),
+            Color = GemParticleColor
+        };
+
+        particles.ProcessMaterial = material;
+        particles.Amount = 8;
+        particles.Explosiveness = 0.9f;
+        particles.OneShot = true;
+        particles.Lifetime = 0.3f;
+        particles.Emitting = true;
+
+        var temp = new Node3D();
+        GetTree().CurrentScene.AddChild(temp);
+        temp.GlobalPosition = GlobalPosition + new Vector3(0, 0.8f, 0);
+        temp.AddChild(particles);
+
+        var timer = GetTree().CreateTimer(particles.Lifetime + 0.1);
+        timer.Timeout += () => temp.QueueFree();
     }
 }

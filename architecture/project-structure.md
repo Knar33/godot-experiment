@@ -19,13 +19,13 @@ The main Godot project references Core via `<ProjectReference>` and excludes `sr
 
 - `scenes/` — Godot `.tscn` scene files, organized by domain
   - `scenes/arena/` — Arena scene
-  - `scenes/enemies/` — Base enemy scene (inherited by specific enemy types)
+  - `scenes/enemies/` — Base enemy scene and per-type enemy scenes (Crawler, etc.)
   - `scenes/pickups/` — Gem pickup scene
   - `scenes/player/` — Player and camera scenes
   - `scenes/Game.tscn` — Root game scene (main scene)
 - `scripts/` — Godot-specific C# scripts (nodes, autoloads) that reference Core types, organized by domain
   - `scripts/arena/` — Arena node scripts
-  - `scripts/enemies/` — Enemy scripts (BaseEnemy, EnemySpawner)
+  - `scripts/enemies/` — Enemy scripts (BaseEnemy, Crawler, EnemySpawner)
   - `scripts/managers/` — Autoload and manager scripts (GameManager, HitStopManager, MusicManager, SettingsManager)
   - `scripts/pickups/` — Pickup scripts (GemPickup)
   - `scripts/player/` — Player, camera, and projectile scripts (ScreenShake)
@@ -39,6 +39,7 @@ The main Godot project references Core via `<ProjectReference>` and excludes `sr
   - `Settings/` — Settings data model (SettingsData) — namespace `GodotExperiment.Settings`
 - `tests/GodotExperiment.Tests/` — xUnit tests for Core classes
 - `assets/audio/` — Audio assets organized by category (music/, player/, enemies/, ui/, ambience/)
+  - `assets/audio/enemies/` — Per-enemy-type audio (ambient loops, death sounds, telegraphs)
 - `assets/shaders/` — Shader files (enemy_flash.gdshader)
 - `design/` — Game design documents (source of truth for gameplay intent)
 - `architecture/` — Technical implementation documents
@@ -90,9 +91,28 @@ State changes are re-emitted as Godot signals via `StateChanged(int, int)` so UI
 
 All enemies are added to the `"enemy"` group. `PlayerProjectile.OnBodyEntered` calls `BaseEnemy.TakeDamage(1)` on hit.
 
+### Audio Playback
+
+`BaseEnemy` handles ambient and death audio for all enemy types:
+
+- **Ambient**: On `_Ready()`, if the `AmbientAudio` node has a stream assigned, it begins playing and auto-loops via the `Finished` signal. Stopped on death.
+- **Death**: On death, the `DeathAudio` node is reparented to a temporary detached `Node3D` so it outlives the enemy's `QueueFree()`. The temp node self-frees when playback finishes.
+
+Audio streams are configured per-type in each enemy's scene file (e.g. `Crawler.tscn` assigns `crawler_ambient.wav` and `crawler_death.wav`). Enemies without audio streams assigned simply skip playback.
+
+### Crawler
+
+`Crawler` (`scripts/enemies/Crawler.cs`) extends `BaseEnemy` with no overrides — the default move-toward-player and contact-damage behavior is exactly the Crawler's AI. Stats configured in `scenes/enemies/Crawler.tscn`:
+
+- **Health**: 3 (dies in 3 shots)
+- **Speed**: 7 units/s (moderate)
+- **Gems**: 1 per kill
+- **Mesh**: Flattened sphere (green, scale 1.3×0.6×1.3) — distinct low/wide silhouette vs. the base capsule
+- **Audio**: Quiet skittering ambient (looping, -12 dB), small crunch/pop death sound
+
 `EnemySpawner` (`scripts/enemies/EnemySpawner.cs`) spawns enemies at arena-edge points on a configurable interval. Uses `SpawnPointSelector` for behind-player bias. Only active during `GameState.Playing`.
 
-`GemPickup` (`scripts/pickups/GemPickup.cs`) is an `Area3D` in the `"gems"` group with a scatter animation on spawn. Collection/magnetism/HUD integration is deferred to the gem pickup task.
+`GemPickup` (`scripts/pickups/GemPickup.cs`) is an `Area3D` in the `"gems"` group (layer 5, mask 0, monitorable) with a scatter animation on spawn. When the player's `GemCollectionArea` (Area3D, mask 16, radius 2 units) detects a gem, the gem enters magnetism mode: it accelerates toward the player over ~0.12s with a slight upward arc, then emits `Collected` and frees itself. On collection, `Player.cs` calls `GameManager.AddGems(1)`, plays a chime via `CollectAudio` (`AudioStreamPlayer3D`) with ascending pitch on rapid pickups (+0.05 per pickup within 0.3s, capped at +0.5, reset after 0.3s gap), and spawns a one-shot green `GpuParticles3D` burst at player height.
 
 ### Collision Layers
 

@@ -10,21 +10,11 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 
 ## 8. Crawler (Enemy — Wave 1+)
 
-- [ ] Create the Crawler scene: a small ground creature with a distinct placeholder mesh and unique silhouette, inheriting the base enemy class
-- [ ] Implement Crawler AI: moves directly toward the player at moderate speed with contact damage on touch
-- [ ] Configure Crawler stats: 2-3 shot health, moderate speed, 1 gem drop; spawns in groups of 5-10 that increase over waves
-- [ ] Add Crawler audio: quiet skittering ambient sound, small crunch/pop death sound
+(All items completed — see Completed section below)
 
 ## 9. Gem Pickups
 
-- [ ] Create the gem pickup scene: a bright, easy-to-spot small mesh with a CollisionShape3D trigger area for player collection
-- [ ] Implement gem collection on the player: when the player's collection area (~2 unit radius) overlaps a gem, the gem enters a magnetism snap (lerp toward player over ~0.1s with slight curve), then triggers collection
-- [ ] Add gem collection audio: short bright chime via `AudioStreamPlayer3D` on the player, with ascending pitch on rapid successive pickups (+0.05 per pickup within 0.3s, capped at +0.5), reset after 0.3s gap
-- [ ] Add gem collection particle effect: small bright burst at player position matching gem color
-- [ ] Ensure gems persist on the arena floor indefinitely within a run and do not despawn until the run is restarted
-- [ ] Implement the upgrade meter: tracks total gems collected toward a threshold that increases with each upgrade earned (1st at 10, 2nd at 15, 3rd at 20, etc.); pulse the HUD meter element when the threshold is reached
-- [ ] Display the gem count and upgrade meter progress on the HUD as a progress bar or numeric indicator
-- [ ] Reset all dropped gems, collected gem count, and the upgrade meter threshold on player death/restart
+(All items completed — see Completed section below)
 
 ## 10. Wave System
 
@@ -413,3 +403,21 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 - [x] Create the enemy spawner system: spawns enemy instances at the defined arena-edge spawn points with staggered timing, randomized point selection, and a bias against spawning directly behind the player
 - [x] Implement spawn-in animation for large enemies (Titan, Sentinel): the enemy is briefly visible at its spawn point but inactive for ~1s
 - [x] Add unit tests for base enemy health (damage application, death at 0 HP), per-type gem drop counts, and spawn point randomization distribution
+
+### Crawler (Enemy — Wave 1+)
+
+- [x] Create the Crawler scene: a small ground creature with a distinct placeholder mesh and unique silhouette, inheriting the base enemy class
+- [x] Implement Crawler AI: moves directly toward the player at moderate speed with contact damage on touch
+- [x] Configure Crawler stats: 2-3 shot health, moderate speed, 1 gem drop; spawns in groups of 5-10 that increase over waves
+- [x] Add Crawler audio: quiet skittering ambient sound, small crunch/pop death sound
+
+### Gem Pickups
+
+- [x] Create the gem pickup scene: a bright, easy-to-spot small mesh with a CollisionShape3D trigger area for player collection
+- [x] Implement gem collection on the player: when the player's collection area (~2 unit radius) overlaps a gem, the gem enters a magnetism snap (lerp toward player over ~0.1s with slight curve), then triggers collection
+- [x] Add gem collection audio: short bright chime via `AudioStreamPlayer3D` on the player, with ascending pitch on rapid successive pickups (+0.05 per pickup within 0.3s, capped at +0.5), reset after 0.3s gap
+- [x] Add gem collection particle effect: small bright burst at player position matching gem color
+- [x] Ensure gems persist on the arena floor indefinitely within a run and do not despawn until the run is restarted
+- [x] Implement the upgrade meter: tracks total gems collected toward a threshold that increases with each upgrade earned (1st at 10, 2nd at 15, 3rd at 20, etc.); pulse the HUD meter element when the threshold is reached
+- [x] Display the gem count and upgrade meter progress on the HUD as a progress bar or numeric indicator
+- [x] Reset all dropped gems, collected gem count, and the upgrade meter threshold on player death/restart

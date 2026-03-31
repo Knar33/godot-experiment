@@ -20,6 +20,7 @@ public partial class BaseEnemy : CharacterBody3D
 
     private MeshInstance3D? _mesh;
     private ShaderMaterial? _flashMaterial;
+    private AudioStreamPlayer3D? _ambientAudio;
     private float _flashTimer;
     private float _lowHealthTime;
     private float _spawnInTimer;
@@ -46,6 +47,8 @@ public partial class BaseEnemy : CharacterBody3D
         var contactArea = GetNodeOrNull<Area3D>("ContactArea");
         if (contactArea != null)
             contactArea.BodyEntered += OnContactBodyEntered;
+
+        SetupAmbientAudio();
 
         if (IsLargeEnemy)
         {
@@ -113,7 +116,9 @@ public partial class BaseEnemy : CharacterBody3D
 
     private void OnDied()
     {
+        _ambientAudio?.Stop();
         SpawnDeathParticles();
+        PlayDeathSound();
         DropGems();
         GameManager.Instance?.RecordEnemyKill();
         QueueFree();
@@ -191,6 +196,36 @@ public partial class BaseEnemy : CharacterBody3D
 
         var timer = GetTree().CreateTimer(particles.Lifetime + 0.1);
         timer.Timeout += () => temp.QueueFree();
+    }
+
+    private void SetupAmbientAudio()
+    {
+        _ambientAudio = GetNodeOrNull<AudioStreamPlayer3D>("AmbientAudio");
+        if (_ambientAudio?.Stream == null) return;
+
+        _ambientAudio.Finished += OnAmbientFinished;
+        _ambientAudio.Play();
+    }
+
+    private void OnAmbientFinished()
+    {
+        if (_ambientAudio != null && !Health.IsDead)
+            _ambientAudio.Play();
+    }
+
+    private void PlayDeathSound()
+    {
+        var deathAudio = GetNodeOrNull<AudioStreamPlayer3D>("DeathAudio");
+        if (deathAudio?.Stream == null) return;
+
+        deathAudio.GetParent().RemoveChild(deathAudio);
+
+        var temp = new Node3D();
+        GetTree().CurrentScene.AddChild(temp);
+        temp.GlobalPosition = GlobalPosition;
+        temp.AddChild(deathAudio);
+        deathAudio.Play();
+        deathAudio.Finished += () => temp.QueueFree();
     }
 
     private void DropGems()

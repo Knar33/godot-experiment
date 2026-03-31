@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/Player.cs" id="1"]
 [ext_resource type="AudioStream" path="res://assets/audio/player/fire.wav" id="2"]
+[ext_resource type="AudioStream" path="res://assets/audio/player/gem_collect.wav" id="3"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
 radius = 0.4
@@ -13,6 +14,9 @@ height = 1.8
 
 [sub_resource type="StandardMaterial3D" id="Material_1"]
 albedo_color = Color(0.6, 0.7, 0.8, 1)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_gem"]
+radius = 2.0
 
 [node name="Player" type="CharacterBody3D"]
 script = ExtResource("1")
@@ -29,3 +33,17 @@ surface_material_override/0 = SubResource("Material_1")
 [node name="FireAudio" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource("2")
 max_distance = 40.0
+
+[node name="GemCollectionArea" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 16
+monitoring = true
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GemCollectionArea"]
+shape = SubResource("SphereShape3D_gem")
+
+[node name="CollectAudio" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("3")
+max_distance = 30.0
+volume_db = -6.0
