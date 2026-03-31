@@ -18,7 +18,10 @@ Player mechanics are split across two layers:
 
 - **`src/GodotExperiment.Core/PlayerMovement/BhopState.cs`** — Pure C# bhop timing, speed stacking, decay logic. No Godot dependency, fully unit-testable. Namespace: `GodotExperiment.PlayerMovement`.
 - **`src/GodotExperiment.Core/PlayerMovement/DodgeRollState.cs`** — Pure C# dodge roll state machine (rolling, i-frames, cooldown). No Godot dependency, fully unit-testable. Namespace: `GodotExperiment.PlayerMovement`.
-- **`scripts/player/Player.cs`** — Godot `CharacterBody3D` script. Reads input, queries camera for direction, delegates to `BhopState`/`DodgeRollState` for logic, applies physics via `MoveAndSlide()`.
+- **`src/GodotExperiment.Core/Combat/AutoFireState.cs`** — Pure C# fire rate timing. Tracks elapsed time, determines when to fire. Namespace: `GodotExperiment.Combat`.
+- **`src/GodotExperiment.Core/Combat/ProjectileState.cs`** — Pure C# projectile range tracking for despawn. Namespace: `GodotExperiment.Combat`.
+- **`scripts/player/Player.cs`** — Godot `CharacterBody3D` script. Reads input, queries camera for direction, delegates to `BhopState`/`DodgeRollState`/`AutoFireState` for logic, applies physics via `MoveAndSlide()`, spawns projectiles.
+- **`scripts/player/PlayerProjectile.cs`** — Godot `Area3D` script. Moves the projectile forward, delegates range tracking to `ProjectileState`, handles enemy collision via `BodyEntered`.
 
 ## Movement System
 
@@ -55,6 +58,50 @@ Player mechanics are split across two layers:
 | `Gravity` | 20 | Downward acceleration (units/s²) |
 | `AirStrafeInfluence` | 8 | Lateral force while airborne (units/s²) |
 | `DodgeRollSpeed` | 18 | Movement speed during dodge roll (units/s) |
+
+## Shooting
+
+### Auto-Fire
+
+The player fires continuously while `GameManager.CurrentState == GameState.Playing`. Fire timing is managed by `AutoFireState` (Core, `GodotExperiment.Combat`).
+
+- **Fire rate**: ~8 shots/sec (interval 0.125s).
+- Each physics frame, `AutoFireState.Update(dt)` accumulates time. When `CanFire` is true, `TryFire()` resets the timer and triggers a projectile spawn.
+
+### Projectile
+
+`scenes/player/PlayerProjectile.tscn` is a standalone Area3D scene instanced at runtime.
+
+```
+PlayerProjectile (Area3D) [scripts/player/PlayerProjectile.cs]
+├── CollisionShape3D — SphereShape3D (radius 0.15)
+└── MeshInstance3D — SphereMesh (radius 0.15), bright cyan emissive material
+```
+
+- **Collision layer**: 3 (player projectiles, bitmask 4). **Collision mask**: layer 4 (enemies, bitmask 8).
+- **Speed**: 50 units/s. Covers the arena radius (25 units) in 0.5s.
+- **Range**: Despawns after traveling 25 units (arena radius), tracked by `ProjectileState` (Core).
+- **Enemy collision**: On `BodyEntered`, if the body is in the `"enemy"` group, the projectile destroys itself. Damage application will be added when the enemy health system is implemented.
+- Projectiles are spawned into the `Projectiles` Node3D container in `Game.tscn`.
+
+### Aim Direction
+
+Projectiles spawn at the player's position + (0, 1.2, 0) (upper chest height). The direction is `(AimPoint - spawnPosition).Normalized()`, using `PlayerCamera.AimPoint`. If the aim point is closer than 2 units, the camera's forward direction is used as fallback to prevent wild aim angles.
+
+### Collision Layer Assignments
+
+| Layer | Purpose | Bitmask |
+|-------|---------|---------|
+| 1 | Arena geometry, player | 1 |
+| 3 | Player projectiles | 4 |
+| 4 | Enemies (future) | 8 |
+
+### Projectile Exported Properties
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `Speed` | 50 | Travel speed (units/s) |
+| `MaxRange` | 25 | Despawn distance (units) |
 
 ## Camera
 
@@ -123,4 +170,8 @@ PlayerCamera (Node3D) [scripts/player/PlayerCamera.cs]
 
 `tests/GodotExperiment.Tests/DodgeRollStateTests.cs` — 18 tests covering roll initiation, i-frame window, roll duration, cooldown lifecycle, full sequences, and reset.
 
-Camera and crosshair are Godot-dependent (Node3D, Camera3D, raycasts, Control drawing) and are not covered by pure unit tests.
+`tests/GodotExperiment.Tests/AutoFireStateTests.cs` — 14 tests covering fire interval timing, CanFire/TryFire behavior, timer reset, custom intervals, and shots-per-second accuracy.
+
+`tests/GodotExperiment.Tests/ProjectileStateTests.cs` — 9 tests covering distance accumulation, max range expiry, small-increment simulation, and travel time accuracy.
+
+Camera, crosshair, and projectile Godot scripts are Godot-dependent and are not covered by pure unit tests.

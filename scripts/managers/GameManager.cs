@@ -18,6 +18,8 @@ public partial class GameManager : Node
     {
         Instance = this;
         StateMachine.StateChanged += OnStateMachineStateChanged;
+        // TODO: Replace with proper countdown sequence (Core Game Loop task)
+        StateMachine.TransitionTo(GameState.Playing);
     }
 
     public override void _ExitTree()

@@ -4,15 +4,6 @@ Ordered by urgency (dependencies first, polish last). Completed tasks are checke
 
 ---
 
-## Player Shooting
-
-- [ ] Create a player projectile scene: a fast-moving Area3D or RigidBody3D with a bright visually distinct mesh, CollisionShape3D, and a script that moves it forward each physics frame
-- [ ] Implement player auto-fire: while GameManager state is Playing, the player continuously fires projectiles (~8 per second) from the character toward the camera's aim direction
-- [ ] Implement projectile range limit: player projectiles despawn after traveling a fixed distance roughly matching the arena radius
-- [ ] Implement projectile-enemy collision: when a player projectile contacts an enemy, deal damage to the enemy and destroy the projectile (default pre-upgrade behavior)
-- [ ] Ensure player projectiles are visually distinct from enemy projectiles (Spitter) using a consistent bright color unique to the player
-- [ ] Add unit tests for player fire rate timing interval and projectile range-based despawn
-
 ## Player Death
 
 - [ ] Implement one-hit player death: any enemy damage source (contact, projectile, explosion, ground hazard) triggers instant player death when the player is not in i-frames
@@ -271,3 +262,12 @@ Ordered by urgency (dependencies first, polish last). Completed tasks are checke
 
 - [x] Offset the camera horizontally to an over-the-shoulder position so the crosshair targets the world ahead of the player rather than the player's back
 - [x] Implement scroll-wheel zoom: mouse scroll adjusts the camera distance between a configurable min and max, with smooth interpolation toward the target distance
+
+### Player Shooting
+
+- [x] Create a player projectile scene: a fast-moving Area3D or RigidBody3D with a bright visually distinct mesh, CollisionShape3D, and a script that moves it forward each physics frame
+- [x] Implement player auto-fire: while GameManager state is Playing, the player continuously fires projectiles (~8 per second) from the character toward the camera's aim direction
+- [x] Implement projectile range limit: player projectiles despawn after traveling a fixed distance roughly matching the arena radius
+- [x] Implement projectile-enemy collision: when a player projectile contacts an enemy, deal damage to the enemy and destroy the projectile (default pre-upgrade behavior)
+- [x] Ensure player projectiles are visually distinct from enemy projectiles (Spitter) using a consistent bright color unique to the player
+- [x] Add unit tests for player fire rate timing interval and projectile range-based despawn

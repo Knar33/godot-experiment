@@ -1,4 +1,6 @@
 using Godot;
+using GodotExperiment.Combat;
+using GodotExperiment.GameLoop;
 using GodotExperiment.PlayerMovement;
 
 namespace GodotExperiment;
@@ -13,15 +15,23 @@ public partial class Player : CharacterBody3D
 
     public BhopState Bhop { get; } = new();
     public DodgeRollState DodgeRoll { get; } = new();
+    public AutoFireState AutoFire { get; } = new();
 
     private bool _wasGrounded = true;
     private float _groundedTime;
     private float _jumpBufferTime = float.MaxValue;
     private Vector3 _dodgeRollDirection;
 
+    private PackedScene _projectileScene = null!;
+    private PlayerCamera? _playerCamera;
+    private Node3D? _projectilesContainer;
+
+    private static readonly Vector3 MuzzleOffset = new(0f, 1.2f, 0f);
+
     public override void _Ready()
     {
         AddToGroup("player");
+        _projectileScene = GD.Load<PackedScene>("res://scenes/player/PlayerProjectile.tscn");
     }
 
     public override void _PhysicsProcess(double delta)
@@ -96,6 +106,43 @@ public partial class Player : CharacterBody3D
         _wasGrounded = grounded;
         Velocity = velocity;
         MoveAndSlide();
+
+        UpdateShooting(dt);
+    }
+
+    private void UpdateShooting(float dt)
+    {
+        AutoFire.Update(dt);
+
+        if (GameManager.Instance?.CurrentState != GameState.Playing)
+            return;
+
+        if (AutoFire.TryFire())
+            SpawnProjectile();
+    }
+
+    private void SpawnProjectile()
+    {
+        _playerCamera ??= GetNodeOrNull<PlayerCamera>("../PlayerCamera");
+        _projectilesContainer ??= GetNodeOrNull<Node3D>("../Projectiles");
+
+        Camera3D? camera = GetViewport().GetCamera3D();
+        if (camera == null || _playerCamera == null || _projectilesContainer == null)
+            return;
+
+        Vector3 spawnPos = GlobalPosition + MuzzleOffset;
+        Vector3 aimTarget = _playerCamera.AimPoint;
+
+        Vector3 cameraForward = (-camera.GlobalTransform.Basis.Z).Normalized();
+        if (spawnPos.DistanceTo(aimTarget) < 2f)
+            aimTarget = spawnPos + cameraForward * 50f;
+
+        Vector3 direction = (aimTarget - spawnPos).Normalized();
+
+        var projectile = _projectileScene.Instantiate<PlayerProjectile>();
+        _projectilesContainer.AddChild(projectile);
+        projectile.GlobalPosition = spawnPos;
+        projectile.Initialize(direction);
     }
 
     private void ApplyAirStrafe(ref Vector3 velocity, float dt)

@@ -28,6 +28,7 @@ The main Godot project references Core via `<ProjectReference>` and excludes `sr
   - `scripts/ui/` — HUD and UI element scripts (Crosshair)
 - `src/GodotExperiment.Core/` — Pure C# classes: enums, state machines, data models, calculations
   - `PlayerMovement/` — Player movement state (BhopState, DodgeRollState) — namespace `GodotExperiment.PlayerMovement`
+  - `Combat/` — Combat mechanics (AutoFireState, ProjectileState) — namespace `GodotExperiment.Combat`
   - `GameLoop/` — Game state management (GameState, GameStateMachine) — namespace `GodotExperiment.GameLoop`
 - `tests/GodotExperiment.Tests/` — xUnit tests for Core classes
 - `design/` — Game design documents (source of truth for gameplay intent)

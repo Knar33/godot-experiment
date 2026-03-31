@@ -20,6 +20,8 @@ ambient_light_energy = 0.6
 
 [node name="Enemies" type="Node3D" parent="."]
 
+[node name="Projectiles" type="Node3D" parent="."]
+
 [node name="UI" type="CanvasLayer" parent="."]
 
 [node name="Crosshair" type="Control" parent="UI"]
