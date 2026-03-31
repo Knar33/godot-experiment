@@ -1,4 +1,5 @@
 using Godot;
+using GodotExperiment.GameLoop;
 
 namespace GodotExperiment;
 
@@ -17,6 +18,8 @@ public partial class PlayerCamera : Node3D
     [Export] public float HorizontalOffset { get; set; } = 0.6f;
     [Export] public float AimRayLength { get; set; } = 100f;
     [Export] public float ClipMargin { get; set; } = 0.3f;
+    [Export] public float DeathFreezeTime { get; set; } = 0.3f;
+    [Export] public AudioStream? DeathStingSound { get; set; }
 
     private Camera3D _camera = null!;
     private float _yaw;
@@ -24,6 +27,9 @@ public partial class PlayerCamera : Node3D
     private Vector3 _orbitCenter;
     private Node3D? _player;
     private float _targetDistance;
+
+    private bool _deathFreezeActive;
+    private float _deathFreezeTimer;
 
     public Vector3 AimPoint { get; private set; }
     public bool HasAimTarget { get; private set; }
@@ -81,6 +87,15 @@ public partial class PlayerCamera : Node3D
             _player = GetTree().GetFirstNodeInGroup("player") as Node3D;
             if (_player == null) return;
             _orbitCenter = _player.GlobalPosition + Vector3.Up * VerticalOffset;
+            ConnectPlayerDeathSignal();
+        }
+
+        if (_deathFreezeActive)
+        {
+            _deathFreezeTimer -= dt;
+            if (_deathFreezeTimer <= 0f)
+                OnDeathFreezeComplete();
+            return;
         }
 
         Vector3 target = _player.GlobalPosition + Vector3.Up * VerticalOffset;
@@ -100,6 +115,37 @@ public partial class PlayerCamera : Node3D
         _camera.GlobalPosition = GetClippedPosition(offsetCenter, desiredPos);
 
         UpdateAimPoint();
+    }
+
+    private void ConnectPlayerDeathSignal()
+    {
+        if (_player is Player player)
+            player.PlayerDied += OnPlayerDied;
+    }
+
+    private void OnPlayerDied()
+    {
+        _deathFreezeActive = true;
+        _deathFreezeTimer = DeathFreezeTime;
+    }
+
+    private void OnDeathFreezeComplete()
+    {
+        _deathFreezeActive = false;
+        PlayDeathSting();
+        GameManager.Instance?.TransitionTo(GameState.Dead);
+    }
+
+    private void PlayDeathSting()
+    {
+        if (DeathStingSound == null) return;
+
+        var stingPlayer = new AudioStreamPlayer();
+        stingPlayer.Stream = DeathStingSound;
+        stingPlayer.Bus = "Music";
+        AddChild(stingPlayer);
+        stingPlayer.Play();
+        stingPlayer.Finished += () => stingPlayer.QueueFree();
     }
 
     /// <summary>

@@ -28,7 +28,7 @@ The main Godot project references Core via `<ProjectReference>` and excludes `sr
   - `scripts/ui/` — HUD and UI element scripts (Crosshair, HitMarker, SpeedLines, BhopCounter, ThreatIndicator, SettingsMenu)
 - `src/GodotExperiment.Core/` — Pure C# classes: enums, state machines, data models, calculations
   - `PlayerMovement/` — Player movement state (BhopState, DodgeRollState) — namespace `GodotExperiment.PlayerMovement`
-  - `Combat/` — Combat mechanics (AutoFireState, ProjectileState) — namespace `GodotExperiment.Combat`
+  - `Combat/` — Combat mechanics (AutoFireState, ProjectileState, DamageSource, PlayerHealthState) — namespace `GodotExperiment.Combat`
   - `GameLoop/` — Game state management (GameState, GameStateMachine) — namespace `GodotExperiment.GameLoop`
   - `GameFeel/` — Screen shake and hit stop state (ScreenShakeState, HitStopState) — namespace `GodotExperiment.GameFeel`
   - `Settings/` — Settings data model (SettingsData) — namespace `GodotExperiment.Settings`

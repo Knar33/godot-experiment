@@ -4,14 +4,6 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 
 ---
 
-## 3. Player Death & I-Frames
-
-- [ ] Implement one-hit player death: any enemy damage source (contact, projectile, explosion, ground hazard) triggers instant player death when the player is not in i-frames
-- [ ] Implement dodge roll i-frame protection: during the dodge roll's ~0.3s active invulnerability window, all incoming damage is ignored
-- [ ] Implement player death sequence: freeze the survival timer on the exact frame of death, cut all audio abruptly, play a death effect (ragdoll or disintegration) on the player character
-- [ ] Implement death camera freeze: hold the camera position for ~0.3s after player death, then play the death sting sound and transition GameManager to Dead
-- [ ] Add unit tests for player i-frame protection during dodge roll and death triggering from different damage source types (contact, projectile, AoE)
-
 ## 4. Core Game Loop
 
 - [ ] Implement the countdown sequence: on game start or restart, show a 3-2-1 countdown UI with percussive audio beats while the player is locked at arena center, then transition GameManager to Playing
@@ -409,3 +401,11 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 - [x] Add an `AudioStreamPlayer3D` (`FireAudio`) to the player for firing sounds; play a short punchy sound on each shot with slight pitch randomization (±5%)
 - [x] Add an `AudioStreamPlayer3D` (`ImpactAudio`) to the projectile scene for impact sounds; reparent to a temp node on collision so it finishes playing after projectile is freed; distinct sounds for enemy hits vs. surface hits
 - [x] Source or create placeholder audio assets for the firing sound and both impact sound types
+
+### Player Death & I-Frames
+
+- [x] Implement one-hit player death: any enemy damage source (contact, projectile, explosion, ground hazard) triggers instant player death when the player is not in i-frames
+- [x] Implement dodge roll i-frame protection: during the dodge roll's ~0.3s active invulnerability window, all incoming damage is ignored
+- [x] Implement player death sequence: freeze the survival timer on the exact frame of death, cut all audio abruptly, play a death effect (ragdoll or disintegration) on the player character
+- [x] Implement death camera freeze: hold the camera position for ~0.3s after player death, then play the death sting sound and transition GameManager to Dead
+- [x] Add unit tests for player i-frame protection during dodge roll and death triggering from different damage source types (contact, projectile, AoE)

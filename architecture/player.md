@@ -25,7 +25,9 @@ Player mechanics are split across two layers:
 - **`src/GodotExperiment.Core/PlayerMovement/DodgeRollState.cs`** — Pure C# dodge roll state machine (rolling, i-frames, cooldown). No Godot dependency, fully unit-testable. Namespace: `GodotExperiment.PlayerMovement`.
 - **`src/GodotExperiment.Core/Combat/AutoFireState.cs`** — Pure C# fire rate timing. Tracks elapsed time, determines when to fire. Namespace: `GodotExperiment.Combat`.
 - **`src/GodotExperiment.Core/Combat/ProjectileState.cs`** — Pure C# projectile range tracking for despawn. Namespace: `GodotExperiment.Combat`.
-- **`scripts/player/Player.cs`** — Godot `CharacterBody3D` script. Reads input, queries camera for direction, delegates to `BhopState`/`DodgeRollState`/`AutoFireState` for logic, applies physics via `MoveAndSlide()`, spawns projectiles.
+- **`src/GodotExperiment.Core/Combat/DamageSource.cs`** — Enum for damage source types: `Contact`, `Projectile`, `Explosion`, `GroundHazard`. Namespace: `GodotExperiment.Combat`.
+- **`src/GodotExperiment.Core/Combat/PlayerHealthState.cs`** — Pure C# one-hit death model with i-frame checking. Namespace: `GodotExperiment.Combat`.
+- **`scripts/player/Player.cs`** — Godot `CharacterBody3D` script. Reads input, queries camera for direction, delegates to `BhopState`/`DodgeRollState`/`AutoFireState`/`PlayerHealthState` for logic, applies physics via `MoveAndSlide()`, spawns projectiles, handles death.
 - **`scripts/player/PlayerProjectile.cs`** — Godot `Area3D` script. Moves the projectile forward, delegates range tracking to `ProjectileState`, handles enemy collision via `BodyEntered`.
 
 ## Movement System
@@ -53,6 +55,50 @@ Player mechanics are split across two layers:
 - Duration: 0.5s. Player moves at 18 units/s in the input direction (or camera forward if no input).
 - I-frames: First 0.3s of the roll grants invulnerability.
 - Cooldown: 1.5s after the roll ends before the next roll is available.
+
+## Health & Death
+
+### One-Hit Death
+
+The player dies to any single damage source when not in i-frames. There is no health bar — `PlayerHealthState` (Core) tracks alive/dead state only.
+
+### Damage Flow
+
+1. Enemy damage source (contact, projectile, explosion, ground hazard) calls `Player.TakeDamage(DamageSource)`.
+2. `Player.TakeDamage` delegates to `PlayerHealthState.TakeDamage(source, DodgeRoll.IsInvulnerable)`.
+3. If invulnerable (dodge roll i-frames active), damage is ignored and the call returns `false`.
+4. If vulnerable, `PlayerHealthState` marks the player dead, records the `KilledBy` source, fires the `Died` event, and returns `true`.
+
+### I-Frame Protection
+
+Only the dodge roll provides i-frames. `DodgeRollState.IsInvulnerable` is `true` for the first 0.3s of the roll. All damage sources are blocked equally during this window — contact, projectile, explosion, and ground hazard.
+
+### Death Sequence
+
+When `PlayerHealthState.TakeDamage` returns `true` (player died), `Player.cs` executes the death sequence:
+
+1. **Audio cut**: All `AudioStreamPlayer3D` children on the Player node are stopped immediately.
+2. **Visual**: The player mesh is hidden (placeholder for ragdoll/disintegration effect).
+3. **Velocity zero**: Player velocity is set to zero — no more movement.
+4. **Signal**: The `PlayerDied` Godot signal is emitted.
+5. **Physics skip**: `_PhysicsProcess` returns early while `Health.IsAlive` is false, disabling all input and movement.
+
+### Death Camera Freeze
+
+`PlayerCamera.cs` connects to the player's `PlayerDied` signal:
+
+1. On signal, the camera enters a **freeze state** for 0.3s (`DeathFreezeTime`). During the freeze, `_PhysicsProcess` returns early — the camera holds its position and rotation.
+2. After the freeze timer expires:
+   - A **death sting** sound plays (non-positional `AudioStreamPlayer` on the Music bus), if the `DeathStingSound` export is set.
+   - `GameManager.TransitionTo(GameState.Dead)` is called, transitioning the game to the Dead state.
+
+### PlayerHealthState (Core)
+
+- `IsAlive` — `true` initially, `false` after death.
+- `KilledBy` — The `DamageSource` that killed the player, or `null` if alive.
+- `TakeDamage(DamageSource source, bool isInvulnerable)` — Returns `true` if the player died. Ignores damage if invulnerable or already dead.
+- `Died` event — Fired once on death with the `DamageSource`.
+- `Reset()` — Restores to alive state for restart.
 
 ## Exported Properties
 
@@ -184,6 +230,8 @@ PlayerCamera (Node3D) [scripts/player/PlayerCamera.cs]
 | `HorizontalOffset` | 0.6 | Rightward offset from player for over-the-shoulder view (units) |
 | `AimRayLength` | 100 | Maximum distance for aim raycast (units) |
 | `ClipMargin` | 0.3 | Offset from geometry surface when camera clips (units) |
+| `DeathFreezeTime` | 0.3 | Duration camera holds position after player death (seconds) |
+| `DeathStingSound` | null | Audio stream for the death sting (played after freeze) |
 
 ## Tests
 
@@ -194,5 +242,7 @@ PlayerCamera (Node3D) [scripts/player/PlayerCamera.cs]
 `tests/GodotExperiment.Tests/AutoFireStateTests.cs` — 21 tests covering fire interval timing, CanFire/TryFire behavior, timer reset, custom intervals, shots-per-second accuracy, ResetToReady for immediate first shot on press, and hold-to-fire simulation.
 
 `tests/GodotExperiment.Tests/ProjectileStateTests.cs` — 9 tests covering distance accumulation, max range expiry, small-increment simulation, and travel time accuracy.
+
+`tests/GodotExperiment.Tests/PlayerHealthStateTests.cs` — 21 tests covering one-hit death from all 4 damage source types, i-frame protection (during dodge roll, after i-frame window, at exact boundary, when not rolling), death event firing, already-dead guarding, reset lifecycle, and integrated DodgeRollState i-frame verification.
 
 Camera, crosshair, and projectile Godot scripts are Godot-dependent and are not covered by pure unit tests.

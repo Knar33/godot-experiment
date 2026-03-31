@@ -16,6 +16,10 @@ public partial class Player : CharacterBody3D
     public BhopState Bhop { get; } = new();
     public DodgeRollState DodgeRoll { get; } = new();
     public AutoFireState AutoFire { get; } = new();
+    public PlayerHealthState Health { get; } = new();
+
+    [Signal]
+    public delegate void PlayerDiedEventHandler();
 
     private bool _wasGrounded = true;
     private float _groundedTime;
@@ -36,8 +40,46 @@ public partial class Player : CharacterBody3D
         _projectileScene = GD.Load<PackedScene>("res://scenes/player/PlayerProjectile.tscn");
     }
 
+    /// <summary>
+    /// Called by enemy damage sources (contact, projectile, explosion, ground hazard).
+    /// Checks i-frame protection before applying lethal damage.
+    /// </summary>
+    public void TakeDamage(DamageSource source)
+    {
+        if (!Health.TakeDamage(source, DodgeRoll.IsInvulnerable))
+            return;
+
+        OnPlayerDeath();
+    }
+
+    private void OnPlayerDeath()
+    {
+        StopAllAudio();
+        HidePlayerMesh();
+        Velocity = Vector3.Zero;
+        EmitSignal(SignalName.PlayerDied);
+    }
+
+    private void StopAllAudio()
+    {
+        foreach (var child in GetChildren())
+        {
+            if (child is AudioStreamPlayer3D audio)
+                audio.Stop();
+        }
+    }
+
+    private void HidePlayerMesh()
+    {
+        var mesh = GetNodeOrNull<MeshInstance3D>("MeshInstance3D");
+        if (mesh != null)
+            mesh.Visible = false;
+    }
+
     public override void _PhysicsProcess(double delta)
     {
+        if (!Health.IsAlive) return;
+
         float dt = (float)delta;
         DodgeRoll.Update(dt);
 
