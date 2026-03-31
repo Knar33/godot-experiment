@@ -4,13 +4,6 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 
 ---
 
-## 6. Death Screen & Run Statistics
-
-- [ ] Implement the death/results screen UI: displays the run's survival time (large, left side) and the leaderboard table (right side); shown when GameManager enters Dead state
-- [ ] Track and display run statistics on the death screen: enemies killed, gems collected, wave reached, longest bhop chain, upgrades chosen (displayed as icons in acquisition order)
-- [ ] Implement personal best tracking: if the run's time is a new personal best, show a "NEW BEST" callout with a brief fanfare sound
-- [ ] Add a clearly labeled restart button/key prompt on the death screen
-
 ## 7. Enemy Foundation
 
 - [ ] Create a base enemy C# class/scene with a health system (takes damage from player projectiles, dies at 0 HP), pathfinding/movement toward the player, and collision that triggers player death on contact
@@ -409,3 +402,10 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 - [x] Display the gem count and upgrade meter progress on the HUD as a progress bar showing gems collected toward the next upgrade threshold
 - [x] Display the countdown text (3-2-1) on the HUD at the start of each run, then hide it when gameplay begins
 - [x] Ensure all HUD elements are small and unobtrusive so they don't obscure enemies or compete with gameplay readability
+
+### Death Screen & Run Statistics
+
+- [x] Implement the death/results screen UI: displays the run's survival time (large, left side) and the leaderboard table (right side); shown when GameManager enters Dead state
+- [x] Track and display run statistics on the death screen: enemies killed, gems collected, wave reached, longest bhop chain, upgrades chosen (displayed as icons in acquisition order)
+- [x] Implement personal best tracking: if the run's time is a new personal best, show a "NEW BEST" callout with a brief fanfare sound
+- [x] Add a clearly labeled restart button/key prompt on the death screen

@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/arena/Arena.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="2"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://scripts/ui/PauseMenu.cs" id="7"]
 [ext_resource type="Script" path="res://scripts/ui/DeathScreen.cs" id="8"]
 [ext_resource type="Script" path="res://scripts/ui/GemCounterUI.cs" id="9"]
+[ext_resource type="AudioStream" path="res://assets/audio/ui/new_best_fanfare.wav" id="10"]
 
 [sub_resource type="Environment" id="Environment_1"]
 background_mode = 1
@@ -182,33 +183,118 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -160.0
-offset_top = -80.0
-offset_right = 160.0
-offset_bottom = 80.0
+offset_left = -340.0
+offset_top = -200.0
+offset_right = 340.0
+offset_bottom = 200.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/DeathScreen/Panel"]
+[node name="Content" type="HBoxContainer" parent="UI/DeathScreen/Panel"]
 layout_mode = 2
 
-[node name="DeathTitle" type="Label" parent="UI/DeathScreen/Panel/VBoxContainer"]
+[node name="LeftPanel" type="VBoxContainer" parent="UI/DeathScreen/Panel/Content"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.2
+
+[node name="DeathTitle" type="Label" parent="UI/DeathScreen/Panel/Content/LeftPanel"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.9, 0.2, 0.2, 1)
 text = "YOU DIED"
 horizontal_alignment = 1
 
-[node name="TimeLabel" type="Label" parent="UI/DeathScreen/Panel/VBoxContainer"]
+[node name="TimeLabel" type="Label" parent="UI/DeathScreen/Panel/Content/LeftPanel"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 48
 text = "00:00.000"
 horizontal_alignment = 1
 
-[node name="RestartHint" type="Label" parent="UI/DeathScreen/Panel/VBoxContainer"]
+[node name="NewBestLabel" type="Label" parent="UI/DeathScreen/Panel/Content/LeftPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1.0, 0.85, 0.0, 1)
+text = "NEW BEST!"
+horizontal_alignment = 1
+
+[node name="StatsSeparator" type="HSeparator" parent="UI/DeathScreen/Panel/Content/LeftPanel"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 8)
+
+[node name="StatsContainer" type="VBoxContainer" parent="UI/DeathScreen/Panel/Content/LeftPanel"]
+layout_mode = 2
+
+[node name="EnemiesKilledLabel" type="Label" parent="UI/DeathScreen/Panel/Content/LeftPanel/StatsContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
+text = "Enemies Killed: 0"
+
+[node name="GemsCollectedLabel" type="Label" parent="UI/DeathScreen/Panel/Content/LeftPanel/StatsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Gems Collected: 0"
+
+[node name="WaveReachedLabel" type="Label" parent="UI/DeathScreen/Panel/Content/LeftPanel/StatsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Wave Reached: 0"
+
+[node name="BhopChainLabel" type="Label" parent="UI/DeathScreen/Panel/Content/LeftPanel/StatsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Longest Bhop Chain: 0"
+
+[node name="UpgradesLabel" type="Label" parent="UI/DeathScreen/Panel/Content/LeftPanel/StatsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+text = "Upgrades:"
+
+[node name="UpgradesContainer" type="HBoxContainer" parent="UI/DeathScreen/Panel/Content/LeftPanel/StatsContainer"]
+layout_mode = 2
+
+[node name="BottomSpacer" type="Control" parent="UI/DeathScreen/Panel/Content/LeftPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="RestartHint" type="Label" parent="UI/DeathScreen/Panel/Content/LeftPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
 text = "Press R to restart"
 horizontal_alignment = 1
+
+[node name="Separator" type="VSeparator" parent="UI/DeathScreen/Panel/Content"]
+layout_mode = 2
+custom_minimum_size = Vector2(16, 0)
+
+[node name="RightPanel" type="VBoxContainer" parent="UI/DeathScreen/Panel/Content"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LeaderboardTitle" type="Label" parent="UI/DeathScreen/Panel/Content/RightPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "LEADERBOARD"
+horizontal_alignment = 1
+
+[node name="LeaderboardSeparator" type="HSeparator" parent="UI/DeathScreen/Panel/Content/RightPanel"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 4)
+
+[node name="LeaderboardPlaceholder" type="Label" parent="UI/DeathScreen/Panel/Content/RightPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.5, 0.5, 0.5, 1)
+text = "No entries yet"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="FanfareAudio" type="AudioStreamPlayer" parent="UI/DeathScreen"]
+process_mode = 1
+stream = ExtResource("10")
 
 [node name="PlayerCamera" parent="." instance=ExtResource("3")]
 

@@ -29,7 +29,7 @@ The main Godot project references Core via `<ProjectReference>` and excludes `sr
 - `src/GodotExperiment.Core/` — Pure C# classes: enums, state machines, data models, calculations
   - `PlayerMovement/` — Player movement state (BhopState, DodgeRollState) — namespace `GodotExperiment.PlayerMovement`
   - `Combat/` — Combat mechanics (AutoFireState, ProjectileState, DamageSource, PlayerHealthState) — namespace `GodotExperiment.Combat`
-  - `GameLoop/` — Game state management (GameState, GameStateMachine, SurvivalTimerState, CountdownState, UpgradeMeterState) — namespace `GodotExperiment.GameLoop`
+  - `GameLoop/` — Game state management (GameState, GameStateMachine, SurvivalTimerState, CountdownState, UpgradeMeterState, RunStatistics, PersonalBestState) — namespace `GodotExperiment.GameLoop`
   - `GameFeel/` — Screen shake and hit stop state (ScreenShakeState, HitStopState) — namespace `GodotExperiment.GameFeel`
   - `Settings/` — Settings data model (SettingsData) — namespace `GodotExperiment.Settings`
 - `tests/GodotExperiment.Tests/` — xUnit tests for Core classes
@@ -50,14 +50,16 @@ Countdown → Playing → Dead → Countdown (restart)
 
 Valid transitions are enforced; invalid transitions return `false` and leave state unchanged. The machine fires a `StateChanged` event on valid transitions and on `Reset()`.
 
-`GameManager` (scripts/managers/) is a Godot `Node` autoload (`ProcessMode = Always`) that wraps `GameStateMachine`, `CountdownState`, `SurvivalTimerState`, and `UpgradeMeterState`. It orchestrates:
+`GameManager` (scripts/managers/) is a Godot `Node` autoload (`ProcessMode = Always`) that wraps `GameStateMachine`, `CountdownState`, `SurvivalTimerState`, `UpgradeMeterState`, `RunStatistics`, and `PersonalBestState`. It orchestrates:
 
 - **Countdown**: on `_Ready()` and on restart, starts a 3-second countdown via `CountdownState`. Player movement is locked during countdown. Emits `CountdownTick(int)` and `CountdownFinished` signals.
-- **Playing**: on countdown finish, transitions to Playing and starts the survival timer. Emits `SurvivalTimeUpdated(string)` each frame.
-- **Death**: `TriggerPlayerDeath()` freezes the timer on the exact death frame. After the camera freeze (0.3s), `PlayerCamera` transitions to Dead.
+- **Playing**: on countdown finish, transitions to Playing, starts the survival timer, and connects bhop tracking from the player's `BhopState` to `RunStatistics`. Emits `SurvivalTimeUpdated(string)` each frame.
+- **Death**: `TriggerPlayerDeath()` freezes the timer on the exact death frame and checks `PersonalBestState` to determine if the run is a new personal best (`LastRunWasPersonalBest`). After the camera freeze (0.3s), `PlayerCamera` transitions to Dead.
 - **Pause**: Escape during Playing pauses the tree (`GetTree().Paused = true`) and shows the PauseMenu. Resume unpauses and re-captures the mouse.
-- **Restart**: R key from Dead state (or restart button from pause menu) clears all enemies/projectiles/gems, resets player position/state, resets upgrade meter, and starts a new countdown.
-- **Gems / Upgrade Meter**: `AddGems(int)` feeds `UpgradeMeterState` which tracks gems collected toward an escalating threshold (10, 15, 20, …). Emits `GemCountChanged(int, int)` on collection and fires `ThresholdReached` when full (future upgrade selection will consume the upgrade via `ConsumeUpgrade()`).
+- **Restart**: R key from Dead state (or restart button from pause menu) clears all enemies/projectiles/gems, resets player position/state, resets upgrade meter and run statistics, and starts a new countdown.
+- **Gems / Upgrade Meter**: `AddGems(int)` feeds both `UpgradeMeterState` and `RunStatistics`. The meter tracks gems toward an escalating threshold (10, 15, 20, …). Emits `GemCountChanged(int, int)` on collection and fires `ThresholdReached` when full (future upgrade selection will consume the upgrade via `ConsumeUpgrade()`).
+- **Run Statistics**: `RunStatistics` tracks enemies killed, gems collected, wave reached, longest bhop chain, and upgrades chosen during a run. Bhop events are wired from the player's `BhopState` via `BhopLanded` and `ChainBroken` events. Stats are exposed for the death screen and reset on restart.
+- **Personal Best**: `PersonalBestState` tracks the best survival time across sessions. Checked on death; `LastRunWasPersonalBest` flag is set for the death screen UI to show a "NEW BEST" callout.
 
 State changes are re-emitted as Godot signals via `StateChanged(int, int)` so UI nodes can react.
 

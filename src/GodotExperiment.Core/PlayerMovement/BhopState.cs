@@ -14,6 +14,10 @@ public class BhopState
 
     public float SpeedMultiplier { get; private set; } = 1.0f;
     public bool InChain { get; private set; }
+    public int CurrentChainCount { get; private set; }
+
+    public event Action? BhopLanded;
+    public event Action? ChainBroken;
 
     /// <summary>
     /// Attempt a bunny hop. Call when the player jumps while grounded.
@@ -26,10 +30,12 @@ public class BhopState
         {
             SpeedMultiplier = Math.Min(SpeedMultiplier + BoostPerBhop, MaxSpeedMultiplier);
             InChain = true;
+            CurrentChainCount++;
+            BhopLanded?.Invoke();
             return true;
         }
 
-        InChain = false;
+        BreakChain();
         return false;
     }
 
@@ -42,13 +48,25 @@ public class BhopState
         {
             SpeedMultiplier = Math.Max(1.0f, SpeedMultiplier - DecayRate * deltaTime);
             if (SpeedMultiplier <= 1.0f)
-                InChain = false;
+                BreakChain();
         }
     }
 
     public void Reset()
     {
         SpeedMultiplier = 1.0f;
+        InChain = false;
+        CurrentChainCount = 0;
+    }
+
+    private void BreakChain()
+    {
+        if (InChain || CurrentChainCount > 0)
+        {
+            InChain = false;
+            CurrentChainCount = 0;
+            ChainBroken?.Invoke();
+        }
         InChain = false;
     }
 }

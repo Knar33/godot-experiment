@@ -177,6 +177,93 @@ public class BhopStateTests
         Assert.InRange(elapsed, expectedDecayTime - 0.02f, expectedDecayTime + 0.02f);
     }
 
+    // --- Chain count ---
+
+    [Fact]
+    public void InitialChainCount_IsZero()
+    {
+        var bhop = new BhopState();
+        Assert.Equal(0, bhop.CurrentChainCount);
+    }
+
+    [Fact]
+    public void SuccessfulBhop_IncrementsChainCount()
+    {
+        var bhop = new BhopState();
+        bhop.TryBhop(0f);
+        Assert.Equal(1, bhop.CurrentChainCount);
+        bhop.TryBhop(0f);
+        Assert.Equal(2, bhop.CurrentChainCount);
+    }
+
+    [Fact]
+    public void FailedBhop_ResetsChainCount()
+    {
+        var bhop = new BhopState();
+        bhop.TryBhop(0f);
+        bhop.TryBhop(0f);
+        bhop.TryBhop(0.2f);
+        Assert.Equal(0, bhop.CurrentChainCount);
+    }
+
+    [Fact]
+    public void DecayToBase_ResetsChainCount()
+    {
+        var bhop = new BhopState();
+        bhop.TryBhop(0f);
+        bhop.DecaySpeed(10f);
+        Assert.Equal(0, bhop.CurrentChainCount);
+    }
+
+    [Fact]
+    public void BhopLanded_EventFires_OnSuccessfulBhop()
+    {
+        var bhop = new BhopState();
+        int fired = 0;
+        bhop.BhopLanded += () => fired++;
+
+        bhop.TryBhop(0f);
+        Assert.Equal(1, fired);
+
+        bhop.TryBhop(0f);
+        Assert.Equal(2, fired);
+    }
+
+    [Fact]
+    public void ChainBroken_EventFires_OnFailedBhop()
+    {
+        var bhop = new BhopState();
+        int fired = 0;
+        bhop.ChainBroken += () => fired++;
+
+        bhop.TryBhop(0f);
+        bhop.TryBhop(0.2f);
+        Assert.Equal(1, fired);
+    }
+
+    [Fact]
+    public void ChainBroken_EventFires_OnFullDecay()
+    {
+        var bhop = new BhopState();
+        int fired = 0;
+        bhop.ChainBroken += () => fired++;
+
+        bhop.TryBhop(0f);
+        bhop.DecaySpeed(10f);
+        Assert.Equal(1, fired);
+    }
+
+    [Fact]
+    public void ChainBroken_DoesNotFireTwice_ForSameBreak()
+    {
+        var bhop = new BhopState();
+        int fired = 0;
+        bhop.ChainBroken += () => fired++;
+
+        bhop.TryBhop(0.2f);
+        Assert.Equal(0, fired);
+    }
+
     // --- Reset ---
 
     [Fact]
@@ -189,5 +276,6 @@ public class BhopStateTests
 
         Assert.Equal(1.0f, bhop.SpeedMultiplier);
         Assert.False(bhop.InChain);
+        Assert.Equal(0, bhop.CurrentChainCount);
     }
 }

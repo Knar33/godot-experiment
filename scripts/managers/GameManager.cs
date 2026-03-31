@@ -11,6 +11,8 @@ public partial class GameManager : Node
     public SurvivalTimerState SurvivalTimer { get; } = new();
     public CountdownState Countdown { get; } = new();
     public UpgradeMeterState UpgradeMeter { get; } = new();
+    public RunStatistics RunStats { get; } = new();
+    public PersonalBestState PersonalBest { get; } = new();
 
     [Signal]
     public delegate void StateChangedEventHandler(int previousState, int newState);
@@ -28,6 +30,7 @@ public partial class GameManager : Node
     public delegate void GemCountChangedEventHandler(int current, int threshold);
 
     public GameState CurrentState => StateMachine.Current;
+    public bool LastRunWasPersonalBest { get; private set; }
 
     public override void _Ready()
     {
@@ -89,11 +92,28 @@ public partial class GameManager : Node
     {
         SurvivalTimer.Freeze();
         EmitSignal(SignalName.SurvivalTimeUpdated, SurvivalTimer.Format());
+        LastRunWasPersonalBest = PersonalBest.TrySetNewBest(SurvivalTimer.ElapsedSeconds);
+    }
+
+    public void RecordEnemyKill()
+    {
+        RunStats.RecordEnemyKill();
+    }
+
+    public void RecordWaveReached(int wave)
+    {
+        RunStats.RecordWaveReached(wave);
+    }
+
+    public void RecordUpgradeChosen(string upgradeName)
+    {
+        RunStats.RecordUpgradeChosen(upgradeName);
     }
 
     public void AddGems(int count)
     {
         UpgradeMeter.AddGems(count);
+        RunStats.RecordGemsCollected(count);
     }
 
     public void RestartRun()
@@ -101,6 +121,7 @@ public partial class GameManager : Node
         SurvivalTimer.Reset();
         Countdown.Reset();
         UpgradeMeter.Reset();
+        RunStats.Reset();
 
         ClearArena();
         ResetPlayer();
@@ -136,6 +157,7 @@ public partial class GameManager : Node
         SurvivalTimer.Reset();
         Countdown.Reset();
         UpgradeMeter.Reset();
+        RunStats.Reset();
         ClearArena();
         ResetPlayer();
 
@@ -162,6 +184,7 @@ public partial class GameManager : Node
     {
         StateMachine.TransitionTo(GameState.Playing);
         SurvivalTimer.Start();
+        ConnectBhopTracking();
         EmitSignal(SignalName.CountdownFinished);
     }
 
@@ -197,6 +220,20 @@ public partial class GameManager : Node
         foreach (var node in GetTree().GetNodesInGroup(group))
             node.QueueFree();
     }
+
+    private void ConnectBhopTracking()
+    {
+        var player = GetTree().GetFirstNodeInGroup("player") as CharacterBody3D;
+        if (player is not Player p) return;
+
+        p.Bhop.BhopLanded -= OnBhopLanded;
+        p.Bhop.ChainBroken -= OnBhopChainBroken;
+        p.Bhop.BhopLanded += OnBhopLanded;
+        p.Bhop.ChainBroken += OnBhopChainBroken;
+    }
+
+    private void OnBhopLanded() => RunStats.RecordBhopLanded();
+    private void OnBhopChainBroken() => RunStats.RecordBhopChainBroken();
 
     private void ResetPlayer()
     {
