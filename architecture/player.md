@@ -73,8 +73,12 @@ PlayerCamera (Node3D) [scripts/player/PlayerCamera.cs]
 
 ### Positioning
 - The camera faces the direction defined by (pitch, yaw) — this is the **aim direction**.
-- The camera is positioned **behind** the aim direction at a configurable distance (default 8 units) from the orbit center.
-- The player character is visible near the bottom of the screen; the crosshair at screen center targets the world ahead.
+- The camera is positioned **behind** the aim direction at a configurable distance (default 8 units) from an **offset orbit center**.
+- The offset center is displaced to the right of the player (default 0.6 units along the camera's right vector), creating an over-the-shoulder view. This shifts the player to the left of screen so the crosshair at screen center targets the world ahead rather than the player's back.
+
+### Scroll-Wheel Zoom
+- Mouse scroll adjusts a target distance between `MinDistance` (default 3) and `MaxDistance` (default 14) in discrete steps (`ZoomStep`, default 1 unit).
+- Each physics frame, the actual `Distance` smoothly interpolates toward the target using exponential lerp (`ZoomSmoothing`, default 12).
 
 ### Smooth Follow
 - Orbit center position uses framerate-independent exponential interpolation: `lerp(current, target, 1 - exp(-speed * dt))` with a default speed of 20.
@@ -101,10 +105,15 @@ PlayerCamera (Node3D) [scripts/player/PlayerCamera.cs]
 |----------|---------|-------------|
 | `MouseSensitivity` | 0.002 | Radians per pixel of mouse movement |
 | `Distance` | 8 | Distance from orbit center to camera (units) |
+| `MinDistance` | 3 | Minimum zoom distance (units) |
+| `MaxDistance` | 14 | Maximum zoom distance (units) |
+| `ZoomStep` | 1 | Distance change per scroll tick (units) |
+| `ZoomSmoothing` | 12 | Exponential interpolation rate for zoom |
 | `MinPitch` | -80 | Minimum vertical angle (degrees) |
 | `MaxPitch` | 60 | Maximum vertical angle (degrees) |
-| `FollowSpeed` | 20 | Exponential follow rate (higher = snappier) |
+| `FollowSpeed` | 40 | Exponential follow rate (higher = snappier) |
 | `VerticalOffset` | 1.5 | Height above player position for orbit center (units) |
+| `HorizontalOffset` | 0.6 | Rightward offset from player for over-the-shoulder view (units) |
 | `AimRayLength` | 100 | Maximum distance for aim raycast (units) |
 | `ClipMargin` | 0.3 | Offset from geometry surface when camera clips (units) |
 
