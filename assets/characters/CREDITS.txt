@@ -1,3 +1,0 @@
-godot_platformer_player.glb
-  Source: Godot Engine demo project "3D Platformer" (MIT License)
-  https://github.com/godotengine/godot-demo-projects/tree/4.3/3d/platformer/player
