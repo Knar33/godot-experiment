@@ -33,7 +33,7 @@ The main Godot project references Core via `<ProjectReference>` and excludes `sr
 - `src/GodotExperiment.Core/` — Pure C# classes: enums, state machines, data models, calculations
   - `PlayerMovement/` — Player movement state (BhopState, DodgeRollState) — namespace `GodotExperiment.PlayerMovement`
   - `Combat/` — Combat mechanics (AutoFireState, ProjectileState, DamageSource, PlayerHealthState) — namespace `GodotExperiment.Combat`
-  - `Enemies/` — Enemy logic (EnemyHealthState, SpawnPointSelector) — namespace `GodotExperiment.Enemies`
+  - `Enemies/` — Enemy logic (EnemyHealthState, SpawnPointSelector, SpitterAIState) — namespace `GodotExperiment.Enemies`
   - `GameLoop/` — Game state management (GameState, GameStateMachine, SurvivalTimerState, CountdownState, UpgradeMeterState, RunStatistics, PersonalBestState) — namespace `GodotExperiment.GameLoop`
   - `Waves/` — Wave system (WaveEnemyGroup, WaveDefinition, WaveCompositions, WaveManagerState) — namespace `GodotExperiment.Waves`
   - `GameFeel/` — Screen shake and hit stop state (ScreenShakeState, HitStopState) — namespace `GodotExperiment.GameFeel`
@@ -110,6 +110,26 @@ Audio streams are configured per-type in each enemy's scene file (e.g. `Crawler.
 - **Gems**: 1 per kill
 - **Mesh**: Flattened sphere (green, scale 1.3×0.6×1.3) — distinct low/wide silhouette vs. the base capsule
 - **Audio**: Quiet skittering ambient (looping, -12 dB), small crunch/pop death sound
+
+### Spitter
+
+`Spitter` (`scripts/enemies/Spitter.cs`) extends `BaseEnemy` with a ranged AI driven by `SpitterAIState` (Core, `GodotExperiment.Enemies`). The AI has three phases:
+
+1. **Approaching**: Moves toward the player until within preferred range (14 ± 4 units).
+2. **Planted**: Stops moving and fires arcing projectiles on a 3-second interval. First shot fires at half-interval after planting.
+3. **Repositioning**: If the player moves out of range and the Spitter has been planted for ≥5 seconds, it resumes movement to close/widen distance.
+
+Stats configured in `scenes/enemies/Spitter.tscn`:
+
+- **Health**: 5 (dies in 5 shots)
+- **Speed**: 3 units/s (slow)
+- **Gems**: 2 per kill
+- **Mesh**: Tapered cylinder (purple, wider at base) — distinct upright silhouette vs. Crawler's low sphere
+- **Audio**: Low gurgling ambient (-10 dB), spit/hiss telegraph on fire, wet burst death sound
+
+`SpitterProjectile` (`scripts/enemies/SpitterProjectile.cs`) is an `Area3D` that follows a parabolic arc computed from spawn position to the player's position at fire time. Flight time is ~1.2 seconds. On collision with arena geometry or the player (mask 1), it spawns a `SpitterGroundHazard` and frees itself. Direct player hits deal `DamageSource.Projectile`. A Y-position failsafe triggers ground impact if the projectile falls below floor level.
+
+`SpitterGroundHazard` (`scripts/enemies/SpitterGroundHazard.cs`) is an `Area3D` with a flat glowing disc mesh (yellow-green, transparent). Lasts 1.5 seconds, fading out over its lifetime. Contact with the player deals `DamageSource.GroundHazard`. Self-frees on expiry.
 
 `EnemySpawner` (`scripts/enemies/EnemySpawner.cs`) handles the mechanics of placing enemies in the arena. Uses `SpawnPointSelector` for behind-player bias. Exposes `SpawnEnemyOfType(PackedScene)` for wave-managed spawning and `SpawnEnemyAt(PackedScene, Vector3)` for direct placement. When `WaveManaged = true` (default in `Game.tscn`), EnemySpawner's internal timer loop is disabled and spawning is driven entirely by `WaveManager`.
 

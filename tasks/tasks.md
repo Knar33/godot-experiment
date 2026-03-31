@@ -6,15 +6,6 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 
 
 
-## 11. Spitter (Enemy — Wave 3+)
-
-- [ ] Create the Spitter scene: a medium-sized enemy with a distinct placeholder mesh, inheriting the base enemy class
-- [ ] Implement Spitter AI: moves slowly, plants itself at medium range, repositions occasionally to maintain spacing
-- [ ] Implement the Spitter ranged attack: lobs a slow, visible arcing projectile toward the player's current position on a timed interval
-- [ ] Implement Spitter ground hazard: projectile impact leaves a small damage zone for 1.5s that kills on contact, then despawns
-- [ ] Configure Spitter stats: 4-5 shot health, slow speed, 2 gem drop; spawns 1-3 at a time spread apart
-- [ ] Add Spitter audio: low gurgling ambient, brief spit/hiss telegraph, wet burst death sound
-
 ## 12. Charger (Enemy — Wave 4+)
 
 - [ ] Create the Charger scene: a medium-sized enemy with a distinct placeholder mesh, inheriting the base enemy class
@@ -411,3 +402,12 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 - [x] Implement early-game wave compositions (waves 1-5): wave 1 Crawlers only, then progressively introduce Spitters, Chargers, and Drones
 - [x] Enforce the difficulty scaling rule: difficulty increases only through enemy count, composition, and spawn speed — enemy stats are never modified
 - [x] Add unit tests for wave composition data correctness and spawn timing intervals
+
+### Spitter (Enemy — Wave 3+)
+
+- [x] Create the Spitter scene: a medium-sized enemy with a distinct placeholder mesh, inheriting the base enemy class
+- [x] Implement Spitter AI: moves slowly, plants itself at medium range, repositions occasionally to maintain spacing
+- [x] Implement the Spitter ranged attack: lobs a slow, visible arcing projectile toward the player's current position on a timed interval
+- [x] Implement Spitter ground hazard: projectile impact leaves a small damage zone for 1.5s that kills on contact, then despawns
+- [x] Configure Spitter stats: 4-5 shot health, slow speed, 2 gem drop; spawns 1-3 at a time spread apart
+- [x] Add Spitter audio: low gurgling ambient, brief spit/hiss telegraph, wet burst death sound
