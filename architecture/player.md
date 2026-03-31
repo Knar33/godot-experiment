@@ -61,12 +61,13 @@ Player mechanics are split across two layers:
 
 ## Shooting
 
-### Auto-Fire
+### Auto-Fire (Hold-to-Fire)
 
-The player fires continuously while `GameManager.CurrentState == GameState.Playing`. Fire timing is managed by `AutoFireState` (Core, `GodotExperiment.Combat`).
+The player fires continuously while the fire input is held (`shoot` action — left mouse button / right trigger) and `GameManager.CurrentState == GameState.Playing`. Fire timing is managed by `AutoFireState` (Core, `GodotExperiment.Combat`).
 
 - **Fire rate**: ~8 shots/sec (interval 0.125s).
-- Each physics frame, `AutoFireState.Update(dt)` accumulates time. When `CanFire` is true, `TryFire()` resets the timer and triggers a projectile spawn.
+- Each physics frame while the fire input is held, `AutoFireState.Update(dt)` accumulates time. When `CanFire` is true, `TryFire()` resets the timer and triggers a projectile spawn.
+- When the fire input is released, `AutoFireState` stops accumulating time. The timer resets on the next press so the first shot fires immediately when the player starts holding.
 
 ### Projectile
 
@@ -78,11 +79,17 @@ PlayerProjectile (Area3D) [scripts/player/PlayerProjectile.cs]
 └── MeshInstance3D — SphereMesh (radius 0.15), bright cyan emissive material
 ```
 
-- **Collision layer**: 3 (player projectiles, bitmask 4). **Collision mask**: layer 4 (enemies, bitmask 8).
+- **Collision layer**: 3 (player projectiles, bitmask 4). **Collision mask**: layers 1 (arena geometry, bitmask 1) and 4 (enemies, bitmask 8).
 - **Speed**: 50 units/s. Covers the arena radius (25 units) in 0.5s.
 - **Range**: Despawns after traveling 25 units (arena radius), tracked by `ProjectileState` (Core).
-- **Enemy collision**: On `BodyEntered`, if the body is in the `"enemy"` group, the projectile destroys itself. Damage application will be added when the enemy health system is implemented.
+- **Arena collision**: On `BodyEntered`, if the body is arena geometry (layer 1), the projectile plays an impact effect and destroys itself.
+- **Enemy collision**: On `BodyEntered`, if the body is in the `"enemy"` group, the projectile plays an impact effect and destroys itself. Damage application will be added when the enemy health system is implemented.
 - Projectiles are spawned into the `Projectiles` Node3D container in `Game.tscn`.
+
+### Audio
+
+- **Fire sound**: An `AudioStreamPlayer3D` on the player plays a short, punchy firing sound each time a projectile is spawned. Uses a small pool of slightly pitch-randomized variations (±5%) to avoid repetitive machine-gun monotony at 8 shots/sec.
+- **Impact sound**: Each projectile carries an `AudioStreamPlayer3D` that plays on collision (enemy or arena surface) at the impact position before the projectile is freed. Different sounds for enemy hits vs. surface hits.
 
 ### Aim Direction
 

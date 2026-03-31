@@ -4,6 +4,22 @@ Ordered by urgency (dependencies first, polish last). Completed tasks are checke
 
 ---
 
+## Shooting — Hold-to-Fire
+
+- [ ] Add a `shoot` input action mapped to left mouse button (and right trigger for gamepad) in the Godot project input map
+- [ ] Update `Player.cs` to only call `AutoFireState.Update(dt)` and spawn projectiles while the `shoot` action is held; stop firing when released
+- [ ] Reset the `AutoFireState` timer when the fire input is first pressed so the first shot fires immediately on click
+- [ ] Update `AutoFireState` unit tests to cover the hold-to-fire behavior (timer reset on press, no accumulation while not firing)
+
+## Projectile Physics & Audio
+
+- [ ] Update `PlayerProjectile.tscn` collision mask to include layer 1 (arena geometry) so projectiles collide with walls and floor
+- [ ] Update `PlayerProjectile.cs` to detect arena geometry collisions in `BodyEntered` and destroy the projectile on impact
+- [ ] Add a small impact particle effect (e.g. spark burst) that plays at the collision point when a projectile hits arena geometry or an enemy
+- [ ] Add an `AudioStreamPlayer3D` to the player for firing sounds; play a short punchy sound on each shot with slight pitch randomization (±5%) to avoid monotony
+- [ ] Add an `AudioStreamPlayer3D` to the projectile scene for impact sounds; play on collision before freeing, with distinct sounds for enemy hits vs. surface hits
+- [ ] Source or create placeholder audio assets for the firing sound and impact sounds (can be replaced with final assets later)
+
 ## Player Death
 
 - [ ] Implement one-hit player death: any enemy damage source (contact, projectile, explosion, ground hazard) triggers instant player death when the player is not in i-frames

@@ -31,3 +31,13 @@ Burrower craters are the only terrain modification — temporary rough patches t
 - Lighting is functional: the player and enemies are well-lit and readable; the background is dark and undistracting
 - The center of the arena may have a subtle landmark (glow, marking) so the player can orient at a glance
 - Enemy spawn points at the edges should have brief visual/audio cues (flash, rumble) to alert the player
+
+## Environmental Atmosphere
+
+The arena is not just a gameplay container — it should feel like a place, even if that place is minimal and hostile.
+
+- **Ambient Particles**: Faint dust motes or embers drift through the air above the arena floor. Subtle enough not to interfere with gameplay readability, but present enough to give the space depth and atmosphere. Particle density may increase slightly as the wave count climbs, reinforcing the sense of escalating chaos.
+- **Edge Glow**: The arena boundary has a faint, continuous glow or energy effect so the player always knows where the edge is at a glance. The glow should be visible from the arena center but not bright enough to distract.
+- **Edge Warning Zone**: The outer ~10% of the arena radius has a subtle visual treatment on the floor (slightly darker, faint pulsing edge line, or different texture tint). This is a "you're getting close to the wall" signal — being pinned at the edge is dangerous, and the player should feel uneasy about spending time there.
+- **Floor Reactivity**: Projectile impacts on the arena floor leave brief scorch marks or decals that fade after 1-2 seconds. These are purely cosmetic but add texture to the battlefield and help sell the physicality of combat. Burrower craters remain the only gameplay-affecting floor modification.
+- **Ambient Audio**: A low, droning ambient soundscape underlies the arena at all times. It should feel oppressive and alien — the sonic equivalent of the dark, hostile visual style (see `audio.md`).

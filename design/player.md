@@ -26,11 +26,13 @@ Bunny hopping is a core skill mechanic that rewards precise jump timing with inc
 
 ## Shooting
 
-- **Auto-Fire**: The player fires automatically and continuously. There is no trigger to pull — the weapon is always shooting while the game is active.
+- **Auto-Fire**: Holding the fire input (left mouse button / right trigger) continuously fires projectiles at the fire rate. Releasing the input stops firing.
 - **Aim Direction**: The player aims toward the camera's look direction (mouse or right stick). A visible crosshair indicates the exact aim point.
 - **Projectile Type**: Fast-moving projectiles that travel in a straight line. No hitscan — projectiles have travel time, rewarding leading targets.
+- **Projectile Collision**: Projectiles collide with arena geometry (walls, floor). On impact they are destroyed and play a small hit effect.
 - **Fire Rate**: Rapid fire (~8 shots per second). Individual shots deal low damage; sustained fire on a target is what kills.
 - **Range**: Projectiles despawn after a fixed distance roughly matching the arena radius, preventing infinite-range sniping.
+- **Sound**: Each shot produces a short, punchy firing sound. Projectiles play a distinct impact sound on hitting an enemy or arena surface.
 
 ## Gems
 
@@ -57,8 +59,22 @@ Enemies drop gems on death. Gems are automatically collected when the player mov
 - **One Hit Kill**: The player dies to any single enemy attack. No health bar, no damage numbers, no healing.
 - **Invulnerability Frames**: Only during the dodge roll's active window.
 
+## Movement Feedback
+
+- **Bhop Chain Counter**: After the 2nd consecutive successful bhop, a small counter appears on the HUD (e.g., "x3", "x4"). Fades out 0.5s after the chain breaks. Purely cosmetic — gives the player confirmation they're timing correctly without cluttering the screen.
+- **Speed Trail**: At bhop speeds above ~1.3x, faint radial speed lines appear at the screen edges. Intensity scales with speed. Combined with FOV widening (see `game-feel.md`), this makes high-speed bhopping feel viscerally fast.
+- **Landing Particles**: Successful bhop landings produce a brighter, sharper dust puff than normal landings. A visual "yes, you nailed it" cue that reinforces the timing window.
+- **Dodge Roll Afterimage**: During the dodge roll, a brief motion blur or ghosted afterimage trail follows the player, selling the speed and invulnerability of the move.
+
+## Threat Awareness
+
+- **Directional Threat Indicator**: When an enemy enters a close range directly behind the player (outside camera view), a subtle red arc flashes on the corresponding screen edge. This is a "danger close" warning, not a radar — it only triggers for immediate, nearby threats. Helps counteract the third-person camera's inherent blind spot without trivializing flanking enemies like the Shade.
+- **Proximity Audio**: Enemy sounds are spatially positioned (3D audio). The player should be able to hear a Charger wind-up or Howler scream and know its direction by ear alone (see `audio.md` for per-enemy audio identity).
+
 ## Visual Design
 
 - The player character should be simple and readable — a humanoid silhouette that doesn't compete with enemy visibility.
 - Projectiles from the player should be visually distinct (bright, consistent color) so the player can distinguish their fire from enemy projectiles.
+- Each projectile leaves a short, bright trail (2-3 projectile-lengths) that fades quickly after impact. The trail makes the stream of fire visible at a glance and reinforces aim direction.
+- A brief muzzle flash at the projectile spawn point (upper chest) on each shot, randomized rotation per shot to avoid visual repetition.
 - The gem count and upgrade meter should be visible but unobtrusive on the HUD.

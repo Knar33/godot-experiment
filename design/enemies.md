@@ -6,6 +6,23 @@ Enemies are designed as an ecosystem. Each type applies a different kind of pres
 
 All enemies spawn at the edges of the arena and move inward toward the player. All enemies drop gems on death (see `player.md` for gem values per enemy type).
 
+## Visual & Audio Identity
+
+Every enemy type must be instantly recognizable by both sight and sound. In a chaotic arena with 30+ enemies on screen, the player relies on silhouette, color, and audio cues to prioritize targets without consciously identifying each one.
+
+- **Silhouette**: Each enemy has a unique shape and size that reads clearly even at distance or in peripheral vision. No two enemy types should share a similar silhouette.
+- **Color Palette**: Each enemy type has a dominant color or accent that distinguishes it. Colors should remain readable under the arena's lighting and for players with color vision deficiencies (see `settings.md` for colorblind mode).
+- **Audio Signature**: Each enemy has a distinct ambient sound and attack telegraph sound. The player should be able to identify off-screen threats by ear. Telegraph sounds (Charger wind-up, Howler scream) are mixed at high priority so they cut through combat noise (see `audio.md` for full audio identity table).
+
+## Death Effects
+
+Enemy deaths should feel satisfying and communicate clearly that the threat is eliminated.
+
+- **Burst/dissolve**: On death, enemies burst apart or dissolve into particles matching their color palette. No ragdolls — corpses must not litter the arena, obscure gems, or create visual noise.
+- **Speed**: Death effects are fast (under 0.3s). The battlefield should clear quickly so the player can focus on remaining threats.
+- **Scaling**: Death effects scale with enemy importance. A Crawler pops quietly. A Titan has a prolonged collapse with heavy particles, screen shake, and a distinctive death sound.
+- **Kill sound**: Each enemy type has a distinct death sound. The player should know what they killed by the audio alone (see `audio.md`).
+
 ---
 
 ## 1. Crawler

@@ -20,6 +20,7 @@
 
 - Triggered by any contact with an enemy attack (melee hit, projectile, explosion, etc.)
 - The player character ragdolls or disintegrates on death
+- All audio cuts abruptly on death. A brief silence followed by a low death sting (see `audio.md`)
 - A brief camera freeze (0.3s) emphasizes the moment of death before transitioning to the results screen
 - No health, no shields, no extra lives — one hit and the run is over
 
@@ -29,6 +30,20 @@
 - The arena resets completely: all enemies despawn, all projectiles clear, the timer resets
 - The player spawns at center and the countdown begins again
 - Total time from death to gameplay should be under 3 seconds (excluding the countdown)
+
+## Run Statistics
+
+The death screen shows a summary of the run alongside the survival time and leaderboard. Stats serve two purposes: they give the player a sense of accomplishment even on short runs, and they help diagnose what went well or poorly.
+
+- **Survival Time**: The primary score, displayed large and prominent.
+- **Personal Best Notification**: If the run's time is a new personal best, a "NEW BEST" callout appears next to the time. This moment should feel special — brief fanfare sound, highlighted text.
+- **Enemies Killed**: Total enemies killed during the run, with a per-type breakdown available on hover or secondary view.
+- **Gems Collected**: Total gems collected.
+- **Upgrades Chosen**: Icons of the upgrades selected during the run, displayed in order of acquisition.
+- **Longest Bhop Chain**: The longest consecutive bhop chain achieved during the run. Serves as a secondary skill metric alongside survival time.
+- **Wave Reached**: The highest wave number reached.
+
+Stats are shown alongside the leaderboard on the death screen (see `leaderboard.md`). They are not persisted between sessions — only the survival time is saved to the leaderboard. This keeps the data lightweight and focused.
 
 ## Session Flow
 
