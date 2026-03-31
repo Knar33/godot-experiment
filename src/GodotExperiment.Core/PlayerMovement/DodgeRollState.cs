@@ -1,4 +1,4 @@
-namespace GodotExperiment.Player;
+namespace GodotExperiment.PlayerMovement;
 
 public class DodgeRollState
 {

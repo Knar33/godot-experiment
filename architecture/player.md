@@ -16,8 +16,8 @@ The capsule bottom sits at y=0 so the player stands flush on the arena floor. Th
 
 Player mechanics are split across two layers:
 
-- **`src/GodotExperiment.Core/Player/BhopState.cs`** — Pure C# bhop timing, speed stacking, decay logic. No Godot dependency, fully unit-testable.
-- **`src/GodotExperiment.Core/Player/DodgeRollState.cs`** — Pure C# dodge roll state machine (rolling, i-frames, cooldown). No Godot dependency, fully unit-testable.
+- **`src/GodotExperiment.Core/PlayerMovement/BhopState.cs`** — Pure C# bhop timing, speed stacking, decay logic. No Godot dependency, fully unit-testable. Namespace: `GodotExperiment.PlayerMovement`.
+- **`src/GodotExperiment.Core/PlayerMovement/DodgeRollState.cs`** — Pure C# dodge roll state machine (rolling, i-frames, cooldown). No Godot dependency, fully unit-testable. Namespace: `GodotExperiment.PlayerMovement`.
 - **`scripts/player/Player.cs`** — Godot `CharacterBody3D` script. Reads input, queries camera for direction, delegates to `BhopState`/`DodgeRollState` for logic, applies physics via `MoveAndSlide()`.
 
 ## Movement System

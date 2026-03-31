@@ -1,5 +1,5 @@
 using Godot;
-using GodotExperiment.Player;
+using GodotExperiment.PlayerMovement;
 
 namespace GodotExperiment;
 
