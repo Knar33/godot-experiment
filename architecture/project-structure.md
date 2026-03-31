@@ -19,21 +19,27 @@ The main Godot project references Core via `<ProjectReference>` and excludes `sr
 
 - `scenes/` — Godot `.tscn` scene files, organized by domain
   - `scenes/arena/` — Arena scene
+  - `scenes/enemies/` — Base enemy scene (inherited by specific enemy types)
+  - `scenes/pickups/` — Gem pickup scene
   - `scenes/player/` — Player and camera scenes
   - `scenes/Game.tscn` — Root game scene (main scene)
 - `scripts/` — Godot-specific C# scripts (nodes, autoloads) that reference Core types, organized by domain
   - `scripts/arena/` — Arena node scripts
+  - `scripts/enemies/` — Enemy scripts (BaseEnemy, EnemySpawner)
   - `scripts/managers/` — Autoload and manager scripts (GameManager, HitStopManager, MusicManager, SettingsManager)
+  - `scripts/pickups/` — Pickup scripts (GemPickup)
   - `scripts/player/` — Player, camera, and projectile scripts (ScreenShake)
   - `scripts/ui/` — HUD and UI element scripts (Crosshair, CountdownUI, SurvivalTimerUI, GemCounterUI, DeathScreen, PauseMenu, HitMarker, SpeedLines, BhopCounter, ThreatIndicator, SettingsMenu)
 - `src/GodotExperiment.Core/` — Pure C# classes: enums, state machines, data models, calculations
   - `PlayerMovement/` — Player movement state (BhopState, DodgeRollState) — namespace `GodotExperiment.PlayerMovement`
   - `Combat/` — Combat mechanics (AutoFireState, ProjectileState, DamageSource, PlayerHealthState) — namespace `GodotExperiment.Combat`
+  - `Enemies/` — Enemy logic (EnemyHealthState, SpawnPointSelector) — namespace `GodotExperiment.Enemies`
   - `GameLoop/` — Game state management (GameState, GameStateMachine, SurvivalTimerState, CountdownState, UpgradeMeterState, RunStatistics, PersonalBestState) — namespace `GodotExperiment.GameLoop`
   - `GameFeel/` — Screen shake and hit stop state (ScreenShakeState, HitStopState) — namespace `GodotExperiment.GameFeel`
   - `Settings/` — Settings data model (SettingsData) — namespace `GodotExperiment.Settings`
 - `tests/GodotExperiment.Tests/` — xUnit tests for Core classes
 - `assets/audio/` — Audio assets organized by category (music/, player/, enemies/, ui/, ambience/)
+- `assets/shaders/` — Shader files (enemy_flash.gdshader)
 - `design/` — Game design documents (source of truth for gameplay intent)
 - `architecture/` — Technical implementation documents
 - `tasks/` — Task tracking
@@ -62,6 +68,44 @@ Valid transitions are enforced; invalid transitions return `false` and leave sta
 - **Personal Best**: `PersonalBestState` tracks the best survival time across sessions. Checked on death; `LastRunWasPersonalBest` flag is set for the death screen UI to show a "NEW BEST" callout.
 
 State changes are re-emitted as Godot signals via `StateChanged(int, int)` so UI nodes can react.
+
+## Enemy System
+
+### Core Types (pure C#, `GodotExperiment.Enemies`)
+
+`EnemyHealthState` tracks per-enemy HP with damage, death events, and a low-health flag (≤25% max HP). All enemies use integer health; player projectiles deal 1 damage by default.
+
+`SpawnPointSelector` provides weighted random spawn point selection. `ComputeWeights()` biases toward points the player is facing (dot product mapping: front ≈ 1.0, behind ≈ 0.2). `SelectWeighted()` performs weighted random index selection from the computed weights.
+
+### Godot Types
+
+`BaseEnemy` (`scripts/enemies/BaseEnemy.cs`) is a `CharacterBody3D` on collision layer 4 (mask 1 for arena geometry). It composes `EnemyHealthState` and provides:
+
+- **Movement**: Direct steering toward the player each physics frame (flat arena, no nav mesh needed). Override `MoveTowardPlayer()` in subclasses for specialized AI.
+- **Contact damage**: `ContactArea` (child `Area3D`, mask 1) detects player via group check and calls `Player.TakeDamage(DamageSource.Contact)`.
+- **Damage flash**: `ShaderMaterial` (`assets/shaders/enemy_flash.gdshader`) with `flash_intensity` uniform. Set to 1.0 on hit, decays linearly over 2 frames (~33ms). When health ≤ 25%, oscillates at 2 Hz between 0.0–0.3.
+- **Death effects**: Spawns a detached one-shot `GpuParticles3D` with configurable color/count/explosiveness, then `QueueFree()` immediately. Calls `GameManager.RecordEnemyKill()`.
+- **Gem dropping**: Spawns `GemPickup` instances (count from `GemDropCount`) scattered outward from the death position.
+- **Spawn-in**: Large enemies (`IsLargeEnemy = true`) are visible but inactive for `SpawnInDuration` seconds before moving/dealing damage.
+
+All enemies are added to the `"enemy"` group. `PlayerProjectile.OnBodyEntered` calls `BaseEnemy.TakeDamage(1)` on hit.
+
+`EnemySpawner` (`scripts/enemies/EnemySpawner.cs`) spawns enemies at arena-edge points on a configurable interval. Uses `SpawnPointSelector` for behind-player bias. Only active during `GameState.Playing`.
+
+`GemPickup` (`scripts/pickups/GemPickup.cs`) is an `Area3D` in the `"gems"` group with a scatter animation on spawn. Collection/magnetism/HUD integration is deferred to the gem pickup task.
+
+### Collision Layers
+
+| Layer | Bit Value | Usage |
+|-------|-----------|-------|
+| 1 | 1 | Arena geometry, Player (default) |
+| 3 | 4 | Player projectiles |
+| 4 | 8 | Enemies |
+| 5 | 16 | Gem pickups |
+
+`PlayerProjectile`: layer 3, mask 1+4 (hits arena geometry and enemies).
+`BaseEnemy`: layer 4, mask 1 (collides with arena geometry for movement).
+`GemPickup`: layer 5, mask 0 (detected by player collection area, not self-monitoring).
 
 ## Input Actions
 

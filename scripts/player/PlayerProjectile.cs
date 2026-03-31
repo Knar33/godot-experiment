@@ -44,6 +44,10 @@ public partial class PlayerProjectile : Area3D
         if (body.IsInGroup("player")) return;
 
         bool isEnemy = body.IsInGroup("enemy");
+
+        if (isEnemy && body is BaseEnemy enemy)
+            enemy.TakeDamage(1);
+
         PlayImpactSound(isEnemy);
         QueueFree();
     }

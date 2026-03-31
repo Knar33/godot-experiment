@@ -14,10 +14,12 @@ Medium — large enough that the player has room to maneuver and kite enemies, b
 
 ## Boundaries
 
-The arena is bounded by a visible wall or void edge. The player cannot leave. Enemies spawn at or just beyond the boundary and enter the play space.
+The arena is an open platform floating over a void. There are no walls — the player and enemies can walk off the edge and fall. Falling off the arena is lethal: a killbox below the platform kills the player instantly.
 
-- The boundary should be visually obvious — the player should never accidentally run into it
-- Contact with the boundary does not damage the player, but being pinned against it with enemies closing in is effectively a death sentence
+- The edge should be visually obvious — the floor shader's edge glow and the visible drop-off into darkness make the boundary unmistakable
+- The open edge adds a real environmental hazard: aggressive bhopping near the rim risks falling off, and enemies can be kited off the edge
+- Enemies that fall off the arena are killed by the same killbox (freeing them without gem drops)
+- Spawn points are positioned just inside the arena edge so enemies appear at the perimeter and move inward
 
 ## Floor
 

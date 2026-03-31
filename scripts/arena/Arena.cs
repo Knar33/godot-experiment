@@ -1,59 +1,26 @@
 using Godot;
+using GodotExperiment.Combat;
 
 namespace GodotExperiment;
 
 public partial class Arena : Node3D
 {
     [Export] public float Radius { get; set; } = 25f;
-    [Export] public int BoundarySegments { get; set; } = 32;
-    [Export] public float WallHeight { get; set; } = 4f;
-    [Export] public float WallThickness { get; set; } = 0.5f;
     [Export] public int SpawnPointCount { get; set; } = 12;
-    [Export] public float SpawnPointRadius { get; set; } = 28f;
+    [Export] public float SpawnPointInset { get; set; } = 1.5f;
+    [Export] public float KillboxDepth { get; set; } = -20f;
 
     public Vector3[] SpawnPoints { get; private set; } = [];
 
     public override void _Ready()
     {
-        CreateBoundaryWalls();
         CreateSpawnPoints();
-    }
-
-    private void CreateBoundaryWalls()
-    {
-        float angleStep = Mathf.Tau / BoundarySegments;
-        float arcLength = Mathf.Tau * Radius / BoundarySegments;
-        float segmentLength = arcLength * 1.1f;
-        float wallCenterRadius = Radius + WallThickness / 2f;
-
-        for (int i = 0; i < BoundarySegments; i++)
-        {
-            float angle = i * angleStep;
-
-            var wall = new StaticBody3D
-            {
-                Position = new Vector3(
-                    Mathf.Cos(angle) * wallCenterRadius,
-                    WallHeight / 2f,
-                    Mathf.Sin(angle) * wallCenterRadius
-                ),
-                Name = $"BoundaryWall_{i}"
-            };
-            wall.RotateY(-angle + Mathf.Pi / 2f);
-
-            var shape = new BoxShape3D
-            {
-                Size = new Vector3(segmentLength, WallHeight, WallThickness)
-            };
-            var collision = new CollisionShape3D { Shape = shape };
-
-            wall.AddChild(collision);
-            AddChild(wall);
-        }
+        CreateKillbox();
     }
 
     private void CreateSpawnPoints()
     {
+        float spawnRadius = Radius - SpawnPointInset;
         SpawnPoints = new Vector3[SpawnPointCount];
         float angleStep = Mathf.Tau / SpawnPointCount;
 
@@ -61,9 +28,9 @@ public partial class Arena : Node3D
         {
             float angle = i * angleStep;
             SpawnPoints[i] = new Vector3(
-                Mathf.Cos(angle) * SpawnPointRadius,
+                Mathf.Cos(angle) * spawnRadius,
                 0f,
-                Mathf.Sin(angle) * SpawnPointRadius
+                Mathf.Sin(angle) * spawnRadius
             );
 
             var marker = new Marker3D
@@ -72,6 +39,46 @@ public partial class Arena : Node3D
                 Name = $"SpawnPoint_{i}"
             };
             AddChild(marker);
+        }
+    }
+
+    private void CreateKillbox()
+    {
+        var killbox = new Area3D
+        {
+            Name = "Killbox",
+            CollisionLayer = 0,
+            CollisionMask = 0b1001, // layers 1 (player/geometry) and 4 (enemies)
+            Monitoring = true,
+            Monitorable = false
+        };
+
+        float boxSize = Radius * 4f;
+        var shape = new BoxShape3D
+        {
+            Size = new Vector3(boxSize, 1f, boxSize)
+        };
+        var collision = new CollisionShape3D
+        {
+            Shape = shape,
+            Position = new Vector3(0, KillboxDepth, 0)
+        };
+
+        killbox.AddChild(collision);
+        AddChild(killbox);
+
+        killbox.BodyEntered += OnKillboxBodyEntered;
+    }
+
+    private void OnKillboxBodyEntered(Node3D body)
+    {
+        if (body.IsInGroup("player") && body is Player player)
+        {
+            player.TakeDamage(DamageSource.GroundHazard);
+        }
+        else if (body.IsInGroup("enemy") && body is BaseEnemy enemy)
+        {
+            enemy.QueueFree();
         }
     }
 

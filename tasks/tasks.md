@@ -6,15 +6,7 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 
 ## 7. Enemy Foundation
 
-- [ ] Create a base enemy C# class/scene with a health system (takes damage from player projectiles, dies at 0 HP), pathfinding/movement toward the player, and collision that triggers player death on contact
-- [ ] Add per-enemy audio nodes to the base scene: `AmbientAudio`, `TelegraphAudio`, `DeathAudio` (all `AudioStreamPlayer3D`, bus: EnemySFX)
-- [ ] Implement enemy damage flash: `ShaderMaterial` with `flash_intensity` uniform, set to 1.0 on hit, decays over 2 frames
-- [ ] Implement enemy low-health indicator: when health < 25%, `flash_intensity` oscillates at 2 Hz between 0.0 and 0.3
-- [ ] Implement enemy death effects: on death, spawn a detached `GpuParticles3D` with per-type color/count/explosiveness, free the enemy node immediately
-- [ ] Implement gem dropping in the base enemy class: on death, spawn gem pickup instances based on the enemy's configured gem value, scattering them briefly outward before they settle
-- [ ] Create the enemy spawner system: spawns enemy instances at the defined arena-edge spawn points with staggered timing, randomized point selection, and a bias against spawning directly behind the player
-- [ ] Implement spawn-in animation for large enemies (Titan, Sentinel): the enemy is briefly visible at its spawn point but inactive for ~1s
-- [ ] Add unit tests for base enemy health (damage application, death at 0 HP), per-type gem drop counts, and spawn point randomization distribution
+(All items completed — see Completed section below)
 
 ## 8. Crawler (Enemy — Wave 1+)
 
@@ -409,3 +401,15 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 - [x] Track and display run statistics on the death screen: enemies killed, gems collected, wave reached, longest bhop chain, upgrades chosen (displayed as icons in acquisition order)
 - [x] Implement personal best tracking: if the run's time is a new personal best, show a "NEW BEST" callout with a brief fanfare sound
 - [x] Add a clearly labeled restart button/key prompt on the death screen
+
+### Enemy Foundation
+
+- [x] Create a base enemy C# class/scene with a health system (takes damage from player projectiles, dies at 0 HP), pathfinding/movement toward the player, and collision that triggers player death on contact
+- [x] Add per-enemy audio nodes to the base scene: `AmbientAudio`, `TelegraphAudio`, `DeathAudio` (all `AudioStreamPlayer3D`, bus: EnemySFX)
+- [x] Implement enemy damage flash: `ShaderMaterial` with `flash_intensity` uniform, set to 1.0 on hit, decays over 2 frames
+- [x] Implement enemy low-health indicator: when health < 25%, `flash_intensity` oscillates at 2 Hz between 0.0 and 0.3
+- [x] Implement enemy death effects: on death, spawn a detached `GpuParticles3D` with per-type color/count/explosiveness, free the enemy node immediately
+- [x] Implement gem dropping in the base enemy class: on death, spawn gem pickup instances based on the enemy's configured gem value, scattering them briefly outward before they settle
+- [x] Create the enemy spawner system: spawns enemy instances at the defined arena-edge spawn points with staggered timing, randomized point selection, and a bias against spawning directly behind the player
+- [x] Implement spawn-in animation for large enemies (Titan, Sentinel): the enemy is briefly visible at its spawn point but inactive for ~1s
+- [x] Add unit tests for base enemy health (damage application, death at 0 HP), per-type gem drop counts, and spawn point randomization distribution
