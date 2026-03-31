@@ -7,7 +7,12 @@
 ```
 Player (CharacterBody3D) [scripts/player/Player.cs]
 ├── CollisionShape3D — CapsuleShape3D (radius 0.4, height 1.8), centered at y=0.9
-└── MeshInstance3D — CapsuleMesh placeholder (same dimensions), light blue material
+├── MeshInstance3D — CapsuleMesh placeholder (same dimensions), light blue material
+├── MuzzleFlash (GpuParticles3D) — One-shot burst per firing event, position (0, 1.2, 0)
+├── FireAudio (AudioStreamPlayer3D) — Firing sound, bus: PlayerSFX
+├── KillAudio (AudioStreamPlayer3D) — Kill confirmation sound, bus: PlayerSFX
+├── BhopAudio (AudioStreamPlayer3D) — Bhop landing sound, bus: PlayerSFX
+└── RollAudio (AudioStreamPlayer3D) — Dodge roll whoosh, bus: PlayerSFX
 ```
 
 The capsule bottom sits at y=0 so the player stands flush on the arena floor. The player is added to the `"player"` group at runtime for camera and other systems to locate it.
@@ -76,7 +81,9 @@ The player fires continuously while the fire input is held (`shoot` action — l
 ```
 PlayerProjectile (Area3D) [scripts/player/PlayerProjectile.cs]
 ├── CollisionShape3D — SphereShape3D (radius 0.15)
-└── MeshInstance3D — SphereMesh (radius 0.15), bright cyan emissive material
+├── MeshInstance3D — SphereMesh (radius 0.15), bright cyan emissive material
+├── Trail (MeshInstance3D) — ImmediateMesh trail, 2-3 projectile-lengths, fading cyan
+└── ImpactAudio (AudioStreamPlayer3D) — Impact sound, bus: PlayerSFX
 ```
 
 - **Collision layer**: 3 (player projectiles, bitmask 4). **Collision mask**: layers 1 (arena geometry, bitmask 1) and 4 (enemies, bitmask 8).
@@ -148,10 +155,17 @@ PlayerCamera (Node3D) [scripts/player/PlayerCamera.cs]
 - The hit point (or a far fallback point at 100 units) is stored as `AimPoint` for shooting systems to use.
 - The player's collision is excluded so the aim ray passes through the character.
 
-### Crosshair
+### Crosshair & Hit Marker
 - A `Control` node (`scripts/ui/Crosshair.cs`) draws a small cross at screen center using `_Draw()`.
 - The crosshair has 4 arms (default 8px length, 2px thick) separated by a small gap (3px) from center.
-- Added as a full-rect child of the UI CanvasLayer in `Game.tscn` with `mouse_filter = IGNORE`.
+- Crosshair style (cross/dot/circle) and color are configurable via settings (see `architecture/settings.md`).
+- A sibling `Control` node (`scripts/ui/HitMarker.cs`) draws hit/kill confirmation markers overlaid on the crosshair (see `architecture/game-feel.md`).
+- Added as full-rect children of the UI CanvasLayer in `Game.tscn` with `mouse_filter = IGNORE`.
+
+### FOV Scaling
+- Camera FOV widens subtly as the player's bhop speed multiplier increases (`FovScalePerUnit` default 6° per 1.0x). Smoothly interpolated via exponential lerp.
+- Base FOV is configurable via settings (default 75°). Speed-based scaling is additive on top.
+- See `architecture/game-feel.md` for implementation details.
 
 ### Camera Exported Properties
 

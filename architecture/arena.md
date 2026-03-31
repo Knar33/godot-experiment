@@ -41,6 +41,56 @@ Generated procedurally by `Arena.cs` in `_Ready()`. 32 invisible `StaticBody3D` 
 
 `Arena.GetRandomSpawnPoint()` returns a random spawn position.
 
+## Environmental Atmosphere
+
+### Ambient Particles
+
+A `GpuParticles3D` node (`AmbientParticles`) added to the Arena scene. Emits faint dust motes / embers drifting above the arena floor:
+
+- Emission volume: a large box covering the arena diameter, positioned above the floor.
+- Particle count: ~100-200. Lifetime: 4-6s. Very slow drift velocity.
+- Material: small billboard sprites, low alpha (0.1-0.2), warm/neutral tone.
+- Particle density may increase slightly based on wave count (adjustable `AmountRatio`).
+- Disabled when "Reduce Motion" accessibility setting is on.
+
+### Edge Warning Zone
+
+The arena floor shader is extended with an edge warning band:
+
+- The outer ~10% of the arena radius (beyond 22.5 units from center) has a slightly darker floor tint or faint pulsing edge line.
+- Implemented as a distance-based blend in the existing floor shader: `float edgeFactor = smoothstep(22.5, 25.0, distFromCenter)`.
+- The existing red edge glow ring serves as the hard boundary indicator. The warning zone provides a softer "you're getting close" signal.
+
+### Floor Reactivity
+
+Projectile impacts on the arena floor leave brief cosmetic scorch marks:
+
+- On projectile destruction (arena collision), a small `Decal` node is spawned at the impact point.
+- Decal texture: dark scorch mark, alpha fades from 1.0 to 0.0 over 1.5s via tween, then self-frees.
+- Maximum active decals capped at ~30 to limit overhead. Oldest decal is freed early if the cap is reached.
+- Burrower craters remain the only gameplay-affecting floor modification.
+
+### Ambient Audio
+
+An `AudioStreamPlayer` node (`AmbientAudio`) on the Arena, output to the `Ambience` bus:
+
+- Plays a looping ambient drone soundscape.
+- Low volume, oppressive/alien tone matching the dark visual style.
+- See `architecture/audio.md` for bus layout and mix priorities.
+
+### Updated Scene Structure
+
+```
+Arena (Node3D) [scripts/Arena.cs]
+├── Floor (StaticBody3D)
+│   ├── FloorMesh (MeshInstance3D) — PlaneMesh 50x50 with grid + edge warning shader
+│   └── FloorCollision (CollisionShape3D) — BoxShape3D 52x1x52, centered at y=-0.5
+├── BoundaryWall_0..31 (StaticBody3D) — generated at runtime
+├── SpawnPoint_0..11 (Marker3D) — generated at runtime
+├── AmbientParticles (GpuParticles3D) — Dust/ember particles
+└── AmbientAudio (AudioStreamPlayer) — Arena ambient drone, bus: Ambience
+```
+
 ## Key Constants
 
 | Property | Default | Configurable via |

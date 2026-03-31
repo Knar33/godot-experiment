@@ -23,14 +23,17 @@ The main Godot project references Core via `<ProjectReference>` and excludes `sr
   - `scenes/Game.tscn` — Root game scene (main scene)
 - `scripts/` — Godot-specific C# scripts (nodes, autoloads) that reference Core types, organized by domain
   - `scripts/arena/` — Arena node scripts
-  - `scripts/managers/` — Autoload and manager scripts (GameManager)
-  - `scripts/player/` — Player and camera scripts
-  - `scripts/ui/` — HUD and UI element scripts (Crosshair)
+  - `scripts/managers/` — Autoload and manager scripts (GameManager, HitStopManager, MusicManager, SettingsManager)
+  - `scripts/player/` — Player, camera, and projectile scripts (ScreenShake)
+  - `scripts/ui/` — HUD and UI element scripts (Crosshair, HitMarker, SpeedLines, BhopCounter, ThreatIndicator, SettingsMenu)
 - `src/GodotExperiment.Core/` — Pure C# classes: enums, state machines, data models, calculations
   - `PlayerMovement/` — Player movement state (BhopState, DodgeRollState) — namespace `GodotExperiment.PlayerMovement`
   - `Combat/` — Combat mechanics (AutoFireState, ProjectileState) — namespace `GodotExperiment.Combat`
   - `GameLoop/` — Game state management (GameState, GameStateMachine) — namespace `GodotExperiment.GameLoop`
+  - `GameFeel/` — Screen shake and hit stop state (ScreenShakeState, HitStopState) — namespace `GodotExperiment.GameFeel`
+  - `Settings/` — Settings data model (SettingsData) — namespace `GodotExperiment.Settings`
 - `tests/GodotExperiment.Tests/` — xUnit tests for Core classes
+- `assets/audio/` — Audio assets organized by category (music/, player/, enemies/, ui/, ambience/)
 - `design/` — Game design documents (source of truth for gameplay intent)
 - `architecture/` — Technical implementation documents
 - `tasks/` — Task tracking
@@ -61,10 +64,11 @@ Defined in `project.godot` under `[input]`:
 | `move_right` | D | Player movement |
 | `jump` | Space | Jump / bunny hop |
 | `dodge_roll` | Left Shift | Dodge roll |
+| `shoot` | Left Mouse Button | Hold to fire projectiles |
 | `pause` | Escape | Pause menu |
 | `restart` | R | Restart from death screen |
 
-Mouse look is handled directly in code (Input.MouseMode capture), not via input actions.
+Mouse look is handled directly in code (Input.MouseMode capture), not via input actions. Gamepad bindings: `shoot` on right trigger, movement on left stick, aim on right stick.
 
 ## Godot SDK Version
 

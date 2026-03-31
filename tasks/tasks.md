@@ -1,204 +1,41 @@
 # Tasks
 
-Ordered by urgency (dependencies first, polish last). Completed tasks are checked and moved to the bottom.
+Ordered by priority: core mechanics first, then combat loop, content, scoring, game feel, audio, atmosphere, settings, and final polish. Completed tasks are checked and moved to the bottom.
 
 ---
 
-## Shooting — Hold-to-Fire
+## 1. Shooting — Hold-to-Fire
 
 - [ ] Add a `shoot` input action mapped to left mouse button (and right trigger for gamepad) in the Godot project input map
 - [ ] Update `Player.cs` to only call `AutoFireState.Update(dt)` and spawn projectiles while the `shoot` action is held; stop firing when released
 - [ ] Reset the `AutoFireState` timer when the fire input is first pressed so the first shot fires immediately on click
 - [ ] Update `AutoFireState` unit tests to cover the hold-to-fire behavior (timer reset on press, no accumulation while not firing)
 
-## Projectile Physics & Audio
+## 2. Projectile Collision & Audio
 
 - [ ] Update `PlayerProjectile.tscn` collision mask to include layer 1 (arena geometry) so projectiles collide with walls and floor
 - [ ] Update `PlayerProjectile.cs` to detect arena geometry collisions in `BodyEntered` and destroy the projectile on impact
-- [ ] Add a small impact particle effect (e.g. spark burst) that plays at the collision point when a projectile hits arena geometry or an enemy
-- [ ] Add an `AudioStreamPlayer3D` to the player for firing sounds; play a short punchy sound on each shot with slight pitch randomization (±5%) to avoid monotony
-- [ ] Add an `AudioStreamPlayer3D` to the projectile scene for impact sounds; play on collision before freeing, with distinct sounds for enemy hits vs. surface hits
-- [ ] Source or create placeholder audio assets for the firing sound and impact sounds (can be replaced with final assets later)
+- [ ] Add an `AudioStreamPlayer3D` (`FireAudio`) to the player for firing sounds; play a short punchy sound on each shot with slight pitch randomization (±5%)
+- [ ] Add an `AudioStreamPlayer3D` (`ImpactAudio`) to the projectile scene for impact sounds; reparent to a temp node on collision so it finishes playing after projectile is freed; distinct sounds for enemy hits vs. surface hits
+- [ ] Source or create placeholder audio assets for the firing sound and both impact sound types
 
-## Player Death
+## 3. Player Death & I-Frames
 
 - [ ] Implement one-hit player death: any enemy damage source (contact, projectile, explosion, ground hazard) triggers instant player death when the player is not in i-frames
 - [ ] Implement dodge roll i-frame protection: during the dodge roll's ~0.3s active invulnerability window, all incoming damage is ignored
-- [ ] Implement player death sequence: freeze the survival timer on the exact frame of death, play a death effect (ragdoll or disintegration) on the player character
-- [ ] Implement death camera freeze: hold the camera position for ~0.3s after player death before transitioning the GameManager state to Dead and showing the results screen
+- [ ] Implement player death sequence: freeze the survival timer on the exact frame of death, cut all audio abruptly, play a death effect (ragdoll or disintegration) on the player character
+- [ ] Implement death camera freeze: hold the camera position for ~0.3s after player death, then play the death sting sound and transition GameManager to Dead
 - [ ] Add unit tests for player i-frame protection during dodge roll and death triggering from different damage source types (contact, projectile, AoE)
 
-## Core Game Loop
+## 4. Core Game Loop
 
-- [ ] Implement the countdown sequence: on game start or restart, show a 3-2-1 countdown UI while the player is locked at arena center, then transition GameManager to Playing
+- [ ] Implement the countdown sequence: on game start or restart, show a 3-2-1 countdown UI with percussive audio beats while the player is locked at arena center, then transition GameManager to Playing
 - [ ] Implement the survival timer: starts at 0:00.000 when the countdown finishes, counts up in real time, freezes on the exact frame of player death; this is the player's score
-- [ ] Implement the death/results screen UI: displays the run's survival time (large, left side) and the leaderboard table (right side); shown when GameManager enters Dead state
 - [ ] Implement the restart flow: a single button press from the death screen despawns all enemies, clears all projectiles and gems, resets the timer, resets player position to center, clears all upgrades, and starts the countdown; total time from restart press to gameplay must be under 3 seconds
-- [ ] Implement a pause menu: pressing escape during Playing state pauses the game (freezes physics and timer) and shows a menu with resume, restart, and quit options
+- [ ] Implement a pause menu: pressing escape during Playing state pauses the game (freezes physics and timer) and shows a menu with resume, restart, quit, and settings options
 - [ ] Add unit tests for GameManager state transitions (Countdown -> Playing -> Dead -> Countdown) and survival timer accuracy
 
-## Enemy Foundation
-
-- [ ] Create a base enemy C# class/scene with a health system (takes damage from player projectiles, dies at 0 HP), pathfinding/movement toward the player, and collision that triggers player death on contact
-- [ ] Implement gem dropping in the base enemy class: on death, spawn gem pickup instances based on the enemy's configured gem value, scattering them briefly outward before they settle on the ground
-- [ ] Create the enemy spawner system: spawns enemy instances at the defined arena-edge spawn points with staggered timing, randomized point selection, and a bias against spawning directly behind the player
-- [ ] Implement spawn-in animation for large enemies (Titan, Sentinel): the enemy is briefly visible at its spawn point but inactive (no movement or attacks) for ~1s, giving the player time to register the new threat
-- [ ] Implement enemy hit feedback: when a player projectile strikes an enemy, play a brief visual flash on the enemy and/or a hit sound so the player knows their shots are landing
-- [ ] Add unit tests for base enemy health (damage application, death at 0 HP), per-type gem drop counts, and spawn point randomization distribution
-
-## Crawler (Enemy — Wave 1+)
-
-- [ ] Create the Crawler scene: a small ground creature with a placeholder mesh that inherits the base enemy class
-- [ ] Implement Crawler AI: moves directly toward the player at moderate speed with contact damage on touch (uses base enemy collision-kill behavior)
-- [ ] Configure Crawler stats: 2-3 shot health, moderate speed, 1 gem drop; spawns in groups of 5-10 that increase over waves
-
-## Spitter (Enemy — Wave 3+)
-
-- [ ] Create the Spitter scene: a medium-sized enemy with a placeholder mesh that inherits the base enemy class
-- [ ] Implement Spitter AI: moves slowly, plants itself at medium range from the player, repositions occasionally to maintain spacing
-- [ ] Implement the Spitter ranged attack: lobs a slow, visible arcing projectile toward the player's current position on a timed interval
-- [ ] Implement Spitter ground hazard: when a Spitter projectile impacts the arena floor, it leaves a small damage zone for 1.5s that kills the player on contact, then despawns
-- [ ] Configure Spitter stats: 4-5 shot health, slow speed, 2 gem drop; spawns 1-3 at a time spread apart
-
-## Charger (Enemy — Wave 4+)
-
-- [ ] Create the Charger scene: a medium-sized enemy with a placeholder mesh that inherits the base enemy class
-- [ ] Implement Charger AI: moves slowly toward the player, periodically stops to enter a 1.5s telegraph state (visible glow/animation) aimed at the player's current position
-- [ ] Implement the Charger's charge attack: after the telegraph, launch in a straight line at very high speed for ~0.5s, dealing lethal contact damage
-- [ ] Implement Charger recovery: after the charge ends, the Charger is stunned and stationary for 1s before resuming normal behavior
-- [ ] Configure Charger stats: 8-10 shot health, slow normal speed / very fast charge speed, 3 gem drop; spawns solo or in pairs
-
-## Drone (Enemy — Wave 5+)
-
-- [ ] Create the Drone scene: a small flying enemy with a placeholder mesh that inherits the base enemy class, positioned above the ground plane
-- [ ] Implement Drone AI: hovers and orbits the player at close-medium range with fast, erratic lateral movement to make it hard to hit
-- [ ] Implement the Drone dive-bomb attack: periodically telegraphs briefly, then dives toward the player at high speed for a lethal contact strike
-- [ ] Configure Drone stats: 1-2 shot health, fast erratic speed, 1 gem drop; spawns in clusters of 4-8
-
-## Bloater (Enemy — Wave 6+)
-
-- [ ] Create the Bloater scene: a large, slow enemy with a placeholder mesh that inherits the base enemy class
-- [ ] Implement Bloater AI: moves very slowly toward the player (rarely reaches them), deals lethal contact damage if it does touch the player
-- [ ] Implement the Bloater death explosion: on death, wait 0.5s then trigger a large AoE explosion that kills the player if in range and deals damage to any other enemies caught in the blast
-- [ ] Configure Bloater stats: 15-20 shot health, very slow speed, 4 gem drop; spawns solo, 1-2 per wave in later stages
-
-## Shade (Enemy — Wave 7+)
-
-- [ ] Create the Shade scene: a stealthy enemy with a placeholder mesh that inherits the base enemy class
-- [ ] Implement Shade near-invisibility: the Shade is mostly invisible (rendered as a faint heat-shimmer distortion) and becomes fully visible for 0.5s immediately before attacking
-- [ ] Implement Shade flanking AI: avoids the player's forward camera arc, circles wide to approach from behind or from the player's blind spots
-- [ ] Implement the Shade melee attack: a lethal strike from behind with a 0.5s fully-visible telegraph window
-- [ ] Configure Shade stats: 3-4 shot health, moderate-fast speed, 3 gem drop; spawns solo or in pairs starting mid-game
-
-## Burrower (Enemy — Wave 8+)
-
-- [ ] Create the Burrower scene: an underground enemy that inherits the base enemy class with two states (burrowed and surfaced)
-- [ ] Implement the Burrower's burrowed state: travels underground toward the player, visible only as a moving dirt trail on the arena floor, completely invulnerable to player projectiles
-- [ ] Implement the Burrower eruption attack: surfaces near the player with a quick AoE eruption (lethal to the player if in the small blast area), then remains above ground for 2s dealing contact damage and taking damage from player projectiles
-- [ ] Implement Burrower re-burrowing: after 2s on the surface, the Burrower digs back underground and resumes burrowed pursuit
-- [ ] Implement Burrower arena craters: each eruption leaves a small crater on the arena floor that slows the player's movement speed for 5s before despawning
-- [ ] Configure Burrower stats: 6-8 shot health (only while surfaced), moderate underground speed, 3 gem drop; spawns 1-2 at a time starting mid-game
-
-## Sentinel (Enemy — Wave 10+)
-
-- [ ] Create the Sentinel scene: a tall, towering enemy with a placeholder mesh, a visible glowing core weak point on its chest, and inheritance from the base enemy class
-- [ ] Implement Sentinel passive behavior: nearly stationary with a very slow drift toward the player; the Sentinel does not attack directly
-- [ ] Implement the Sentinel buff aura: all enemies within ~1/3 of the arena radius of the Sentinel gain +40% movement speed and attack 50% more frequently; the buff is removed when the Sentinel dies
-- [ ] Implement Sentinel weak point: hits to the glowing chest core deal full damage (5-6 shots to kill), body shots deal heavily reduced damage (20+ shots to kill), incentivizing precision aim
-- [ ] Configure Sentinel stats: high health (body/weak point split), very slow speed, 5 gem drop; spawns solo in mid-to-late waves
-
-## Howler (Enemy — Wave 11+)
-
-- [ ] Create the Howler scene: a medium enemy with a placeholder mesh that inherits the base enemy class
-- [ ] Implement Howler base AI: moves toward the player at moderate speed with a weak melee swipe if adjacent
-- [ ] Implement the Howler scream: every 10s, the Howler stops moving and channels a 1.5s scream (stationary and vulnerable during the channel)
-- [ ] Implement the Howler enrage effect: when the scream completes, all enemies within a large radius turn red and gain +60% speed with all attacks becoming lethal contact for 5s
-- [ ] Configure Howler stats: 8-10 shot health, moderate speed, 4 gem drop; spawns solo in mid-to-late waves
-
-## Titan (Enemy — Wave 15+)
-
-- [ ] Create the Titan scene: a massive enemy with a placeholder mesh that inherits the base enemy class, significantly larger than all other enemy types
-- [ ] Implement Titan base AI: moves very slowly but relentlessly toward the player, never stops pursuing
-- [ ] Implement the Titan ground slam attack: 2s telegraph, then sends a radial shockwave along the ground in a ~180-degree forward arc; the player must dodge-roll through it or be airborne (bhop) to survive
-- [ ] Implement the Titan sweep attack: a wide melee arc covering the Titan's front with a 1s telegraph; lethal on contact
-- [ ] Implement the Titan crawler spawning: every 8s, 3-4 Crawlers emerge from the Titan's body as additional threats
-- [ ] Configure Titan stats: 100+ shot health, very slow speed, 10 gem drop; spawns solo starting around wave 15, max 1-2 active at a time
-- [ ] Add unit tests for Titan shockwave avoidance via dodge roll i-frames and via being airborne during a bhop
-
-## Wave System
-
-- [ ] Create a WaveManager node that tracks the current wave number, controls spawn timing, and interfaces with the enemy spawner
-- [ ] Define wave composition as data: for each wave number, specify which enemy types spawn and in what quantities (could be a resource file or dictionary)
-- [ ] Implement continuous wave flow in the WaveManager: the next wave's enemies begin spawning while the current wave's enemies are still alive (no downtime between waves)
-- [ ] Implement staggered spawning within each wave: enemies trickle in over the wave's duration at intervals rather than all appearing simultaneously
-- [ ] Implement early-game wave compositions (1-5): wave 1 is Crawlers only, then progressively introduce Spitters, Chargers, and Drones across waves 2-5
-- [ ] Implement mid-game wave compositions (6-12): increase enemy counts, introduce Bloaters, Shades, Burrowers, then Sentinels and Howlers one at a time
-- [ ] Implement late-game wave compositions (13-20): all enemy types active, multiple Sentinels/Howlers simultaneously, first Titan around wave 15, high Crawler/Drone swarm counts
-- [ ] Implement endless wave scaling (21+): cycle through varied compositions with ever-increasing enemy counts, additional Titans, and accelerating spawn rates
-- [ ] Enforce the difficulty scaling rule: difficulty increases only through enemy count, composition, and spawn speed — enemy health/speed/damage stats are never modified
-- [ ] Add unit tests for wave composition data correctness and spawn timing intervals
-
-## Gem Pickups
-
-- [ ] Create the gem pickup scene: a bright, easy-to-spot small mesh with a CollisionShape3D trigger area for player collection
-- [ ] Implement gem drop behavior in the base enemy: on enemy death, gems pop outward from the corpse position, scatter briefly, then settle on the arena floor
-- [ ] Implement gem collection on the player: when the player's collection area (~2 unit radius) overlaps a gem, collect it with a particle effect and sound, incrementing the player's gem count
-- [ ] Ensure gems persist on the arena floor indefinitely within a run and do not despawn until the run is restarted
-- [ ] Implement the upgrade meter: tracks total gems collected toward a threshold that increases with each upgrade earned (1st upgrade at 10 gems, 2nd at 15, 3rd at 20, etc.)
-- [ ] Display the gem count and upgrade meter progress on the HUD as a progress bar or numeric indicator
-- [ ] Reset all dropped gems, collected gem count, and the upgrade meter threshold on player death/restart
-
-## Upgrade Selection
-
-- [ ] When the upgrade meter fills, freeze the game completely (pause all enemies, projectiles, physics, and the survival timer) and show the upgrade selection UI
-- [ ] Display 3 upgrade cards on screen, each showing the upgrade name, a short description, and an icon; draw from the full pool with no duplicates in a single offering
-- [ ] Allow already-owned stackable upgrades to appear again in offerings (up to their stack limit); fully-stacked upgrades are excluded from the pool
-- [ ] Implement weighted rarity so that Piercing Rounds appears less frequently than other upgrades in the random draw
-- [ ] Implement upgrade selection input: the player picks one of the 3 cards via mouse click or keyboard (1/2/3 keys)
-- [ ] On selection, apply the chosen upgrade's effects to the player immediately, unpause the game, and reset the upgrade meter with an increased gem threshold for the next upgrade
-- [ ] Clear all active upgrades from the player when the run ends (death/restart)
-
-## Weapon Upgrades
-
-- [ ] Implement Rapid Fire upgrade: reduces the player's auto-fire interval by 25% (faster shooting), stacks up to 3 times
-- [ ] Implement Piercing Rounds upgrade: player projectiles pass through enemies on hit instead of being destroyed, dealing damage to each enemy they pass through; does not stack
-- [ ] Implement Spread Shot upgrade: each player shot fires 2 additional projectiles in a narrow cone (±10 degrees from center); each additional stack adds 1 more projectile; stacks up to 2 times (max 5 projectiles per shot)
-- [ ] Implement Explosive Rounds upgrade: player projectiles deal a small AoE damage burst on hit with distance-based falloff, damaging nearby enemies; does not stack
-- [ ] Implement Heavy Shots upgrade: player projectiles deal 50% more damage per hit; stacks up to 2 times (2.25x damage at max stacks)
-- [ ] Implement Extended Range upgrade: player projectile travel distance increased by 40% beyond the base range; does not stack
-
-## Movement Upgrades
-
-- [ ] Implement Momentum upgrade: increases the player's bunny hop speed cap by 20% (from ~1.8x to ~2.16x base speed); stacks up to 2 times
-- [ ] Implement Forgiving Timing upgrade: widens the player's bunny hop timing window by 50% (from ~100ms to ~150ms); does not stack
-- [ ] Implement Quick Roll upgrade: reduces the player's dodge roll cooldown by 30% (from 1.5s to ~1.05s); stacks up to 2 times (down to ~0.74s at max)
-- [ ] Implement Air Control upgrade: doubles the influence of strafe input on the player's air trajectory while airborne; does not stack
-
-## Utility Upgrades
-
-- [ ] Implement Gem Magnet upgrade: triples the player's gem collection radius from ~2 units to ~6 units; does not stack
-- [ ] Implement Aftershock upgrade: at the end of the player's dodge roll animation, emit a small damage pulse centered on the player (enough damage to kill Crawlers); does not stack
-- [ ] Implement Last Stand upgrade: the next lethal hit the player receives is negated and the player becomes invulnerable for 1s instead of dying; the upgrade is then consumed and removed from the player's active upgrades; does not stack
-- [ ] Implement Chain Lightning upgrade: when the player kills an enemy, a bolt of lightning automatically arcs to the nearest enemy within range dealing 50% of a normal player shot's damage; does not stack
-
-## Upgrade System Tests
-
-- [ ] Add unit tests for upgrade meter threshold scaling formula (10, 15, 20, ... per level)
-- [ ] Add unit tests for upgrade stacking limits and cumulative stat modifications (fire rate, damage, speed cap, cooldown)
-- [ ] Add unit tests for weighted rarity distribution ensuring Piercing Rounds appears less often
-- [ ] Add unit tests for Last Stand consumption: negates one hit, grants 1s invulnerability, then removes itself from active upgrades
-
-## Leaderboard
-
-- [ ] Define the leaderboard data model: a sorted list of up to 10 entries, each containing a rank (int), name (string, max 16 characters), and survival time (float, displayed as MM:SS.mmm)
-- [ ] Implement local leaderboard file storage: save and load the leaderboard as JSON to/from the Godot user data directory; if no file exists on first launch, start with an empty leaderboard
-- [ ] Display the leaderboard on the death/results screen: a top-10 table (rank, name, time) on the right side, alongside the current run's survival time displayed large on the left side
-- [ ] Highlight the current run's entry in the leaderboard table if the run's time qualified for the top 10
-- [ ] Implement leaderboard name entry: if the run's time qualifies for the top 10, show a text input prompt (max 16 characters, default name "PLAYER"); on submission, insert the entry, displace the 10th-place entry if full, and save to disk
-- [ ] Allow the player to skip name entry and restart immediately by pressing the restart key, bypassing the text input
-- [ ] Add unit tests for leaderboard insertion logic: top-10 qualification check, correct rank displacement, proper sorting, and empty board behavior
-
-## HUD
+## 5. HUD Foundation
 
 - [ ] Create the HUD as a CanvasLayer scene with all gameplay UI elements layered over the 3D viewport
 - [ ] Display the survival timer on the HUD in MM:SS.mmm format, visible during gameplay, frozen on death
@@ -207,24 +44,309 @@ Ordered by urgency (dependencies first, polish last). Completed tasks are checke
 - [ ] Display the countdown text (3-2-1) on the HUD at the start of each run, then hide it when gameplay begins
 - [ ] Ensure all HUD elements are small and unobtrusive so they don't obscure enemies or compete with gameplay readability
 
-## Polish
+## 6. Death Screen & Run Statistics
 
-- [ ] Add a particle effect and pickup sound when the player collects a gem
-- [ ] Add death particle effects on enemies (per-type or universal burst/dissolve)
-- [ ] Add the player death visual effect (ragdoll physics or mesh disintegration)
-- [ ] Add hit feedback on enemies when struck by player projectiles (brief color flash on the enemy mesh and/or a hit sound)
-- [ ] Add spawn alert cues: brief visual flash and/or rumble sound at arena edge spawn points when enemies are about to appear
-- [ ] Add the Sentinel aura visual: a translucent dome or ring showing the buff radius around the Sentinel
+- [ ] Implement the death/results screen UI: displays the run's survival time (large, left side) and the leaderboard table (right side); shown when GameManager enters Dead state
+- [ ] Track and display run statistics on the death screen: enemies killed, gems collected, wave reached, longest bhop chain, upgrades chosen (displayed as icons in acquisition order)
+- [ ] Implement personal best tracking: if the run's time is a new personal best, show a "NEW BEST" callout with a brief fanfare sound
+- [ ] Add a clearly labeled restart button/key prompt on the death screen
+
+## 7. Enemy Foundation
+
+- [ ] Create a base enemy C# class/scene with a health system (takes damage from player projectiles, dies at 0 HP), pathfinding/movement toward the player, and collision that triggers player death on contact
+- [ ] Add per-enemy audio nodes to the base scene: `AmbientAudio`, `TelegraphAudio`, `DeathAudio` (all `AudioStreamPlayer3D`, bus: EnemySFX)
+- [ ] Implement enemy damage flash: `ShaderMaterial` with `flash_intensity` uniform, set to 1.0 on hit, decays over 2 frames
+- [ ] Implement enemy low-health indicator: when health < 25%, `flash_intensity` oscillates at 2 Hz between 0.0 and 0.3
+- [ ] Implement enemy death effects: on death, spawn a detached `GpuParticles3D` with per-type color/count/explosiveness, free the enemy node immediately
+- [ ] Implement gem dropping in the base enemy class: on death, spawn gem pickup instances based on the enemy's configured gem value, scattering them briefly outward before they settle
+- [ ] Create the enemy spawner system: spawns enemy instances at the defined arena-edge spawn points with staggered timing, randomized point selection, and a bias against spawning directly behind the player
+- [ ] Implement spawn-in animation for large enemies (Titan, Sentinel): the enemy is briefly visible at its spawn point but inactive for ~1s
+- [ ] Add unit tests for base enemy health (damage application, death at 0 HP), per-type gem drop counts, and spawn point randomization distribution
+
+## 8. Crawler (Enemy — Wave 1+)
+
+- [ ] Create the Crawler scene: a small ground creature with a distinct placeholder mesh and unique silhouette, inheriting the base enemy class
+- [ ] Implement Crawler AI: moves directly toward the player at moderate speed with contact damage on touch
+- [ ] Configure Crawler stats: 2-3 shot health, moderate speed, 1 gem drop; spawns in groups of 5-10 that increase over waves
+- [ ] Add Crawler audio: quiet skittering ambient sound, small crunch/pop death sound
+
+## 9. Gem Pickups
+
+- [ ] Create the gem pickup scene: a bright, easy-to-spot small mesh with a CollisionShape3D trigger area for player collection
+- [ ] Implement gem collection on the player: when the player's collection area (~2 unit radius) overlaps a gem, the gem enters a magnetism snap (lerp toward player over ~0.1s with slight curve), then triggers collection
+- [ ] Add gem collection audio: short bright chime via `AudioStreamPlayer3D` on the player, with ascending pitch on rapid successive pickups (+0.05 per pickup within 0.3s, capped at +0.5), reset after 0.3s gap
+- [ ] Add gem collection particle effect: small bright burst at player position matching gem color
+- [ ] Ensure gems persist on the arena floor indefinitely within a run and do not despawn until the run is restarted
+- [ ] Implement the upgrade meter: tracks total gems collected toward a threshold that increases with each upgrade earned (1st at 10, 2nd at 15, 3rd at 20, etc.); pulse the HUD meter element when the threshold is reached
+- [ ] Display the gem count and upgrade meter progress on the HUD as a progress bar or numeric indicator
+- [ ] Reset all dropped gems, collected gem count, and the upgrade meter threshold on player death/restart
+
+## 10. Wave System
+
+- [ ] Create a WaveManager node that tracks the current wave number, controls spawn timing, and interfaces with the enemy spawner
+- [ ] Define wave composition as data: for each wave number, specify which enemy types spawn and in what quantities (resource file or dictionary)
+- [ ] Implement continuous wave flow: the next wave's enemies begin spawning while the current wave's enemies are still alive (no downtime)
+- [ ] Implement staggered spawning within each wave: enemies trickle in over the wave's duration at intervals rather than all appearing simultaneously
+- [ ] Implement early-game wave compositions (waves 1-5): wave 1 Crawlers only, then progressively introduce Spitters, Chargers, and Drones
+- [ ] Enforce the difficulty scaling rule: difficulty increases only through enemy count, composition, and spawn speed — enemy stats are never modified
+- [ ] Add unit tests for wave composition data correctness and spawn timing intervals
+
+## 11. Spitter (Enemy — Wave 3+)
+
+- [ ] Create the Spitter scene: a medium-sized enemy with a distinct placeholder mesh, inheriting the base enemy class
+- [ ] Implement Spitter AI: moves slowly, plants itself at medium range, repositions occasionally to maintain spacing
+- [ ] Implement the Spitter ranged attack: lobs a slow, visible arcing projectile toward the player's current position on a timed interval
+- [ ] Implement Spitter ground hazard: projectile impact leaves a small damage zone for 1.5s that kills on contact, then despawns
+- [ ] Configure Spitter stats: 4-5 shot health, slow speed, 2 gem drop; spawns 1-3 at a time spread apart
+- [ ] Add Spitter audio: low gurgling ambient, brief spit/hiss telegraph, wet burst death sound
+
+## 12. Charger (Enemy — Wave 4+)
+
+- [ ] Create the Charger scene: a medium-sized enemy with a distinct placeholder mesh, inheriting the base enemy class
+- [ ] Implement Charger AI: moves slowly toward the player, periodically stops to enter a 1.5s telegraph state (visible glow/animation)
+- [ ] Implement the Charger's charge attack: after telegraph, launch in a straight line at very high speed for ~0.5s, dealing lethal contact damage
+- [ ] Implement Charger recovery: stunned and stationary for 1s after charge ends before resuming
+- [ ] Configure Charger stats: 8-10 shot health, slow normal / very fast charge speed, 3 gem drop; spawns solo or in pairs
+- [ ] Add Charger audio: heavy footsteps/snorting ambient, loud scraping/revving 1.5s telegraph (high priority mix), heavy crash death sound
+
+## 13. Drone (Enemy — Wave 5+)
+
+- [ ] Create the Drone scene: a small flying enemy with a distinct placeholder mesh, positioned above ground, inheriting the base enemy class
+- [ ] Implement Drone AI: hovers and orbits the player at close-medium range with fast, erratic lateral movement
+- [ ] Implement the Drone dive-bomb attack: periodically telegraphs briefly, then dives toward the player at high speed for a lethal contact strike
+- [ ] Configure Drone stats: 1-2 shot health, fast erratic speed, 1 gem drop; spawns in clusters of 4-8
+- [ ] Add Drone audio: high-pitched buzzing ambient, quick dive whistle telegraph, small electric crackle death sound
+
+## 14. Bloater (Enemy — Wave 6+)
+
+- [ ] Create the Bloater scene: a large, slow enemy with a distinct placeholder mesh, inheriting the base enemy class
+- [ ] Implement Bloater AI: moves very slowly toward the player, deals lethal contact damage if it touches the player
+- [ ] Implement the Bloater death explosion: on death, wait 0.5s then trigger a large AoE explosion (lethal to player, damages other enemies)
+- [ ] Configure Bloater stats: 15-20 shot health, very slow speed, 4 gem drop; spawns solo, 1-2 per wave
+- [ ] Add Bloater audio: deep labored breathing ambient, 0.5s ticking/swelling pre-explosion telegraph, massive boom death sound (loudest non-music sound)
+
+## 15. Mid/Late Wave Compositions
+
+- [ ] Implement mid-game wave compositions (6-12): increase enemy counts, introduce Bloaters, Shades, Burrowers, then Sentinels and Howlers one at a time
+- [ ] Implement late-game wave compositions (13-20): all enemy types active, multiple Sentinels/Howlers simultaneously, first Titan around wave 15, high Crawler/Drone swarm counts
+- [ ] Implement endless wave scaling (21+): cycle through varied compositions with ever-increasing enemy counts, additional Titans, and accelerating spawn rates
+
+## 16. Shade (Enemy — Wave 7+)
+
+- [ ] Create the Shade scene: a stealthy enemy with a distinct placeholder mesh, inheriting the base enemy class
+- [ ] Implement Shade near-invisibility: rendered as a faint heat-shimmer distortion, becomes fully visible for 0.5s before attacking
+- [ ] Implement Shade flanking AI: avoids the player's forward camera arc, circles wide to approach from behind or blind spots
+- [ ] Implement the Shade melee attack: a lethal strike from behind with a 0.5s fully-visible telegraph window
+- [ ] Configure Shade stats: 3-4 shot health, moderate-fast speed, 3 gem drop; spawns solo or in pairs
+- [ ] Add Shade audio: near-silent faint whisper ambient, sharp blade-draw reveal telegraph, ghostly dissipation death sound
+
+## 17. Burrower (Enemy — Wave 8+)
+
+- [ ] Create the Burrower scene: an underground enemy inheriting the base enemy class with burrowed/surfaced states
+- [ ] Implement the Burrower's burrowed state: travels underground toward the player, visible only as a moving dirt trail, invulnerable to projectiles
+- [ ] Implement the Burrower eruption attack: surfaces near the player with a quick AoE eruption (lethal), then remains above ground for 2s
+- [ ] Implement Burrower re-burrowing: after 2s on the surface, digs back underground and resumes pursuit
+- [ ] Implement Burrower arena craters: each eruption leaves a small crater that slows player movement for 5s before despawning
+- [ ] Configure Burrower stats: 6-8 shot health (only while surfaced), moderate underground speed, 3 gem drop; spawns 1-2 at a time
+- [ ] Add Burrower audio: muffled rumbling ambient while underground, rising rumble eruption telegraph, ground crack death sound
+
+## 18. Sentinel (Enemy — Wave 10+)
+
+- [ ] Create the Sentinel scene: a tall, towering enemy with a distinct placeholder mesh, visible glowing core weak point on chest, inheriting the base enemy class
+- [ ] Implement Sentinel passive behavior: nearly stationary with a very slow drift toward the player; does not attack directly
+- [ ] Implement the Sentinel buff aura: enemies within ~1/3 of arena radius gain +40% movement speed and attack 50% more frequently; removed on death
+- [ ] Implement Sentinel weak point: hits to chest core deal full damage (5-6 shots to kill), body shots deal heavily reduced damage (20+ shots)
+- [ ] Configure Sentinel stats: high health (body/weak point split), very slow speed, 5 gem drop; spawns solo
+- [ ] Add Sentinel audio: deep resonant humming ambient (constant while alive), low structural collapse death sound with audible "depressurize" on buff removal
+- [ ] Add Sentinel weak point hit sound: higher-pitched / more resonant variant of the player hit confirmation sound
+
+## 19. Howler (Enemy — Wave 11+)
+
+- [ ] Create the Howler scene: a medium enemy with a distinct placeholder mesh, inheriting the base enemy class
+- [ ] Implement Howler base AI: moves toward the player at moderate speed with a weak melee swipe if adjacent
+- [ ] Implement the Howler scream: every 10s, stops and channels a 1.5s scream (stationary and vulnerable during channel)
+- [ ] Implement the Howler enrage effect: on scream completion, all enemies within a large radius turn red and gain +60% speed with all attacks becoming lethal contact for 5s
+- [ ] Configure Howler stats: 8-10 shot health, moderate speed, 4 gem drop; spawns solo
+- [ ] Add Howler audio: low growl ambient, rising scream 1.5s telegraph (loud, distinctive, unmistakable — high priority mix), abrupt silence choke-off death sound
+
+## 20. Titan (Enemy — Wave 15+)
+
+- [ ] Create the Titan scene: a massive enemy with a distinct placeholder mesh, significantly larger than all others, inheriting the base enemy class
+- [ ] Implement Titan base AI: moves very slowly but relentlessly toward the player, never stops pursuing
+- [ ] Implement the Titan ground slam attack: 2s telegraph, then radial shockwave along the ground in a ~180-degree forward arc; player must dodge-roll through or be airborne
+- [ ] Implement the Titan sweep attack: a wide melee arc covering the front with a 1s telegraph; lethal on contact
+- [ ] Implement the Titan crawler spawning: every 8s, 3-4 Crawlers emerge from the Titan's body
+- [ ] Configure Titan stats: 100+ shot health, very slow speed, 10 gem drop; spawns solo, max 1-2 active
+- [ ] Add Titan audio: heavy rhythmic boom footsteps, rising seismic hum slam telegraph, whoosh sweep telegraph, prolonged collapse/groan death sound (biggest death sound in the game)
+- [ ] Add unit tests for Titan shockwave avoidance via dodge roll i-frames and via being airborne during a bhop
+
+## 21. Upgrade Selection
+
+- [ ] When the upgrade meter fills, play a "level up" chime, freeze the game completely (pause all enemies, projectiles, physics, survival timer), and show the upgrade selection UI
+- [ ] Display 3 upgrade cards on screen, each showing the upgrade name, a short description, and an icon; draw from the full pool with no duplicates in a single offering
+- [ ] Allow already-owned stackable upgrades to appear again (up to their stack limit); fully-stacked upgrades are excluded
+- [ ] Implement weighted rarity so that Piercing Rounds appears less frequently
+- [ ] Implement upgrade selection input: player picks one of the 3 cards via mouse click or keyboard (1/2/3 keys); add hover tick and selection confirmation sounds
+- [ ] On selection, play a confirmation animation (card flies toward player, brief flash), apply the upgrade immediately, unpause, and reset the upgrade meter with an increased threshold
+- [ ] Clear all active upgrades from the player when the run ends (death/restart)
+
+## 22. Weapon Upgrades
+
+- [ ] Implement Rapid Fire upgrade: reduces auto-fire interval by 25%, stacks up to 3 times
+- [ ] Implement Piercing Rounds upgrade: projectiles pass through enemies instead of stopping on hit; does not stack
+- [ ] Implement Spread Shot upgrade: each shot fires 2 additional projectiles in a narrow cone (±10°); each stack adds 1 more; stacks up to 2 times (max 5 per shot)
+- [ ] Implement Explosive Rounds upgrade: projectiles deal a small AoE burst on hit with distance-based falloff; does not stack
+- [ ] Implement Heavy Shots upgrade: projectiles deal 50% more damage per hit; stacks up to 2 times (2.25x at max)
+- [ ] Implement Extended Range upgrade: projectile travel distance increased by 40%; does not stack
+
+## 23. Movement Upgrades
+
+- [ ] Implement Momentum upgrade: bhop speed cap increased by 20% (1.8x → 2.16x); stacks up to 2 times
+- [ ] Implement Forgiving Timing upgrade: bhop timing window widened by 50% (100ms → 150ms); does not stack
+- [ ] Implement Quick Roll upgrade: dodge roll cooldown reduced by 30% (1.5s → 1.05s); stacks up to 2 times (0.74s at max)
+- [ ] Implement Air Control upgrade: air strafe influence doubled; does not stack
+
+## 24. Utility Upgrades
+
+- [ ] Implement Gem Magnet upgrade: gem collection radius tripled (2 → 6 units); does not stack
+- [ ] Implement Aftershock upgrade: dodge roll emits a small damage pulse at roll end (kills Crawlers); does not stack
+- [ ] Implement Last Stand upgrade: survive one lethal hit, become invulnerable for 1s, then consumed; does not stack
+- [ ] Implement Chain Lightning upgrade: on enemy kill, bolt arcs to nearest enemy within range dealing 50% shot damage; does not stack
+
+## 25. Upgrade System Tests
+
+- [ ] Add unit tests for upgrade meter threshold scaling formula (10, 15, 20, ... per level)
+- [ ] Add unit tests for upgrade stacking limits and cumulative stat modifications (fire rate, damage, speed cap, cooldown)
+- [ ] Add unit tests for weighted rarity distribution ensuring Piercing Rounds appears less often
+- [ ] Add unit tests for Last Stand consumption: negates one hit, grants 1s invulnerability, then removes itself
+
+## 26. Leaderboard
+
+- [ ] Define the leaderboard data model: a sorted list of up to 10 entries, each containing rank (int), name (string, max 16 chars), and survival time (float, MM:SS.mmm)
+- [ ] Implement local leaderboard file storage: save/load as JSON to/from Godot user data directory; empty on first launch
+- [ ] Display the leaderboard on the death/results screen: top-10 table (rank, name, time) on the right side
+- [ ] Highlight the current run's entry in the leaderboard if it qualified for top 10
+- [ ] Implement leaderboard name entry: if top 10, show a text input (max 16 chars, default "PLAYER"); on submit, insert and save
+- [ ] Play a celebratory audio sting on leaderboard placement; absent if the run didn't qualify
+- [ ] Allow the player to skip name entry and restart immediately by pressing the restart key
+- [ ] Add unit tests for leaderboard insertion logic: top-10 qualification, rank displacement, sorting, empty board
+
+## 27. Screen Shake System
+
+- [ ] Implement `ScreenShakeState` in Core: decaying-spring model with additive intensity and hard cap (max 8.0)
+- [ ] Implement `ScreenShake.cs` on `PlayerCamera`: reads `ScreenShakeState.CurrentOffset`, applies as camera displacement perpendicular to aim, multiplied by settings intensity
+- [ ] Wire shake triggers: player shot fired (0.3), enemy hit (0.5), enemy kills (0.2–4.0 scaled by type), Bloater explosion (3.5), player death (5.0)
+- [ ] Add unit tests for ScreenShakeState: additive intensity, hard cap, spring decay, zero-energy at rest
+
+## 28. Hit Stop System
+
+- [ ] Implement `HitStopState` in Core: frame-counted freeze timer with max cap (5 frames)
+- [ ] Implement `HitStopManager` autoload: sets `Engine.TimeScale = 0` while frozen, updates via `_Process` (unscaled), scales by settings intensity
+- [ ] Wire hit stop triggers: enemy kill (1-2 frames), multi-kill (3-4 frames), Titan slam (2-3 frames), Bloater explosion (2-3 frames)
+- [ ] Add unit tests for HitStopState: frame countdown, frozen state, multi-trigger extension, max cap
+
+## 29. Projectile Feedback
+
+- [ ] Add projectile trail to `PlayerProjectile.tscn`: `MeshInstance3D` child with `ImmediateMesh` trail, 2-3 projectile-lengths, fading cyan; persists 0.1s after destruction
+- [ ] Add muzzle flash to player: `GpuParticles3D` at spawn point (0, 1.2, 0), one-shot burst per firing event, randomized rotation
+- [ ] Add impact sparks: `GpuParticles3D` spawned at collision point on projectile destruction; different particles for arena surface vs. enemy hit
+- [ ] Add floor scorch decals: on arena surface impact, spawn a small `Decal` that fades over 1.5s then self-frees; cap at ~30 active decals
+
+## 30. Hit Marker & Kill Confirmation
+
+- [ ] Implement `HitMarker.cs` as a `Control` sibling to `Crosshair` on the HUD: draws 4 white tick marks on enemy hit (fade over 0.1s), red X on kill (fade over 0.15s)
+- [ ] Add kill confirmation audio: distinct punchier sound on the killing blow, played from a dedicated `AudioStreamPlayer3D` (`KillAudio`) on the player
+
+## 31. Movement Feedback Effects
+
+- [ ] Implement FOV scaling in `PlayerCamera.cs`: base FOV (default 75°) + `(speedMultiplier - 1.0) * 6°`, smoothly interpolated
+- [ ] Implement `SpeedLines.cs` on the HUD CanvasLayer: radial lines via `_Draw()`, visible above 1.3x speed, intensity scales to 1.8x; disabled when Reduce Motion is on
+- [ ] Implement `BhopCounter.cs` on the HUD: label showing "x{count}" after 2+ consecutive bhops, fades over 0.5s on chain break
+- [ ] Add bhop landing audio: `AudioStreamPlayer3D` (`BhopAudio`) on the player; brighter sound on successful bhop, duller variant on normal landing
+- [ ] Add dodge roll audio: `AudioStreamPlayer3D` (`RollAudio`) on the player; quick whoosh on roll start
+- [ ] Add dodge roll afterimage: brief motion blur or ghosted trail during the roll duration; disabled when Reduce Motion is on
+- [ ] Add landing dust particles: subtle `GpuParticles3D` at player feet on landing; brighter/sharper variant on successful bhop
+
+## 32. Directional Threat Indicator
+
+- [ ] Implement `ThreatIndicator.cs` on the HUD CanvasLayer: queries `"enemy"` group each frame, draws red arcs on screen edges for enemies within 5 units that are outside the camera frustum; alpha scales with proximity; limited to 3 closest off-screen threats
+
+## 33. Timer Milestone Flash
+
+- [ ] The survival timer on the HUD subtly pulses or changes color at round-number milestones (1:00, 2:00, 3:00, etc.)
+
+## 34. Adaptive Music System
+
+- [ ] Set up Godot AudioServer bus layout: Master → Music, SFX (PlayerSFX, EnemySFX, UISFX), Ambience
+- [ ] Create `MusicManager` autoload with `BaseLayer`, `MidLayer`, `HighLayer` AudioStreamPlayers outputting to Music bus
+- [ ] Implement intensity metric: combined score from active enemy count, wave number, and enemy proximity; drives layer volume crossfading
+- [ ] Implement death transition: all layers fade to 0 over 0.2s, stop; death sting plays after 0.3s camera freeze
+- [ ] Implement restart transition: base layer fades in during countdown
+- [ ] Source or create placeholder adaptive music tracks (ambient drone, mid percussion, high driving) and death sting
+
+## 35. Enemy Audio Integration
+
+- [ ] Configure per-enemy ambient sound streams in each enemy scene (see `design/audio.md` for full identity table)
+- [ ] Configure per-enemy telegraph sound streams with boosted `UnitSize` for high priority mix
+- [ ] Configure per-enemy death sound streams
+- [ ] Implement swarm audio optimization: skip ambient playback for same-type enemies beyond 20 units from the player; `MaxPolyphony = 1` per enemy
+
+## 36. UI & System Audio
+
+- [ ] Add countdown audio: percussive beats for 3-2-1 and a sharp energizing hit on "GO"
+- [ ] Add menu navigation sounds: minimal clean ticks on button hover/select
+- [ ] Implement mute on focus loss: `SettingsManager` handles `NotificationApplicationFocusIn/Out`
+
+## 37. Arena Atmosphere
+
+- [ ] Add `AmbientParticles` (`GpuParticles3D`) to the Arena scene: faint dust/ember particles drifting above the floor; ~100-200 particles, slow drift, low alpha; disabled when Reduce Motion is on
+- [ ] Extend the arena floor shader with an edge warning zone: the outer ~10% of arena radius has a subtle darker tint or pulsing edge line
+- [ ] Add `AmbientAudio` (`AudioStreamPlayer`) to the Arena scene: looping ambient drone, output to Ambience bus
+- [ ] Add arena edge glow: faint continuous glow or energy effect on the boundary, visible from center but not distracting
+
+## 38. Settings System
+
+- [ ] Implement `SettingsData` in Core: data class with all settings fields and defaults (controls, audio, video, game feel, accessibility)
+- [ ] Implement `SettingsManager` autoload: loads/saves `SettingsData` as JSON to `user://settings.json`; applies settings to Godot systems (AudioServer, DisplayServer, Engine, InputMap)
+- [ ] Add unit tests for SettingsData: serialization round-trip, default values, forward-compatibility with missing fields
+
+## 39. Settings Menu UI
+
+- [ ] Create the SettingsMenu scene: `TabContainer` with Controls, Audio, Video, Game Feel, and Accessibility tabs
+- [ ] Implement Controls tab: mouse sensitivity slider, invert Y toggle, key rebinding buttons with conflict detection, gamepad deadzone slider
+- [ ] Implement Audio tab: master/music/SFX volume sliders, mute on focus loss toggle
+- [ ] Implement Video tab: resolution dropdown, display mode selector, VSync toggle, max FPS (visible when VSync off), FOV slider
+- [ ] Implement Game Feel tab: screen shake intensity slider, hit stop intensity slider, speed lines toggle, crosshair style/color selector
+- [ ] Implement Accessibility tab: colorblind mode dropdown, HUD scale slider, reduce motion toggle, high contrast outlines toggle
+- [ ] Integrate the settings menu into the pause menu
+
+## 40. Accessibility Implementation
+
+- [ ] Implement colorblind palette system: `ColorPalette` resource with 4 variants (Default, Protanopia, Deuteranopia, Tritanopia); swap active palette on mode change; materials and UI reference the palette
+- [ ] Implement reduce motion: force-disable speed lines, cap screen shake at 25%, disable dodge roll afterimage, reduce `GpuParticles3D` `AmountRatio` to 0.3
+- [ ] Implement high contrast outlines: Sobel edge-detection post-process shader on enemy and projectile meshes, toggled via a `CanvasLayer`
+- [ ] Implement HUD scaling: multiply HUD `CanvasLayer` scale by the HUD scale setting (0.75-1.5)
+
+## 41. Spawn Alert Cues
+
+- [ ] Add brief visual flash and/or rumble sound at arena edge spawn points when enemies are about to appear
+
+## 42. Enemy-Specific Visuals
+
+- [ ] Add the Sentinel aura visual: translucent dome or ring showing the buff radius
 - [ ] Add the Howler enrage visual: affected enemies temporarily turn red for the 5s enrage duration
-- [ ] Add the Shade stealth visual: a heat-shimmer distortion shader that makes the Shade nearly invisible until it telegraphs its attack
-- [ ] Add the Burrower underground trail: a moving dirt/dust particle effect on the arena floor tracking the Burrower's underground position
-- [ ] Add the Burrower crater visual: a rough terrain patch on the arena floor marking the slow zone for its 5s duration
-- [ ] Add the Titan ground slam shockwave visual: a visible expanding wave along the ground during the slam attack
-- [ ] Add the Charger telegraph visual: a glow effect and ground-scrape particles during the 1.5s charge wind-up
-- [ ] Design the upgrade selection card visuals: styled cards with icons, names, and descriptions for the 3-card upgrade picker UI
-- [ ] Add ambient audio for the arena to establish a hostile, tense atmosphere
-- [ ] Add sound effects for the player's auto-fire shots, dodge roll, and bunny hop landing impacts
+- [ ] Add the Shade stealth visual: heat-shimmer distortion shader, fully visible during 0.5s telegraph
+- [ ] Add the Burrower underground trail: moving dirt/dust particle effect on the arena floor
+- [ ] Add the Burrower crater visual: rough terrain patch marking the slow zone for 5s
+- [ ] Add the Titan ground slam shockwave visual: visible expanding wave along the ground
+- [ ] Add the Charger telegraph visual: glow effect and ground-scrape particles during 1.5s wind-up
+
+## 43. Final Art & Polish
+
+- [ ] Design the upgrade selection card visuals: styled cards with icons, names, and descriptions for the 3-card picker UI
 - [ ] Replace all placeholder meshes with final art assets for the player character, all 10 enemy types, the arena, gems, and projectiles
+- [ ] Replace all placeholder audio with final sound assets
+- [ ] Replace placeholder music tracks with final adaptive music
 
 ---
 
