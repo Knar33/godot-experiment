@@ -203,7 +203,7 @@ public partial class GameManager : Node
 
     private void ClearArena()
     {
-        ClearGroup("enemies");
+        ClearGroup("enemy");
         ClearGroup("projectiles");
         ClearGroup("gems");
 

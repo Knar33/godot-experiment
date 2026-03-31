@@ -12,6 +12,7 @@ public partial class EnemySpawner : Node3D
 {
 	[Export] public float SpawnInterval { get; set; } = 2.0f;
 	[Export] public PackedScene? EnemyScene { get; set; }
+	[Export] public bool WaveManaged { get; set; }
 
 	private Arena? _arena;
 	private Node3D? _enemiesContainer;
@@ -26,6 +27,7 @@ public partial class EnemySpawner : Node3D
 
 	public override void _PhysicsProcess(double delta)
 	{
+		if (WaveManaged) return;
 		if (GameManager.Instance?.CurrentState != GameState.Playing) return;
 		if (_arena == null || _enemiesContainer == null || EnemyScene == null) return;
 
@@ -46,6 +48,16 @@ public partial class EnemySpawner : Node3D
 		enemy.GlobalPosition = spawnPos;
 	}
 
+	public void SpawnEnemyOfType(PackedScene scene)
+	{
+		if (_arena == null || _enemiesContainer == null) return;
+
+		Vector3 spawnPos = SelectSpawnPoint();
+		var enemy = scene.Instantiate<Node3D>();
+		_enemiesContainer.AddChild(enemy);
+		enemy.GlobalPosition = spawnPos;
+	}
+
 	public void SpawnEnemyAt(PackedScene scene, Vector3 position)
 	{
 		if (_enemiesContainer == null) return;
@@ -55,7 +67,7 @@ public partial class EnemySpawner : Node3D
 		enemy.GlobalPosition = position;
 	}
 
-	private Vector3 SelectSpawnPoint()
+	public Vector3 SelectSpawnPoint()
 	{
 		if (_arena!.SpawnPoints.Length == 0)
 			return Vector3.Zero;

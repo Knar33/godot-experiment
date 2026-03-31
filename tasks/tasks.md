@@ -6,16 +6,6 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 
 
 
-## 10. Wave System
-
-- [ ] Create a WaveManager node that tracks the current wave number, controls spawn timing, and interfaces with the enemy spawner
-- [ ] Define wave composition as data: for each wave number, specify which enemy types spawn and in what quantities (resource file or dictionary)
-- [ ] Implement continuous wave flow: the next wave's enemies begin spawning while the current wave's enemies are still alive (no downtime)
-- [ ] Implement staggered spawning within each wave: enemies trickle in over the wave's duration at intervals rather than all appearing simultaneously
-- [ ] Implement early-game wave compositions (waves 1-5): wave 1 Crawlers only, then progressively introduce Spitters, Chargers, and Drones
-- [ ] Enforce the difficulty scaling rule: difficulty increases only through enemy count, composition, and spawn speed — enemy stats are never modified
-- [ ] Add unit tests for wave composition data correctness and spawn timing intervals
-
 ## 11. Spitter (Enemy — Wave 3+)
 
 - [ ] Create the Spitter scene: a medium-sized enemy with a distinct placeholder mesh, inheriting the base enemy class
@@ -411,3 +401,13 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 - [x] Implement the upgrade meter: tracks total gems collected toward a threshold that increases with each upgrade earned (1st at 10, 2nd at 15, 3rd at 20, etc.); pulse the HUD meter element when the threshold is reached
 - [x] Display the gem count and upgrade meter progress on the HUD as a progress bar or numeric indicator
 - [x] Reset all dropped gems, collected gem count, and the upgrade meter threshold on player death/restart
+
+### Wave System
+
+- [x] Create a WaveManager node that tracks the current wave number, controls spawn timing, and interfaces with the enemy spawner
+- [x] Define wave composition as data: for each wave number, specify which enemy types spawn and in what quantities (resource file or dictionary)
+- [x] Implement continuous wave flow: the next wave's enemies begin spawning while the current wave's enemies are still alive (no downtime)
+- [x] Implement staggered spawning within each wave: enemies trickle in over the wave's duration at intervals rather than all appearing simultaneously
+- [x] Implement early-game wave compositions (waves 1-5): wave 1 Crawlers only, then progressively introduce Spitters, Chargers, and Drones
+- [x] Enforce the difficulty scaling rule: difficulty increases only through enemy count, composition, and spawn speed — enemy stats are never modified
+- [x] Add unit tests for wave composition data correctness and spawn timing intervals

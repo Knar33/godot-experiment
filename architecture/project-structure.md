@@ -26,7 +26,7 @@ The main Godot project references Core via `<ProjectReference>` and excludes `sr
 - `scripts/` — Godot-specific C# scripts (nodes, autoloads) that reference Core types, organized by domain
   - `scripts/arena/` — Arena node scripts
   - `scripts/enemies/` — Enemy scripts (BaseEnemy, Crawler, EnemySpawner)
-  - `scripts/managers/` — Autoload and manager scripts (GameManager, HitStopManager, MusicManager, SettingsManager)
+  - `scripts/managers/` — Autoload and manager scripts (GameManager, WaveManager, HitStopManager, MusicManager, SettingsManager)
   - `scripts/pickups/` — Pickup scripts (GemPickup)
   - `scripts/player/` — Player, camera, and projectile scripts (ScreenShake)
   - `scripts/ui/` — HUD and UI element scripts (Crosshair, CountdownUI, SurvivalTimerUI, GemCounterUI, DeathScreen, PauseMenu, HitMarker, SpeedLines, BhopCounter, ThreatIndicator, SettingsMenu)
@@ -35,6 +35,7 @@ The main Godot project references Core via `<ProjectReference>` and excludes `sr
   - `Combat/` — Combat mechanics (AutoFireState, ProjectileState, DamageSource, PlayerHealthState) — namespace `GodotExperiment.Combat`
   - `Enemies/` — Enemy logic (EnemyHealthState, SpawnPointSelector) — namespace `GodotExperiment.Enemies`
   - `GameLoop/` — Game state management (GameState, GameStateMachine, SurvivalTimerState, CountdownState, UpgradeMeterState, RunStatistics, PersonalBestState) — namespace `GodotExperiment.GameLoop`
+  - `Waves/` — Wave system (WaveEnemyGroup, WaveDefinition, WaveCompositions, WaveManagerState) — namespace `GodotExperiment.Waves`
   - `GameFeel/` — Screen shake and hit stop state (ScreenShakeState, HitStopState) — namespace `GodotExperiment.GameFeel`
   - `Settings/` — Settings data model (SettingsData) — namespace `GodotExperiment.Settings`
 - `tests/GodotExperiment.Tests/` — xUnit tests for Core classes
@@ -110,9 +111,40 @@ Audio streams are configured per-type in each enemy's scene file (e.g. `Crawler.
 - **Mesh**: Flattened sphere (green, scale 1.3×0.6×1.3) — distinct low/wide silhouette vs. the base capsule
 - **Audio**: Quiet skittering ambient (looping, -12 dB), small crunch/pop death sound
 
-`EnemySpawner` (`scripts/enemies/EnemySpawner.cs`) spawns enemies at arena-edge points on a configurable interval. Uses `SpawnPointSelector` for behind-player bias. Only active during `GameState.Playing`.
+`EnemySpawner` (`scripts/enemies/EnemySpawner.cs`) handles the mechanics of placing enemies in the arena. Uses `SpawnPointSelector` for behind-player bias. Exposes `SpawnEnemyOfType(PackedScene)` for wave-managed spawning and `SpawnEnemyAt(PackedScene, Vector3)` for direct placement. When `WaveManaged = true` (default in `Game.tscn`), EnemySpawner's internal timer loop is disabled and spawning is driven entirely by `WaveManager`.
 
 `GemPickup` (`scripts/pickups/GemPickup.cs`) is an `Area3D` in the `"gems"` group (layer 5, mask 0, monitorable) with a scatter animation on spawn. When the player's `GemCollectionArea` (Area3D, mask 16, radius 2 units) detects a gem, the gem enters magnetism mode: it accelerates toward the player over ~0.12s with a slight upward arc, then emits `Collected` and frees itself. On collection, `Player.cs` calls `GameManager.AddGems(1)`, plays a chime via `CollectAudio` (`AudioStreamPlayer3D`) with ascending pitch on rapid pickups (+0.05 per pickup within 0.3s, capped at +0.5, reset after 0.3s gap), and spawns a one-shot green `GpuParticles3D` burst at player height.
+
+## Wave System
+
+### Core Types (pure C#, `GodotExperiment.Waves`)
+
+`WaveEnemyGroup` pairs an enemy type name (string) with a spawn count. `WaveDefinition` groups multiple `WaveEnemyGroup`s with a wave number and spawn interval. `TotalEnemyCount` sums all groups.
+
+`WaveCompositions` is a static provider of wave definitions. Waves 1–5 are hand-authored per `design/waves.md`:
+
+| Wave | Composition | Spawn Interval |
+|------|-------------|----------------|
+| 1 | 5 Crawlers | 2.0s |
+| 2 | 10 Crawlers | 1.5s |
+| 3 | 10 Crawlers, 2 Spitters | 1.2s |
+| 4 | 12 Crawlers, 3 Spitters, 1 Charger | 1.0s |
+| 5 | 14 Crawlers, 3 Spitters, 1 Charger, 6 Drones | 0.8s |
+
+Waves 6+ use a scaling formula (Crawler-only placeholder) until mid/late compositions are implemented (task 15). Enemy types are identified by string constants (`WaveCompositions.Crawler`, etc.) which the Godot layer maps to scene paths.
+
+`WaveManagerState` drives wave progression. On `Start()`, it fills a spawn queue from wave 1's definition (shuffled for variety). `Update(dt)` ticks a spawn timer; when it expires, it dequeues the next enemy type and returns it. When the queue empties, it immediately advances to the next wave (no downtime). Accepts an optional `seed` for deterministic testing.
+
+### Godot Types
+
+`WaveManager` (`scripts/managers/WaveManager.cs`) is a scene node in `Game.tscn` that composes `WaveManagerState`. It:
+
+- Connects to `GameManager.CountdownFinished` to start waves after each countdown
+- Connects to `GameManager.StateChanged` to reset on death/restart
+- In `_PhysicsProcess`, calls `WaveManagerState.Update()` and spawns the returned enemy type via `EnemySpawner.SpawnEnemyOfType()`
+- Maps enemy type strings to `PackedScene` paths; gracefully skips types whose scenes don't exist yet
+- Reports wave number to `GameManager.RecordWaveReached()` on each wave advance
+- Emits `WaveStarted(int)` signal for UI consumption
 
 ### Collision Layers
 
