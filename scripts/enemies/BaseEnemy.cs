@@ -18,7 +18,8 @@ public partial class BaseEnemy : CharacterBody3D
     [Export] public float DeathParticleExplosiveness { get; set; } = 0.8f;
 
     [Export] public float SeparationRadius { get; set; } = 2.5f;
-    [Export] public float SeparationWeight { get; set; } = 4.0f;
+    [Export] public float SeparationWeight { get; set; } = 8.0f;
+    [Export] public float SeparationTangent { get; set; } = 0.4f;
 
     public EnemyHealthState Health { get; private set; } = null!;
 
@@ -47,7 +48,7 @@ public partial class BaseEnemy : CharacterBody3D
         Health.Damaged += OnDamaged;
         Health.Died += OnDied;
 
-        _separation = new SeparationState(SeparationRadius, SeparationWeight);
+        _separation = new SeparationState(SeparationRadius, SeparationWeight, SeparationTangent);
 
         _mesh = GetNodeOrNull<MeshInstance3D>("MeshInstance3D");
         SetupFlashMaterial();

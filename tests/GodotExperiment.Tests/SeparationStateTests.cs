@@ -9,8 +9,8 @@ public class SeparationStateTests
     private const float DefaultRadius = 5f;
     private const float DefaultWeight = 4f;
 
-    private static SeparationState Create(float radius = DefaultRadius, float weight = DefaultWeight)
-        => new(radius, weight);
+    private static SeparationState Create(float radius = DefaultRadius, float weight = DefaultWeight, float tangent = 0.4f)
+        => new(radius, weight, tangent);
 
     // --- Construction ---
 
@@ -31,12 +31,19 @@ public class SeparationStateTests
     }
 
     [Fact]
+    public void Constructor_NegativeTangent_Throws()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() => new SeparationState(DefaultRadius, DefaultWeight, -0.1f));
+    }
+
+    [Fact]
     public void Constructor_StoresParameters()
     {
-        var state = Create(3.5f, 6f);
+        var state = new SeparationState(3.5f, 6f, 0.5f);
 
         Assert.Equal(3.5f, state.DetectionRadius);
         Assert.Equal(6f, state.SeparationWeight);
+        Assert.Equal(0.5f, state.TangentialFactor);
     }
 
     // --- No neighbors ---
@@ -62,7 +69,6 @@ public class SeparationStateTests
         var result = state.ComputeSeparationForce(me, neighbors);
 
         Assert.True(result.X > 0, "Force should push away (positive X)");
-        Assert.Equal(0f, result.Y, 3);
     }
 
     [Fact]
@@ -74,8 +80,20 @@ public class SeparationStateTests
 
         var result = state.ComputeSeparationForce(me, neighbors);
 
-        Assert.Equal(0f, result.X, 3);
         Assert.True(result.Y > 0, "Force should push away (positive Y, opposite of neighbor at -Y)");
+    }
+
+    [Fact]
+    public void SingleNeighbor_ZeroTangent_ProducesPurelyRadialForce()
+    {
+        var state = Create(radius: 10f, weight: 1f, tangent: 0f);
+        var me = new Vector2(5f, 0f);
+        var neighbors = new[] { new Vector2(3f, 0f) };
+
+        var result = state.ComputeSeparationForce(me, neighbors);
+
+        Assert.True(result.X > 0, "Force should push away (positive X)");
+        Assert.Equal(0f, result.Y, 3);
     }
 
     // --- Multiple neighbors ---
@@ -144,7 +162,6 @@ public class SeparationStateTests
         var result = state.ComputeSeparationForce(me, neighbors);
 
         Assert.True(result.X < 0, "Should push away from the in-range neighbor at +X");
-        Assert.Equal(0f, result.Y, 3);
     }
 
     // --- Linear distance scaling ---
@@ -249,7 +266,50 @@ public class SeparationStateTests
 
         Assert.True(float.IsFinite(result.X) && float.IsFinite(result.Y),
             "Output should be finite for large asymmetric neighbor counts");
-        Assert.True(result.Length() <= state.SeparationWeight,
-            "Averaged output should not exceed weight");
+    }
+
+    // --- Tangential component ---
+
+    [Fact]
+    public void TangentialFactor_AddsPerpendicularComponent()
+    {
+        var state = Create(radius: 10f, weight: 1f, tangent: 0.5f);
+        var me = Vector2.Zero;
+        var neighbors = new[] { new Vector2(2f, 0f) };
+
+        var result = state.ComputeSeparationForce(me, neighbors);
+
+        Assert.True(result.X < 0, "Radial component pushes away (negative X)");
+        Assert.True(MathF.Abs(result.Y) > 0.01f,
+            "Tangential component should produce a perpendicular force");
+    }
+
+    [Fact]
+    public void TangentialFactor_Zero_ProducesNoPerpendicularComponent()
+    {
+        var state = Create(radius: 10f, weight: 1f, tangent: 0f);
+        var me = Vector2.Zero;
+        var neighbors = new[] { new Vector2(2f, 0f) };
+
+        var result = state.ComputeSeparationForce(me, neighbors);
+
+        Assert.True(result.X < 0, "Radial component pushes away");
+        Assert.Equal(0f, result.Y, 3);
+    }
+
+    [Fact]
+    public void HigherTangentialFactor_ProducesStrongerPerpendicularForce()
+    {
+        var me = Vector2.Zero;
+        var neighbors = new[] { new Vector2(2f, 0f) };
+
+        var stateLow = Create(radius: 10f, weight: 1f, tangent: 0.2f);
+        var resultLow = stateLow.ComputeSeparationForce(me, neighbors);
+
+        var stateHigh = Create(radius: 10f, weight: 1f, tangent: 0.8f);
+        var resultHigh = stateHigh.ComputeSeparationForce(me, neighbors);
+
+        Assert.True(MathF.Abs(resultHigh.Y) > MathF.Abs(resultLow.Y),
+            "Higher tangential factor should produce stronger perpendicular force");
     }
 }

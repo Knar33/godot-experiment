@@ -8,18 +8,22 @@ public class SeparationState
 
     public float DetectionRadius { get; }
     public float SeparationWeight { get; }
+    public float TangentialFactor { get; }
 
     private readonly Random _rng = new();
 
-    public SeparationState(float detectionRadius, float separationWeight)
+    public SeparationState(float detectionRadius, float separationWeight, float tangentialFactor = 0.4f)
     {
         if (detectionRadius <= 0)
             throw new ArgumentOutOfRangeException(nameof(detectionRadius), "Detection radius must be positive.");
         if (separationWeight <= 0)
             throw new ArgumentOutOfRangeException(nameof(separationWeight), "Separation weight must be positive.");
+        if (tangentialFactor < 0)
+            throw new ArgumentOutOfRangeException(nameof(tangentialFactor), "Tangential factor must be non-negative.");
 
         DetectionRadius = detectionRadius;
         SeparationWeight = separationWeight;
+        TangentialFactor = tangentialFactor;
     }
 
     public Vector2 ComputeSeparationForce(Vector2 myPosition, ReadOnlySpan<Vector2> neighborPositions)
@@ -48,7 +52,8 @@ public class SeparationState
                 strength = 1f - distance / DetectionRadius;
             }
 
-            accumulated += away * strength;
+            Vector2 tangent = new(-away.Y, away.X);
+            accumulated += (away + tangent * TangentialFactor) * strength;
             count++;
         }
 

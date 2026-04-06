@@ -11,11 +11,12 @@ All enemies apply a separation steering force each physics frame that pushes the
 #### Constructor
 
 ```csharp
-SeparationState(float detectionRadius, float separationWeight)
+SeparationState(float detectionRadius, float separationWeight, float tangentialFactor = 0.4f)
 ```
 
 - `detectionRadius` — maximum distance at which another enemy is considered a neighbor (units).
 - `separationWeight` — multiplier on the final separation force. Higher = stronger push.
+- `tangentialFactor` — blend ratio of a perpendicular (tangential) component added to each per-neighbor force. Prevents enemies from settling into static rings by making them slide past each other. 0 = purely radial, higher = more orbital drift.
 
 #### Method: `ComputeSeparationForce`
 
@@ -33,7 +34,7 @@ Algorithm:
 2. If any neighbors were found, divide the accumulated vector by the neighbor count (average), then multiply by `separationWeight`.
 3. Return the resulting 2D force vector. Returns zero if no neighbors are within range.
 
-The linear falloff ensures smooth, gradual separation — enemies can partially overlap and push apart over time rather than snapping rigidly. The averaged output means single distant neighbors produce a gentle nudge while dense clusters build up meaningful pressure.
+The linear falloff ensures smooth, gradual separation — enemies can partially overlap and push apart over time rather than snapping rigidly. The averaged output means single distant neighbors produce a gentle nudge while dense clusters build up meaningful pressure. The tangential component (90° rotation of the away vector, scaled by `tangentialFactor`) prevents static equilibrium rings by giving enemies a consistent lateral drift, creating organic orbiting motion rather than locked formations.
 
 ### Per-Type Configuration
 
