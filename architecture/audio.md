@@ -117,6 +117,16 @@ When more than ~15 enemies of the same type are active, individual ambient sound
 
 Telegraph sounds (Charger scrape, Howler scream, Burrower rumble) use a higher `UnitSize` and are assigned to the `EnemySFX` bus with a slight volume boost. They must be audible at any distance as critical survival information.
 
+#### Charger telegraph (current implementation)
+
+- `scenes/enemies/Charger.tscn`
+  - `TelegraphAudio.volume_db = 6.0`
+  - `TelegraphAudio.unit_size = 25.0` (boosted distance audibility)
+- `scripts/enemies/Charger.cs`
+  - Starts telegraph audio on entering the Telegraph phase
+  - Retriggers the clip if it ends before Telegraph completes
+  - Stops telegraph audio when Charging begins
+
 ## UI & System Audio
 
 Played via non-positional `AudioStreamPlayer` nodes (2D audio), output to `UISFX` bus:

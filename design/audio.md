@@ -73,6 +73,7 @@ Each enemy type has a distinct audio identity so the player can recognize threat
 - All enemy sounds use 3D positional audio. The player should be able to identify threat direction by ear.
 - Attenuation is tuned so that distant enemies produce only faint ambient noise, while nearby threats are loud and clear.
 - Telegraph sounds (Charger scraping, Howler screaming, Burrower rumbling) should cut through the mix at any distance — these are critical survival information. They receive higher priority in the audio mix.
+- Charger telegraph specifically must be **unmistakable**: the full 1.5s wind-up has continuous scraping/revving audio (loop/retrigger as needed) and is mixed loud enough to read even from the arena edge.
 - When many enemies of the same type are present (20+ Crawlers), their ambient sounds blend into a generalized "swarm noise" rather than playing 20 individual clips.
 
 ## UI & System Audio

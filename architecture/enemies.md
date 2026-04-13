@@ -40,26 +40,20 @@ The linear falloff ensures smooth, gradual separation — enemies can partially 
 
 | Enemy Type | Detection Radius | Separation Weight | Notes |
 |------------|-----------------|-------------------|-------|
-| Crawler    | 2.0             | 4.0               | Small radius; they're a pack, just not a pile |
-| Spitter    | 3.0             | 5.0               | Keeps ranged enemies spread for better zoning |
-| Charger    | 3.5             | 5.0               | Separates during approach; ignored mid-charge |
-| Drone      | 2.5             | 4.0               | 3D separation (uses Y as well) for aerial spread |
-| Bloater    | 4.0             | 6.0               | Large body; needs wide berth |
-| Shade      | 3.0             | 4.0               | Separates during flanking approach |
-| Sentinel   | 5.0             | 7.0               | Very large; must not overlap anything |
-| Burrower   | 3.0             | 5.0               | Only while surfaced; ignored while underground |
-| Howler     | 3.5             | 5.0               | Standard medium enemy spacing |
-| Titan      | 6.0             | 8.0               | Massive; widest separation radius |
+| Crawler    | 2.0             | 8.0               | Small radius; they're a pack, just not a pile |
+| Spitter    | 3.0             | 10.0              | Keeps ranged enemies spread for better zoning |
+| Charger    | 3.5             | 10.0              | Separates during approach; ignored mid-charge |
 
-These values are configured as `[Export]` properties on each enemy scene, allowing tuning without code changes.
+These values are configured as `[Export]` properties on each enemy scene, allowing tuning without code changes. Additional enemy types will define their own separation values as their scenes are added.
 
 ### Godot Integration: `BaseEnemy` Changes
 
-`BaseEnemy` gains two new exported properties:
+`BaseEnemy` exposes separation tuning as exported properties:
 
 ```csharp
 [Export] public float SeparationRadius { get; set; } = 2.5f;
-[Export] public float SeparationWeight { get; set; } = 4.0f;
+[Export] public float SeparationWeight { get; set; } = 8.0f;
+[Export] public float SeparationTangent { get; set; } = 0.4f;
 ```
 
 And a `SeparationState` instance composed in `_Ready()`.

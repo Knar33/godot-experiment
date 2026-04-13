@@ -38,6 +38,7 @@ WaveManaged = true
 [node name="WaveManager" type="Node" parent="."]
 script = ExtResource("13")
 EnemySpawnerPath = NodePath("../EnemySpawner")
+SpawnIntervalOverrideSeconds = 5.0
 
 [node name="Projectiles" type="Node3D" parent="."]
 

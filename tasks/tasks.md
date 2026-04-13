@@ -10,6 +10,10 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 
 - [ ] Playtest separation tuning: verify enemies spread visibly without losing their pack/swarm feel, and that no enemy type's core AI is broken by separation forces
 
+## 12.6. Playtest Difficulty & Spawn Pacing Tuning
+
+- [ ] Revisit wave spawn pacing after playtests: `WaveManager.SpawnIntervalOverrideSeconds` is currently set to 5.0s in `scenes/Game.tscn`; retune/remove when ready
+
 ## 13. Drone (Enemy — Wave 5+)
 
 - [ ] Create the Drone scene: a small flying enemy with a distinct placeholder mesh, positioned above ground, inheriting the base enemy class
@@ -425,3 +429,11 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 - [x] Add a protected `SeparationEnabled` bool property (default true) to `BaseEnemy` so subclasses can disable separation during specific states
 - [x] Update `Charger.cs` to disable separation during charge and recovery phases (set `SeparationEnabled = false` during those states)
 - [x] Configure per-enemy-type separation values in each enemy scene: Crawler (2.0 / 4.0), Spitter (3.0 / 5.0), Charger (3.5 / 5.0); future enemy scenes will be configured as they are created
+
+### Playtest Difficulty & Spawn Pacing
+
+- [x] Increase Crawler size/readability and reduce health to 1-2 hits
+- [x] Boost Charger telegraph audio loudness and keep it audible through the full telegraph window
+- [x] Add a stronger Charger telegraph visual (pulsing flash during wind-up)
+- [x] Add WaveManager spawn interval override and set to ~5s per spawn for playtests
+- [x] Add unit test coverage for WaveManagerState spawn interval override

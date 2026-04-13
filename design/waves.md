@@ -53,3 +53,11 @@ Difficulty increases through three axes:
 3. **Spawn Speed** - Shorter intervals between spawn groups within a wave and shorter gaps between waves
 
 Enemy stats (health, speed, damage) do NOT scale. The enemies themselves are always the same — the difficulty comes purely from quantity and composition. This ensures that player skill transfers between early and late runs without hidden stat inflation.
+
+## Playtest Tuning (Temporary)
+
+While iterating on early-game readability and threat telegraphs, enemy spawns are intentionally spaced out to make targeted testing easier.
+
+- **Spawn interval**: ~5 seconds between individual enemy spawns (across waves)
+
+This will be revisited once the early combat loop feels stable.

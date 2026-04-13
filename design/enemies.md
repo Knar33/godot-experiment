@@ -31,7 +31,8 @@ Enemy deaths should feel satisfying and communicate clearly that the threat is e
 
 The baseline enemy. Crawlers are small ground creatures that move directly toward the player at moderate speed. They attack by making contact. Individually trivial — they exist to create a constant floor of pressure that the player must manage while dealing with more dangerous threats.
 
-- **Health**: Very Low (2-3 shots)
+- **Health**: Very Low (1-2 shots)
+- **Size**: Small but chunky/readable — slightly oversized for easy target acquisition in early playtests
 - **Speed**: Moderate
 - **Attack**: Contact damage
 - **Spawn Pattern**: Groups of 5-10, increasing over time
@@ -57,7 +58,7 @@ A stationary-ish enemy that plants itself at medium range and lobs slow, visible
 
 **Role**: Burst Threat / Disruption
 
-A medium-sized enemy that pauses, telegraphs with a visible wind-up (glows, scrapes the ground), then launches in a straight line at high speed. Deals heavy contact damage. After charging, it skids to a stop and is vulnerable for a brief window before it can charge again.
+A medium-sized enemy that pauses, telegraphs with a visible wind-up (bright pulsing/flash + ground scrape), then launches in a straight line at high speed. Deals heavy contact damage. After charging, it skids to a stop and is vulnerable for a brief window before it can charge again.
 
 - **Health**: Medium (8-10 shots)
 - **Speed**: Slow normally, very fast during charge

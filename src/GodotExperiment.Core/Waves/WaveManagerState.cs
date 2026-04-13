@@ -15,6 +15,7 @@ public class WaveManagerState
     public int CurrentWave { get; private set; }
     public bool IsActive { get; private set; }
     public int RemainingSpawns => _spawnQueue.Count;
+    public float SpawnIntervalOverrideSeconds { get; set; }
 
     public event Action<int>? WaveStarted;
 
@@ -66,7 +67,9 @@ public class WaveManagerState
     {
         CurrentWave++;
         var definition = WaveCompositions.GetWave(CurrentWave);
-        _currentSpawnInterval = definition.SpawnInterval;
+        _currentSpawnInterval = SpawnIntervalOverrideSeconds > 0f
+            ? SpawnIntervalOverrideSeconds
+            : definition.SpawnInterval;
 
         var enemies = new List<string>();
         foreach (var group in definition.Groups)

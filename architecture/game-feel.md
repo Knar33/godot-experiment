@@ -136,6 +136,15 @@ Handled in the base enemy script via a `ShaderMaterial` with a `flash_intensity`
 - On damage: set `flash_intensity = 1.0`, decay to 0.0 over 2 frames (0.033s).
 - Override material is shared per-type but instanced per-enemy to allow independent flashing.
 
+## Enemy Attack Telegraph Flash
+
+Attack telegraphs can contribute a high-visibility flash using the same `enemy_flash.gdshader` (which mixes the enemy's base albedo toward white based on `flash_intensity`).
+
+- `scripts/enemies/BaseEnemy.cs` exposes `protected float TelegraphFlashIntensity` (0.0–1.0) for subclasses to drive.
+- `BaseEnemy.UpdateFlash()` applies the final shader intensity as:
+  - `max(damageFlash, lowHealthFlash, TelegraphFlashIntensity)`
+- `scripts/enemies/Charger.cs` pulses `TelegraphFlashIntensity` during the Telegraph phase to provide an obvious flashing visual cue.
+
 ## Enemy Low-Health Indicator
 
 When enemy health drops below 25%:

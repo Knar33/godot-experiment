@@ -13,6 +13,11 @@ namespace GodotExperiment;
 public partial class WaveManager : Node
 {
 	[Export] public NodePath EnemySpawnerPath { get; set; } = "";
+	/// <summary>
+	/// Temporary playtest tuning knob. If > 0, forces a fixed delay between individual spawns,
+	/// overriding per-wave spawn intervals defined in <see cref="WaveCompositions"/>.
+	/// </summary>
+	[Export] public float SpawnIntervalOverrideSeconds { get; set; } = 0f;
 
 	private WaveManagerState _state = new();
 	private EnemySpawner? _spawner;
@@ -33,6 +38,7 @@ public partial class WaveManager : Node
 		}
 
 		RegisterEnemyScenes();
+		_state.SpawnIntervalOverrideSeconds = SpawnIntervalOverrideSeconds;
 		_state.WaveStarted += OnWaveStarted;
 
 		if (GameManager.Instance != null)

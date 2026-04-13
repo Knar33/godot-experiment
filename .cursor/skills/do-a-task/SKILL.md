@@ -1,8 +1,7 @@
 ---
 name: do-a-task
 description: >-
-  Reads the project tasks folder, selects the next urgent unchecked work (or a
-  sensible batch of related items), implements it using design and architecture
+  Reads the project tasks folder, selects the next most urgent unchecked work items (as many as the context window can reasonly hold), implements it using design and architecture
   docs, updates task files and tests. Use when the user asks to do a task, pick
   up work from tasks, work through the backlog, or complete items from the
   tasks folder.
@@ -25,8 +24,8 @@ The user wants work driven from repository task files—not ad-hoc features with
 3. **Choose what to do**
    - Prefer **unchecked** items at the **top** of each file (tasks are ordered by urgency; completed work is checked and moved to the **bottom**).
    - If the user names a task or file, honor that.
-   - Otherwise pick the **smallest coherent slice** at the top that can be finished in one pass.
-   - **Batch** multiple items only when they clearly share one feature, file, or subsystem (same component, same API, same bug class). Do not merge unrelated tickets into one giant change.
+   - Otherwise pick the **largest number of work items** at the top that can be finished in one pass.
+   - **Batch** multiple changes as much as possible.
 
 4. **Scope check** — If the selected item is vague, depends on missing design/architecture, or is too large, narrow it: implement one clear sub-part, or add a short clarification note in the task file and proceed on the unblocked portion.
 

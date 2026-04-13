@@ -24,6 +24,7 @@ public partial class BaseEnemy : CharacterBody3D
     public EnemyHealthState Health { get; private set; } = null!;
 
     protected bool SeparationEnabled { get; set; } = true;
+    protected float TelegraphFlashIntensity { get; set; }
 
     private SeparationState _separation = null!;
 
@@ -188,22 +189,22 @@ public partial class BaseEnemy : CharacterBody3D
     {
         if (_flashMaterial == null) return;
 
+        float intensity = 0f;
+
         if (_flashTimer > 0f)
         {
             _flashTimer -= dt;
-            float intensity = Mathf.Clamp(_flashTimer / FlashDecayDuration, 0f, 1f);
-            SetFlashIntensity(intensity);
+            intensity = Mathf.Clamp(_flashTimer / FlashDecayDuration, 0f, 1f);
         }
         else if (Health.IsLowHealth)
         {
             _lowHealthTime += dt;
             float osc = (Mathf.Sin(_lowHealthTime * Mathf.Tau * LowHealthFrequency) + 1f) * 0.5f;
-            SetFlashIntensity(osc * LowHealthMaxIntensity);
+            intensity = osc * LowHealthMaxIntensity;
         }
-        else
-        {
-            SetFlashIntensity(0f);
-        }
+
+        intensity = Mathf.Max(intensity, TelegraphFlashIntensity);
+        SetFlashIntensity(intensity);
     }
 
     private void SetFlashIntensity(float intensity)

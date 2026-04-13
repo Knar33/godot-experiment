@@ -15,6 +15,7 @@ public partial class Charger : BaseEnemy
     private ChargerAIState _aiState = null!;
     private AudioStreamPlayer3D? _telegraphAudio;
     private Vector3 _chargeDirection;
+    private float _telegraphFlashTime;
 
     public override void _Ready()
     {
@@ -40,7 +41,25 @@ public partial class Charger : BaseEnemy
             _telegraphAudio?.Play();
 
         if (transition == ChargerAIState.Phase.Charging)
+        {
+            _telegraphAudio?.Stop();
             _chargeDirection = ComputeLeadDirection(player, distance);
+        }
+
+        if (_aiState.IsTelegraphing)
+        {
+            _telegraphFlashTime += dt;
+            float pulse = (Mathf.Sin(_telegraphFlashTime * Mathf.Tau * 6f) + 1f) * 0.5f;
+            TelegraphFlashIntensity = Mathf.Lerp(0.25f, 0.9f, pulse);
+
+            if (_telegraphAudio?.Stream != null && !_telegraphAudio.Playing)
+                _telegraphAudio.Play();
+        }
+        else
+        {
+            _telegraphFlashTime = 0f;
+            TelegraphFlashIntensity = 0f;
+        }
 
         SeparationEnabled = !_aiState.IsCharging && !_aiState.IsRecovering;
 
