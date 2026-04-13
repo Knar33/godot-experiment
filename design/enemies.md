@@ -31,7 +31,7 @@ Enemy deaths should feel satisfying and communicate clearly that the threat is e
 
 The baseline enemy. Crawlers are small ground creatures that move directly toward the player at moderate speed. They attack by making contact. Individually trivial — they exist to create a constant floor of pressure that the player must manage while dealing with more dangerous threats.
 
-- **Health**: Very Low (1-2 shots)
+- **Health**: Very Low (1 shot)
 - **Size**: Small but chunky/readable — slightly oversized for easy target acquisition in early playtests
 - **Speed**: Moderate
 - **Attack**: Contact damage

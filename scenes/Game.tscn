@@ -1,18 +1,18 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene format=3 uid="uid://by3rf7v6gs4is"]
 
 [ext_resource type="PackedScene" path="res://scenes/arena/Arena.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/player/PlayerCamera.tscn" id="3"]
-[ext_resource type="Script" path="res://scripts/ui/Crosshair.cs" id="4"]
-[ext_resource type="Script" path="res://scripts/ui/CountdownUI.cs" id="5"]
-[ext_resource type="Script" path="res://scripts/ui/SurvivalTimerUI.cs" id="6"]
-[ext_resource type="Script" path="res://scripts/ui/PauseMenu.cs" id="7"]
-[ext_resource type="Script" path="res://scripts/ui/DeathScreen.cs" id="8"]
-[ext_resource type="Script" path="res://scripts/ui/GemCounterUI.cs" id="9"]
-[ext_resource type="AudioStream" path="res://assets/audio/ui/new_best_fanfare.wav" id="10"]
-[ext_resource type="Script" path="res://scripts/enemies/EnemySpawner.cs" id="11"]
+[ext_resource type="Script" uid="uid://bc2bowo6vdchc" path="res://scripts/ui/Crosshair.cs" id="4"]
+[ext_resource type="Script" uid="uid://djvqif22c483y" path="res://scripts/ui/CountdownUI.cs" id="5"]
+[ext_resource type="Script" uid="uid://dyrnxneo5sol6" path="res://scripts/ui/SurvivalTimerUI.cs" id="6"]
+[ext_resource type="Script" uid="uid://cha43s00ylsny" path="res://scripts/ui/PauseMenu.cs" id="7"]
+[ext_resource type="Script" uid="uid://cb4fv7jcmovpf" path="res://scripts/ui/DeathScreen.cs" id="8"]
+[ext_resource type="Script" uid="uid://bxfrelugfwm7y" path="res://scripts/ui/GemCounterUI.cs" id="9"]
+[ext_resource type="AudioStream" uid="uid://2f5ow32hmi67" path="res://assets/audio/ui/new_best_fanfare.wav" id="10"]
+[ext_resource type="Script" uid="uid://cojos7cn58vem" path="res://scripts/enemies/EnemySpawner.cs" id="11"]
 [ext_resource type="PackedScene" path="res://scenes/enemies/Crawler.tscn" id="12"]
-[ext_resource type="Script" path="res://scripts/managers/WaveManager.cs" id="13"]
+[ext_resource type="Script" uid="uid://blmki8q7qlqcm" path="res://scripts/managers/WaveManager.cs" id="13"]
 
 [sub_resource type="Environment" id="Environment_1"]
 background_mode = 1
@@ -21,30 +21,30 @@ ambient_light_source = 2
 ambient_light_color = Color(0.3, 0.3, 0.35, 1)
 ambient_light_energy = 0.6
 
-[node name="Game" type="Node3D"]
+[node name="Game" type="Node3D" unique_id=1419805649]
 
-[node name="Arena" parent="." instance=ExtResource("1")]
+[node name="Arena" parent="." unique_id=1934959593 instance=ExtResource("1")]
 
-[node name="Player" parent="." instance=ExtResource("2")]
+[node name="Player" parent="." unique_id=1387903137 instance=ExtResource("2")]
 
-[node name="Enemies" type="Node3D" parent="."]
+[node name="Enemies" type="Node3D" parent="." unique_id=796432177]
 
-[node name="EnemySpawner" type="Node3D" parent="."]
+[node name="EnemySpawner" type="Node3D" parent="." unique_id=351503464]
 script = ExtResource("11")
-SpawnInterval = 2.0
 EnemyScene = ExtResource("12")
 WaveManaged = true
 
-[node name="WaveManager" type="Node" parent="."]
+[node name="WaveManager" type="Node" parent="." unique_id=568991143]
 script = ExtResource("13")
 EnemySpawnerPath = NodePath("../EnemySpawner")
-SpawnIntervalOverrideSeconds = 5.0
+SpawnIntervalOverrideSeconds = 0.7
 
-[node name="Projectiles" type="Node3D" parent="."]
+[node name="Projectiles" type="Node3D" parent="." unique_id=616372800]
 
-[node name="UI" type="CanvasLayer" parent="."]
+[node name="UI" type="CanvasLayer" parent="." unique_id=2091244737]
 
-[node name="Crosshair" type="Control" parent="UI"]
+[node name="Crosshair" type="Control" parent="UI" unique_id=2049825085]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -53,7 +53,8 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("4")
 
-[node name="CountdownUI" type="Control" parent="UI"]
+[node name="CountdownUI" type="Control" parent="UI" unique_id=1837287431]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -62,8 +63,8 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("5")
 
-[node name="CountdownLabel" type="Label" parent="UI/CountdownUI"]
-anchors_preset = 8
+[node name="CountdownLabel" type="Label" parent="UI/CountdownUI" unique_id=1175115332]
+layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -78,7 +79,8 @@ theme_override_font_sizes/font_size = 96
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="SurvivalTimerUI" type="Control" parent="UI"]
+[node name="SurvivalTimerUI" type="Control" parent="UI" unique_id=587318395]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -87,8 +89,8 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("6")
 
-[node name="TimerLabel" type="Label" parent="UI/SurvivalTimerUI"]
-anchors_preset = 5
+[node name="TimerLabel" type="Label" parent="UI/SurvivalTimerUI" unique_id=665539767]
+layout_mode = 0
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -80.0
@@ -100,7 +102,8 @@ theme_override_font_sizes/font_size = 24
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="GemCounterUI" type="Control" parent="UI"]
+[node name="GemCounterUI" type="Control" parent="UI" unique_id=1561816845]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -109,8 +112,8 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("9")
 
-[node name="GemProgressBar" type="ProgressBar" parent="UI/GemCounterUI"]
-anchors_preset = 5
+[node name="GemProgressBar" type="ProgressBar" parent="UI/GemCounterUI" unique_id=2033609154]
+layout_mode = 0
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -60.0
@@ -121,8 +124,8 @@ grow_horizontal = 2
 max_value = 10.0
 show_percentage = false
 
-[node name="GemLabel" type="Label" parent="UI/GemCounterUI"]
-anchors_preset = 5
+[node name="GemLabel" type="Label" parent="UI/GemCounterUI" unique_id=30691909]
+layout_mode = 0
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -60.0
@@ -135,7 +138,8 @@ text = "0 / 10"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="PauseMenu" type="Control" parent="UI"]
+[node name="PauseMenu" type="Control" parent="UI" unique_id=345202011]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -144,8 +148,8 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("7")
 
-[node name="Panel" type="PanelContainer" parent="UI/PauseMenu"]
-anchors_preset = 8
+[node name="Panel" type="PanelContainer" parent="UI/PauseMenu" unique_id=337509904]
+layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -157,32 +161,33 @@ offset_bottom = 120.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/PauseMenu/Panel"]
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/PauseMenu/Panel" unique_id=2139162738]
 layout_mode = 2
 
-[node name="PauseTitle" type="Label" parent="UI/PauseMenu/Panel/VBoxContainer"]
+[node name="PauseTitle" type="Label" parent="UI/PauseMenu/Panel/VBoxContainer" unique_id=1727693740]
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "PAUSED"
 horizontal_alignment = 1
 
-[node name="Spacer" type="Control" parent="UI/PauseMenu/Panel/VBoxContainer"]
-layout_mode = 2
+[node name="Spacer" type="Control" parent="UI/PauseMenu/Panel/VBoxContainer" unique_id=1501321067]
 custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
 
-[node name="ResumeButton" type="Button" parent="UI/PauseMenu/Panel/VBoxContainer"]
+[node name="ResumeButton" type="Button" parent="UI/PauseMenu/Panel/VBoxContainer" unique_id=408581188]
 layout_mode = 2
 text = "Resume"
 
-[node name="RestartButton" type="Button" parent="UI/PauseMenu/Panel/VBoxContainer"]
+[node name="RestartButton" type="Button" parent="UI/PauseMenu/Panel/VBoxContainer" unique_id=1290638730]
 layout_mode = 2
 text = "Restart"
 
-[node name="QuitButton" type="Button" parent="UI/PauseMenu/Panel/VBoxContainer"]
+[node name="QuitButton" type="Button" parent="UI/PauseMenu/Panel/VBoxContainer" unique_id=1409565122]
 layout_mode = 2
 text = "Quit"
 
-[node name="DeathScreen" type="Control" parent="UI"]
+[node name="DeathScreen" type="Control" parent="UI" unique_id=205113779]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -191,8 +196,8 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("8")
 
-[node name="Panel" type="PanelContainer" parent="UI/DeathScreen"]
-anchors_preset = 8
+[node name="Panel" type="PanelContainer" parent="UI/DeathScreen" unique_id=1328364686]
+layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -204,118 +209,119 @@ offset_bottom = 200.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Content" type="HBoxContainer" parent="UI/DeathScreen/Panel"]
+[node name="Content" type="HBoxContainer" parent="UI/DeathScreen/Panel" unique_id=124865133]
 layout_mode = 2
 
-[node name="LeftPanel" type="VBoxContainer" parent="UI/DeathScreen/Panel/Content"]
+[node name="LeftPanel" type="VBoxContainer" parent="UI/DeathScreen/Panel/Content" unique_id=272707979]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 1.2
 
-[node name="DeathTitle" type="Label" parent="UI/DeathScreen/Panel/Content/LeftPanel"]
+[node name="DeathTitle" type="Label" parent="UI/DeathScreen/Panel/Content/LeftPanel" unique_id=962063954]
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 theme_override_colors/font_color = Color(0.9, 0.2, 0.2, 1)
+theme_override_font_sizes/font_size = 24
 text = "YOU DIED"
 horizontal_alignment = 1
 
-[node name="TimeLabel" type="Label" parent="UI/DeathScreen/Panel/Content/LeftPanel"]
+[node name="TimeLabel" type="Label" parent="UI/DeathScreen/Panel/Content/LeftPanel" unique_id=1230125107]
 layout_mode = 2
 theme_override_font_sizes/font_size = 48
 text = "00:00.000"
 horizontal_alignment = 1
 
-[node name="NewBestLabel" type="Label" parent="UI/DeathScreen/Panel/Content/LeftPanel"]
+[node name="NewBestLabel" type="Label" parent="UI/DeathScreen/Panel/Content/LeftPanel" unique_id=547878980]
 layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0, 1)
 theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1.0, 0.85, 0.0, 1)
 text = "NEW BEST!"
 horizontal_alignment = 1
 
-[node name="StatsSeparator" type="HSeparator" parent="UI/DeathScreen/Panel/Content/LeftPanel"]
-layout_mode = 2
+[node name="StatsSeparator" type="HSeparator" parent="UI/DeathScreen/Panel/Content/LeftPanel" unique_id=831829533]
 custom_minimum_size = Vector2(0, 8)
-
-[node name="StatsContainer" type="VBoxContainer" parent="UI/DeathScreen/Panel/Content/LeftPanel"]
 layout_mode = 2
 
-[node name="EnemiesKilledLabel" type="Label" parent="UI/DeathScreen/Panel/Content/LeftPanel/StatsContainer"]
+[node name="StatsContainer" type="VBoxContainer" parent="UI/DeathScreen/Panel/Content/LeftPanel" unique_id=1040051541]
+layout_mode = 2
+
+[node name="EnemiesKilledLabel" type="Label" parent="UI/DeathScreen/Panel/Content/LeftPanel/StatsContainer" unique_id=1110842657]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Enemies Killed: 0"
 
-[node name="GemsCollectedLabel" type="Label" parent="UI/DeathScreen/Panel/Content/LeftPanel/StatsContainer"]
+[node name="GemsCollectedLabel" type="Label" parent="UI/DeathScreen/Panel/Content/LeftPanel/StatsContainer" unique_id=1517744713]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Gems Collected: 0"
 
-[node name="WaveReachedLabel" type="Label" parent="UI/DeathScreen/Panel/Content/LeftPanel/StatsContainer"]
+[node name="WaveReachedLabel" type="Label" parent="UI/DeathScreen/Panel/Content/LeftPanel/StatsContainer" unique_id=1118916683]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Wave Reached: 0"
 
-[node name="BhopChainLabel" type="Label" parent="UI/DeathScreen/Panel/Content/LeftPanel/StatsContainer"]
+[node name="BhopChainLabel" type="Label" parent="UI/DeathScreen/Panel/Content/LeftPanel/StatsContainer" unique_id=1015856586]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Longest Bhop Chain: 0"
 
-[node name="UpgradesLabel" type="Label" parent="UI/DeathScreen/Panel/Content/LeftPanel/StatsContainer"]
+[node name="UpgradesLabel" type="Label" parent="UI/DeathScreen/Panel/Content/LeftPanel/StatsContainer" unique_id=1810273424]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
 theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+theme_override_font_sizes/font_size = 14
 text = "Upgrades:"
 
-[node name="UpgradesContainer" type="HBoxContainer" parent="UI/DeathScreen/Panel/Content/LeftPanel/StatsContainer"]
+[node name="UpgradesContainer" type="HBoxContainer" parent="UI/DeathScreen/Panel/Content/LeftPanel/StatsContainer" unique_id=1945431981]
 layout_mode = 2
 
-[node name="BottomSpacer" type="Control" parent="UI/DeathScreen/Panel/Content/LeftPanel"]
+[node name="BottomSpacer" type="Control" parent="UI/DeathScreen/Panel/Content/LeftPanel" unique_id=887473152]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="RestartHint" type="Label" parent="UI/DeathScreen/Panel/Content/LeftPanel"]
+[node name="RestartHint" type="Label" parent="UI/DeathScreen/Panel/Content/LeftPanel" unique_id=1444485382]
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
 theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_font_sizes/font_size = 16
 text = "Press R to restart"
 horizontal_alignment = 1
 
-[node name="Separator" type="VSeparator" parent="UI/DeathScreen/Panel/Content"]
-layout_mode = 2
+[node name="Separator" type="VSeparator" parent="UI/DeathScreen/Panel/Content" unique_id=1576679925]
 custom_minimum_size = Vector2(16, 0)
+layout_mode = 2
 
-[node name="RightPanel" type="VBoxContainer" parent="UI/DeathScreen/Panel/Content"]
+[node name="RightPanel" type="VBoxContainer" parent="UI/DeathScreen/Panel/Content" unique_id=270463902]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="LeaderboardTitle" type="Label" parent="UI/DeathScreen/Panel/Content/RightPanel"]
+[node name="LeaderboardTitle" type="Label" parent="UI/DeathScreen/Panel/Content/RightPanel" unique_id=162321197]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "LEADERBOARD"
 horizontal_alignment = 1
 
-[node name="LeaderboardSeparator" type="HSeparator" parent="UI/DeathScreen/Panel/Content/RightPanel"]
-layout_mode = 2
+[node name="LeaderboardSeparator" type="HSeparator" parent="UI/DeathScreen/Panel/Content/RightPanel" unique_id=1519979993]
 custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
 
-[node name="LeaderboardPlaceholder" type="Label" parent="UI/DeathScreen/Panel/Content/RightPanel"]
+[node name="LeaderboardPlaceholder" type="Label" parent="UI/DeathScreen/Panel/Content/RightPanel" unique_id=183097272]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_font_sizes/font_size = 14
 theme_override_colors/font_color = Color(0.5, 0.5, 0.5, 1)
+theme_override_font_sizes/font_size = 14
 text = "No entries yet"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="FanfareAudio" type="AudioStreamPlayer" parent="UI/DeathScreen"]
+[node name="FanfareAudio" type="AudioStreamPlayer" parent="UI/DeathScreen" unique_id=1174137790]
 process_mode = 1
 stream = ExtResource("10")
 
-[node name="PlayerCamera" parent="." instance=ExtResource("3")]
+[node name="PlayerCamera" parent="." unique_id=1402904057 instance=ExtResource("3")]
+HorizontalOffset = 0.8
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=738748188]
 environment = SubResource("Environment_1")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=397737037]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 10, 0)
 light_energy = 1.2
 shadow_enabled = true

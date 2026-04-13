@@ -117,3 +117,33 @@ The initial implementation uses the simple group query. Spatial hashing is a fol
 - Overlapping position (zero distance) produces a non-zero force (symmetry break)
 - Separation weight scales the output magnitude
 - Large neighbor counts produce stable, normalized output
+
+---
+
+## Drone (Enemy — Wave 5+)
+
+### Core AI: `DroneAIState` (pure C#, `GodotExperiment.Enemies`)
+
+`DroneAIState` is a unit-testable state machine in `src/GodotExperiment.Core/Enemies/DroneAIState.cs` that drives the Drone's attack cadence.
+
+Phases:
+
+- **Orbiting**: counts down `AttackTimer` until the next dive-bomb.
+- **Telegraph**: brief wind-up; Drone should stop and play its telegraph cue.
+- **Diving**: high-speed strike window; Drone should move in a straight line toward the locked-in dive direction.
+- **Recovery**: returns to hover/orbit behavior and resets the cooldown.
+
+### Godot Integration: `Drone.cs` / `Drone.tscn`
+
+- `scenes/enemies/Drone.tscn`
+  - `HoverHeight` keeps the Drone above the ground plane.
+  - Placeholder mesh + audio streams configured on `AmbientAudio`, `TelegraphAudio`, and `DeathAudio`.
+- `scripts/enemies/Drone.cs`
+  - Uses `DroneAIState` to decide when to telegraph/dive.
+  - **Orbit steering**: combines a tangential orbit component, a radial correction toward `OrbitRadius`, and a small randomized jitter.
+  - **Dive direction**: locked at the start of the Diving phase, with a small lead based on the player's current velocity.
+  - **3D separation for flying**: neighbor distance checks include Y (so Drones don't “separate” from ground enemies far below), but the resulting steering is applied primarily on the X/Z plane.
+
+### Tests
+
+`tests/GodotExperiment.Tests/DroneAIStateTests.cs` covers phase transitions, timers, and cooldown reset behavior.

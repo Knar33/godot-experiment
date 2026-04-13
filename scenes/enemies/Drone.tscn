@@ -1,0 +1,90 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/Drone.cs" id="1"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/spitter_ambient.wav" id="2"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/charger_telegraph.wav" id="3"]
+[ext_resource type="AudioStream" path="res://assets/audio/enemies/spitter_death.wav" id="4"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
+radius = 0.25
+height = 0.8
+
+[sub_resource type="BoxMesh" id="BoxMesh_1"]
+size = Vector3(0.9, 0.25, 0.9)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1"]
+albedo_color = Color(0.2, 0.8, 0.95, 1)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_1"]
+radius = 0.55
+
+[node name="Drone" type="CharacterBody3D"]
+collision_layer = 8
+collision_mask = 1
+script = ExtResource("1")
+MaxHealth = 2
+MoveSpeed = 8.5
+GemDropCount = 1
+DeathParticleColor = Color(0.2, 0.8, 0.95, 1)
+DeathParticleCount = 14
+DeathParticleExplosiveness = 0.95
+SeparationRadius = 2.2
+SeparationWeight = 7.0
+SeparationTangent = 0.4
+HoverHeight = 2.5
+HoverCorrection = 1.6
+OrbitRadius = 9.0
+OrbitRadiusTolerance = 3.0
+OrbitTangentialWeight = 1.2
+OrbitRadialWeight = 1.0
+JitterStrength = 0.35
+JitterChangeInterval = 0.35
+DiveTriggerRange = 14.0
+DiveInterval = 3.5
+TelegraphDuration = 0.25
+DiveDuration = 0.35
+RecoveryDuration = 0.6
+DiveSpeedMultiplier = 7.0
+DiveAimHeightOffset = 0.9
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+shape = SubResource("CapsuleShape3D_1")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+mesh = SubResource("BoxMesh_1")
+surface_material_override/0 = SubResource("StandardMaterial3D_1")
+
+[node name="ContactArea" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 1
+monitoring = true
+monitorable = false
+
+[node name="ContactShape" type="CollisionShape3D" parent="ContactArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+shape = SubResource("SphereShape3D_1")
+
+[node name="AmbientAudio" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("2")
+volume_db = -16.0
+pitch_scale = 1.6
+max_distance = 22.0
+bus = &"EnemySFX"
+
+[node name="TelegraphAudio" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("3")
+volume_db = 0.0
+pitch_scale = 1.8
+unit_size = 18.0
+max_distance = 50.0
+bus = &"EnemySFX"
+
+[node name="DeathAudio" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("4")
+volume_db = -6.0
+pitch_scale = 1.5
+max_distance = 30.0
+bus = &"EnemySFX"
+

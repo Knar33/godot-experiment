@@ -14,14 +14,6 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 
 - [ ] Revisit wave spawn pacing after playtests: `WaveManager.SpawnIntervalOverrideSeconds` is currently set to 5.0s in `scenes/Game.tscn`; retune/remove when ready
 
-## 13. Drone (Enemy — Wave 5+)
-
-- [ ] Create the Drone scene: a small flying enemy with a distinct placeholder mesh, positioned above ground, inheriting the base enemy class
-- [ ] Implement Drone AI: hovers and orbits the player at close-medium range with fast, erratic lateral movement
-- [ ] Implement the Drone dive-bomb attack: periodically telegraphs briefly, then dives toward the player at high speed for a lethal contact strike
-- [ ] Configure Drone stats: 1-2 shot health, fast erratic speed, 1 gem drop; spawns in clusters of 4-8
-- [ ] Add Drone audio: high-pitched buzzing ambient, quick dive whistle telegraph, small electric crackle death sound
-
 ## 14. Bloater (Enemy — Wave 6+)
 
 - [ ] Create the Bloater scene: a large, slow enemy with a distinct placeholder mesh, inheriting the base enemy class
@@ -378,7 +370,7 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 
 - [x] Create the Crawler scene: a small ground creature with a distinct placeholder mesh and unique silhouette, inheriting the base enemy class
 - [x] Implement Crawler AI: moves directly toward the player at moderate speed with contact damage on touch
-- [x] Configure Crawler stats: 2-3 shot health, moderate speed, 1 gem drop; spawns in groups of 5-10 that increase over waves
+- [x] Configure Crawler stats: 1 shot health, moderate speed, 1 gem drop; spawns in groups of 5-10 that increase over waves
 - [x] Add Crawler audio: quiet skittering ambient sound, small crunch/pop death sound
 
 ### Gem Pickups
@@ -420,6 +412,14 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 - [x] Configure Charger stats: 8-10 shot health, slow normal / very fast charge speed, 3 gem drop; spawns solo or in pairs
 - [x] Add Charger audio: heavy footsteps/snorting ambient, loud scraping/revving 1.5s telegraph (high priority mix), heavy crash death sound
 
+### Drone (Enemy — Wave 5+)
+
+- [x] Create the Drone scene: a small flying enemy with a distinct placeholder mesh, positioned above ground, inheriting the base enemy class
+- [x] Implement Drone AI: hovers and orbits the player at close-medium range with fast, erratic lateral movement
+- [x] Implement the Drone dive-bomb attack: periodically telegraphs briefly, then dives toward the player at high speed for a lethal contact strike
+- [x] Configure Drone stats: 1-2 shot health, fast erratic speed, 1 gem drop; spawns in clusters of 4-8
+- [x] Add Drone audio: high-pitched buzzing ambient, quick dive whistle telegraph, small electric crackle death sound
+
 ### Enemy Boid Separation System
 
 - [x] Create `SeparationState` in `src/GodotExperiment.Core/Enemies/SeparationState.cs`: pure C# class that takes a detection radius and separation weight, and computes a 2D separation steering vector from a list of neighbor positions using inverse-distance falloff
@@ -428,11 +428,11 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 - [x] Update `BaseEnemy.MoveTowardPlayer()` to query the `"enemy"` group for neighbors within `SeparationRadius`, compute the separation force via `SeparationState`, and blend it with the player-seeking direction before applying velocity
 - [x] Add a protected `SeparationEnabled` bool property (default true) to `BaseEnemy` so subclasses can disable separation during specific states
 - [x] Update `Charger.cs` to disable separation during charge and recovery phases (set `SeparationEnabled = false` during those states)
-- [x] Configure per-enemy-type separation values in each enemy scene: Crawler (2.0 / 4.0), Spitter (3.0 / 5.0), Charger (3.5 / 5.0); future enemy scenes will be configured as they are created
+- [x] Configure per-enemy-type separation values in each enemy scene: Crawler (2.0 / 8.0), Spitter (3.0 / 10.0), Charger (3.5 / 10.0); future enemy scenes will be configured as they are created
 
 ### Playtest Difficulty & Spawn Pacing
 
-- [x] Increase Crawler size/readability and reduce health to 1-2 hits
+- [x] Increase Crawler size/readability and reduce health to 1 hit
 - [x] Boost Charger telegraph audio loudness and keep it audible through the full telegraph window
 - [x] Add a stronger Charger telegraph visual (pulsing flash during wind-up)
 - [x] Add WaveManager spawn interval override and set to ~5s per spawn for playtests
