@@ -22,6 +22,7 @@ public partial class PlayerProjectile : Area3D
 
     public override void _Ready()
     {
+        AddToGroup("projectiles");
         _state = new ProjectileState(MaxRange);
         BodyEntered += OnBodyEntered;
     }

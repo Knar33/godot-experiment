@@ -6,16 +6,6 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 
 
 
-## 12.3. Enemy Contact Damage Reliability
-
-- [ ] Fix Crawler contact kill regression: Crawlers should reliably kill the player on body contact when the player is standing still; audit the Crawler collision shape change (sphere) and collision layers/masks, and align with other enemies that correctly trigger contact death
-- [ ] Add regression coverage for contact damage: add a small automated test or runtime validation that fails loudly if an enemy's contact-damage collision setup can't ever hit the player (layers/masks/shape), specifically covering Crawlers
-
-## 12.4. Respawn / Restart Stability
-
-- [ ] Mitigate respawn poison AoE bug: after restarting, ensure no lingering Spitter poison blobs can immediately kill the player (force-despawn all active hazard AoEs during respawn/restart)
-- [ ] Permanently fix respawn poison AoE bug: root-cause why Spitter poison blobs can persist / still deal damage across respawn; gate hazard damage + lifetime to `GameManager` state and add a regression test
-
 ## 12.5. Enemy Boid Separation System
 
 - [ ] Playtest separation tuning: verify enemies spread visibly without losing their pack/swarm feel, and that no enemy type's core AI is broken by separation forces
@@ -26,14 +16,6 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 
 - [ ] Revisit wave spawn pacing after playtests: `WaveManager.SpawnIntervalOverrideSeconds` is currently set to 0.7s in `scenes/Game.tscn`; retune/remove when ready
   - [x] Make Core spawn interval override changes apply immediately mid-wave (clamp the pending spawn timer when speeding up)
-
-## 14. Bloater (Enemy — Wave 6+)
-
-- [ ] Create the Bloater scene: a large, slow enemy with a distinct placeholder mesh, inheriting the base enemy class
-- [ ] Implement Bloater AI: moves very slowly toward the player, deals lethal contact damage if it touches the player
-- [ ] Implement the Bloater death explosion: on death, wait 0.5s then trigger a large AoE explosion (lethal to player, damages other enemies)
-- [ ] Configure Bloater stats: 15-20 shot health, very slow speed, 4 gem drop; spawns solo, 1-2 per wave
-- [ ] Add Bloater audio: deep labored breathing ambient, 0.5s ticking/swelling pre-explosion telegraph, massive boom death sound (loudest non-music sound)
 
 ## 15. Mid/Late Wave Compositions
 
@@ -450,3 +432,21 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 - [x] Add a stronger Charger telegraph visual (pulsing flash during wind-up)
 - [x] Add WaveManager spawn interval override and set it in `scenes/Game.tscn` for playtests
 - [x] Add unit test coverage for WaveManagerState spawn interval override
+
+### Enemy Contact Damage Reliability
+
+- [x] Fix Crawler contact kill regression: Crawlers should reliably kill the player on body contact when the player is standing still; audit the Crawler collision shape change (sphere) and collision layers/masks, and align with other enemies that correctly trigger contact death
+- [x] Add regression coverage for contact damage: add a small automated test or runtime validation that fails loudly if an enemy's contact-damage collision setup can't ever hit the player (layers/masks/shape), specifically covering Crawlers
+
+### Respawn / Restart Stability
+
+- [x] Mitigate respawn poison AoE bug: after restarting, ensure no lingering Spitter poison blobs can immediately kill the player (force-despawn all active hazard AoEs during respawn/restart)
+- [x] Permanently fix respawn poison AoE bug: root-cause why Spitter poison blobs can persist / still deal damage across respawn; gate hazard damage + lifetime to `GameManager` state and add a regression test
+
+### Bloater (Enemy — Wave 6+)
+
+- [x] Create the Bloater scene: a large, slow enemy with a distinct placeholder mesh, inheriting the base enemy class
+- [x] Implement Bloater AI: moves very slowly toward the player, deals lethal contact damage if it touches the player
+- [x] Implement the Bloater death explosion: on death, wait 0.5s then trigger a large AoE explosion (lethal to player, damages other enemies)
+- [x] Configure Bloater stats: 15-20 shot health, very slow speed, 4 gem drop; spawns solo, 1-2 per wave
+- [x] Add Bloater audio: deep labored breathing ambient, 0.5s ticking/swelling pre-explosion telegraph, massive boom death sound (loudest non-music sound)

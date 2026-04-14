@@ -108,6 +108,28 @@ public class WaveCompositionsTests
         Assert.Contains(WaveCompositions.Drone, types);
     }
 
+    // --- Wave 6+: Introduces Bloaters ---
+
+    [Fact]
+    public void Wave6_IntroducesBloaters()
+    {
+        var wave = WaveCompositions.GetWave(6);
+
+        var types = wave.Groups.Select(g => g.EnemyType).ToHashSet();
+        Assert.Contains(WaveCompositions.Bloater, types);
+    }
+
+    [Fact]
+    public void ScalingWaves_SpawnOneOrTwoBloaters()
+    {
+        for (int i = 6; i <= 20; i++)
+        {
+            var wave = WaveCompositions.GetWave(i);
+            var bloaterGroup = wave.Groups.Single(g => g.EnemyType == WaveCompositions.Bloater);
+            Assert.InRange(bloaterGroup.Count, 1, 2);
+        }
+    }
+
     // --- Spawn intervals ---
 
     [Fact]

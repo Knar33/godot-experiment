@@ -80,7 +80,7 @@ public partial class BaseEnemy : CharacterBody3D
         AddToGroup("enemy");
         Health = new EnemyHealthState(MaxHealth);
         Health.Damaged += OnDamaged;
-        Health.Died += OnDied;
+        Health.Died += HandleDied;
 
         RebuildSeparation();
 
@@ -118,7 +118,11 @@ public partial class BaseEnemy : CharacterBody3D
             return;
         }
 
-        if (Health.IsDead) return;
+        if (Health.IsDead)
+        {
+            UpdateFlash(dt);
+            return;
+        }
 
         MoveTowardPlayer(dt);
         UpdateFlash(dt);
@@ -200,9 +204,24 @@ public partial class BaseEnemy : CharacterBody3D
         SetFlashIntensity(1.0f);
     }
 
-    private void OnDied()
+    private void HandleDied()
     {
         _ambientAudio?.Stop();
+        OnDied();
+    }
+
+    /// <summary>
+    /// Called once when health reaches zero. Subclasses may override to implement
+    /// delayed death behavior (e.g. Bloater explosion) and must call <see cref="FinalizeDeath"/>
+    /// when the enemy should be removed.
+    /// </summary>
+    protected virtual void OnDied()
+    {
+        FinalizeDeath();
+    }
+
+    protected void FinalizeDeath()
+    {
         SpawnDeathParticles();
         PlayDeathSound();
         DropGems();

@@ -33,6 +33,7 @@ public partial class SpitterProjectile : Area3D
 
     public override void _Ready()
     {
+        AddToGroup("projectiles");
         _hazardScene = GD.Load<PackedScene>("res://scenes/enemies/SpitterGroundHazard.tscn");
         BodyEntered += OnBodyEntered;
     }

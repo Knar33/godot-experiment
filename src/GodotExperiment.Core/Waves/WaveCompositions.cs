@@ -44,14 +44,20 @@ public static class WaveCompositions
 
     /// <summary>
     /// Scaling formula for waves beyond hand-authored definitions.
-    /// Only uses Crawler until mid/late wave compositions are implemented (task 15).
+    /// Placeholder until mid/late wave compositions are implemented (task 15).
     /// </summary>
     private static WaveDefinition GenerateScalingWave(int waveNumber)
     {
         int crawlerCount = 10 + (waveNumber - 5) * 3;
         float interval = Math.Max(0.3f, 1.0f - (waveNumber - 5) * 0.05f);
 
-        var groups = new List<WaveEnemyGroup> { new(Crawler, crawlerCount) };
+        int bloaterCount = waveNumber < 10 ? 1 : 2;
+
+        var groups = new List<WaveEnemyGroup>
+        {
+            new(Crawler, crawlerCount),
+            new(Bloater, bloaterCount)
+        };
         return new WaveDefinition(waveNumber, groups, interval);
     }
 

@@ -147,3 +147,46 @@ Phases:
 ### Tests
 
 `tests/GodotExperiment.Tests/DroneAIStateTests.cs` covers phase transitions, timers, and cooldown reset behavior.
+
+---
+
+## Bloater (Enemy — Wave 6+)
+
+### Core Type: `DelayedExplosionState` (pure C#, `GodotExperiment.Enemies`)
+
+`DelayedExplosionState` is a small countdown state used to trigger a one-shot delayed explosion (used by the Bloater death behavior).
+
+- Location: `src/GodotExperiment.Core/Enemies/DelayedExplosionState.cs`
+- Behavior:
+  - `Arm()` starts the countdown at `DelaySeconds`
+  - `Update(dt)` returns `true` exactly once when the timer elapses, and then stays inert until re-armed or reset
+
+### Godot Integration: `Bloater.cs` / `Bloater.tscn`
+
+- `scenes/enemies/Bloater.tscn`
+  - Configures Bloater stats (health, speed, gem drops) and a large placeholder mesh.
+  - Configures placeholder audio streams on `AmbientAudio`, `TelegraphAudio`, and `DeathAudio` (to be replaced with Bloater-specific assets later).
+- `scripts/enemies/Bloater.cs`
+  - Overrides `BaseEnemy.OnDied()` to implement delayed-death behavior:
+    - On death: disables body collision, plays `TelegraphAudio`, arms `DelayedExplosionState`
+    - While counting down: pulses `TelegraphFlashIntensity`
+    - On explosion: damages the player (lethal, respects i-frames) and applies a configurable damage amount to nearby enemies, then calls `FinalizeDeath()`
+
+### Tests
+
+`tests/GodotExperiment.Tests/DelayedExplosionStateTests.cs` covers the countdown/one-shot trigger behavior.
+
+---
+
+## Spitter Ground Hazard (Respawn-safe)
+
+Spitter ground hazards are short-lived AoE kill zones spawned on Spitter projectile impact.
+
+### Lifecycle / Restart Safety
+
+- `scripts/enemies/SpitterGroundHazard.cs`
+  - Adds itself to the `"hazards"` group.
+  - Immediately self-despawns when the game is not in `Playing` state (prevents hazards from persisting across restart / countdown).
+  - Gates damage application to `Playing` state.
+- `scripts/managers/GameManager.cs`
+  - `ClearArena()` clears the `"hazards"` group during restart/reset cleanup.

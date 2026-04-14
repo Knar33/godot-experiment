@@ -1,5 +1,6 @@
 using Godot;
 using GodotExperiment.Combat;
+using GodotExperiment.GameLoop;
 
 namespace GodotExperiment;
 
@@ -12,12 +13,19 @@ public partial class SpitterGroundHazard : Area3D
 
     public override void _Ready()
     {
+        AddToGroup("hazards");
         BodyEntered += OnBodyEntered;
         _mesh = GetNodeOrNull<MeshInstance3D>("MeshInstance3D");
     }
 
     public override void _PhysicsProcess(double delta)
     {
+        if (GameManager.Instance?.CurrentState != GameState.Playing)
+        {
+            QueueFree();
+            return;
+        }
+
         _timer += (float)delta;
 
         if (_mesh != null)
@@ -34,6 +42,9 @@ public partial class SpitterGroundHazard : Area3D
 
     private void OnBodyEntered(Node3D body)
     {
+        if (GameManager.Instance?.CurrentState != GameState.Playing)
+            return;
+
         if (!body.IsInGroup("player")) return;
 
         if (body is Player player)

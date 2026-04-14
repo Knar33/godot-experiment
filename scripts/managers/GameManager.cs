@@ -205,6 +205,7 @@ public partial class GameManager : Node
     {
         ClearGroup("enemy");
         ClearGroup("projectiles");
+        ClearGroup("hazards");
         ClearGroup("gems");
 
         var projectilesContainer = GetTree().Root.FindChild("Projectiles", true, false) as Node;
