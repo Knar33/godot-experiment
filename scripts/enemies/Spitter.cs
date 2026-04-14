@@ -41,6 +41,7 @@ public partial class Spitter : BaseEnemy
         Vector3 direction = distance > PreferredRange
             ? toPlayer.Normalized()
             : -toPlayer.Normalized();
+        direction = ApplySeparationSteering(direction);
 
         if (toPlayer.LengthSquared() < 0.25f) return;
 

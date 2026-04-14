@@ -17,9 +17,42 @@ public partial class BaseEnemy : CharacterBody3D
     [Export] public int DeathParticleCount { get; set; } = 20;
     [Export] public float DeathParticleExplosiveness { get; set; } = 0.8f;
 
-    [Export] public float SeparationRadius { get; set; } = 2.5f;
-    [Export] public float SeparationWeight { get; set; } = 8.0f;
-    [Export] public float SeparationTangent { get; set; } = 0.4f;
+    private float _separationRadius = 2.5f;
+    private float _separationWeight = 8.0f;
+    private float _separationTangent = 0.4f;
+
+    [Export]
+    public float SeparationRadius
+    {
+        get => _separationRadius;
+        set
+        {
+            _separationRadius = Mathf.Max(0.01f, value);
+            RebuildSeparation();
+        }
+    }
+
+    [Export]
+    public float SeparationWeight
+    {
+        get => _separationWeight;
+        set
+        {
+            _separationWeight = Mathf.Max(0.01f, value);
+            RebuildSeparation();
+        }
+    }
+
+    [Export]
+    public float SeparationTangent
+    {
+        get => _separationTangent;
+        set
+        {
+            _separationTangent = Mathf.Max(0f, value);
+            RebuildSeparation();
+        }
+    }
 
     public EnemyHealthState Health { get; private set; } = null!;
 
@@ -49,7 +82,7 @@ public partial class BaseEnemy : CharacterBody3D
         Health.Damaged += OnDamaged;
         Health.Died += OnDied;
 
-        _separation = new SeparationState(SeparationRadius, SeparationWeight, SeparationTangent);
+        RebuildSeparation();
 
         _mesh = GetNodeOrNull<MeshInstance3D>("MeshInstance3D");
         SetupFlashMaterial();
@@ -107,16 +140,21 @@ public partial class BaseEnemy : CharacterBody3D
         if (toPlayer.LengthSquared() < 0.25f) return;
 
         Vector3 direction = toPlayer.Normalized();
-
-        if (SeparationEnabled)
-        {
-            var sepForce = ComputeSeparationFromGroup();
-            Vector3 separation3D = new(sepForce.X, 0, sepForce.Y);
-            direction = (direction + separation3D).Normalized();
-        }
+        direction = ApplySeparationSteering(direction);
 
         Velocity = direction * MoveSpeed;
         MoveAndSlide();
+    }
+
+    protected Vector3 ApplySeparationSteering(Vector3 desiredDirection)
+    {
+        if (!SeparationEnabled) return desiredDirection;
+
+        var sepForce = ComputeSeparationFromGroup();
+        Vector3 separation3D = new(sepForce.X, 0, sepForce.Y);
+
+        Vector3 blended = desiredDirection + separation3D;
+        return blended.LengthSquared() > 0.0001f ? blended.Normalized() : desiredDirection;
     }
 
     private System.Numerics.Vector2 ComputeSeparationFromGroup()
@@ -140,6 +178,11 @@ public partial class BaseEnemy : CharacterBody3D
         }
 
         return _separation.ComputeSeparationForce(myPos2D, neighbors[..count]);
+    }
+
+    private void RebuildSeparation()
+    {
+        _separation = new SeparationState(SeparationRadius, SeparationWeight, SeparationTangent);
     }
 
     private void OnContactBodyEntered(Node3D body)

@@ -34,8 +34,10 @@ To support early playtesting (readability/telegraph iteration), the wave system 
 - **Core knob**: `WaveManagerState.SpawnIntervalOverrideSeconds`
   - If `> 0`, it overrides `WaveDefinition.SpawnInterval` for all waves.
 - **Godot knob**: `WaveManager.SpawnIntervalOverrideSeconds` (`[Export]`)
-  - Assigned to the Core state in `_Ready()`.
-  - `scenes/Game.tscn` currently sets this to `5.0` seconds.
+  - Assigned to the Core state whenever the export value is set (scene load + live tuning).
+  - `scenes/Game.tscn` currently sets this to `0.7` seconds.
+
+Runtime note: `WaveManagerState.SpawnIntervalOverrideSeconds` can be adjusted while active; it immediately updates the current spawn interval (and clamps the pending spawn timer down when speeding up), which makes spawn pacing tuning easier during playtests.
 
 ## Tests
 

@@ -9,10 +9,13 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 ## 12.5. Enemy Boid Separation System
 
 - [ ] Playtest separation tuning: verify enemies spread visibly without losing their pack/swarm feel, and that no enemy type's core AI is broken by separation forces
+  - [x] Ensure `Spitter` movement blends in separation steering while repositioning (keeps ranged enemies spread without clumping)
+  - [x] Make `BaseEnemy` rebuild its `SeparationState` when separation export values change during play mode (live tuning)
 
 ## 12.6. Playtest Difficulty & Spawn Pacing Tuning
 
-- [ ] Revisit wave spawn pacing after playtests: `WaveManager.SpawnIntervalOverrideSeconds` is currently set to 5.0s in `scenes/Game.tscn`; retune/remove when ready
+- [ ] Revisit wave spawn pacing after playtests: `WaveManager.SpawnIntervalOverrideSeconds` is currently set to 0.7s in `scenes/Game.tscn`; retune/remove when ready
+  - [x] Make Core spawn interval override changes apply immediately mid-wave (clamp the pending spawn timer when speeding up)
 
 ## 14. Bloater (Enemy — Wave 6+)
 
@@ -435,5 +438,5 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 - [x] Increase Crawler size/readability and reduce health to 1 hit
 - [x] Boost Charger telegraph audio loudness and keep it audible through the full telegraph window
 - [x] Add a stronger Charger telegraph visual (pulsing flash during wind-up)
-- [x] Add WaveManager spawn interval override and set to ~5s per spawn for playtests
+- [x] Add WaveManager spawn interval override and set it in `scenes/Game.tscn` for playtests
 - [x] Add unit test coverage for WaveManagerState spawn interval override

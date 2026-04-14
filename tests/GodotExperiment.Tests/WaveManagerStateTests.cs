@@ -105,6 +105,20 @@ public class WaveManagerStateTests
     }
 
     [Fact]
+    public void SpawnIntervalOverride_CanBeChangedWhileActive()
+    {
+        var state = new WaveManagerState(seed: 42);
+        state.Start();
+
+        Assert.NotNull(state.Update(0.016f));
+
+        state.SpawnIntervalOverrideSeconds = 0.1f;
+
+        Assert.Null(state.Update(0.099f));
+        Assert.NotNull(state.Update(0.002f));
+    }
+
+    [Fact]
     public void Update_SpawnsCorrectTotalForWave1()
     {
         var state = new WaveManagerState(seed: 42);

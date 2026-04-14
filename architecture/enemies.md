@@ -56,7 +56,7 @@ These values are configured as `[Export]` properties on each enemy scene, allowi
 [Export] public float SeparationTangent { get; set; } = 0.4f;
 ```
 
-And a `SeparationState` instance composed in `_Ready()`.
+And a `SeparationState` instance composed in `_Ready()` (rebuilt when separation export values change during play mode to support live tuning).
 
 #### Neighbor Query
 

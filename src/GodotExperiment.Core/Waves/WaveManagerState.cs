@@ -11,11 +11,30 @@ public class WaveManagerState
     private readonly Random _rng;
     private float _spawnTimer;
     private float _currentSpawnInterval;
+    private float _spawnIntervalOverrideSeconds;
 
     public int CurrentWave { get; private set; }
     public bool IsActive { get; private set; }
     public int RemainingSpawns => _spawnQueue.Count;
-    public float SpawnIntervalOverrideSeconds { get; set; }
+    public float SpawnIntervalOverrideSeconds
+    {
+        get => _spawnIntervalOverrideSeconds;
+        set
+        {
+            _spawnIntervalOverrideSeconds = value;
+
+            if (!IsActive || CurrentWave <= 0)
+                return;
+
+            var definition = WaveCompositions.GetWave(CurrentWave);
+            _currentSpawnInterval = _spawnIntervalOverrideSeconds > 0f
+                ? _spawnIntervalOverrideSeconds
+                : definition.SpawnInterval;
+
+            if (_spawnTimer > _currentSpawnInterval)
+                _spawnTimer = _currentSpawnInterval;
+        }
+    }
 
     public event Action<int>? WaveStarted;
 

@@ -1,66 +1,55 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene format=3 uid="uid://bfliw8ejmj6f3"]
 
-[ext_resource type="Script" path="res://scripts/enemies/Crawler.cs" id="1"]
-[ext_resource type="AudioStream" path="res://assets/audio/enemies/crawler_ambient.wav" id="2"]
-[ext_resource type="AudioStream" path="res://assets/audio/enemies/crawler_death.wav" id="3"]
+[ext_resource type="Script" uid="uid://b18urbp1os4y2" path="res://scripts/enemies/Crawler.cs" id="1"]
+[ext_resource type="AudioStream" uid="uid://gdxdihl5muwx" path="res://assets/audio/enemies/crawler_ambient.wav" id="2"]
+[ext_resource type="AudioStream" uid="uid://dx83vnpnehxxp" path="res://assets/audio/enemies/crawler_death.wav" id="3"]
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
-radius = 0.3
-height = 0.6
+[sub_resource type="SphereShape3D" id="SphereShape3D_6qrdm"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_1"]
 radius = 0.3
 height = 0.6
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1"]
-albedo_color = Color(0.3, 0.55, 0.2, 1)
+albedo_color = Color(0.7260133, 0, 0.109286286, 1)
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_1"]
-radius = 0.5
 
-[node name="Crawler" type="CharacterBody3D"]
+[node name="Crawler" type="CharacterBody3D" unique_id=194893336]
 collision_layer = 8
-collision_mask = 1
 script = ExtResource("1")
 MaxHealth = 1
 MoveSpeed = 7.0
-GemDropCount = 1
 DeathParticleColor = Color(0.3, 0.55, 0.2, 1)
 DeathParticleCount = 12
 DeathParticleExplosiveness = 0.9
 SeparationRadius = 2.0
-SeparationWeight = 8.0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=762297760]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
-shape = SubResource("CapsuleShape3D_1")
+shape = SubResource("SphereShape3D_6qrdm")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=238806882]
 transform = Transform3D(1.6, 0, 0, 0, 0.75, 0, 0, 0, 1.6, 0, 0.3, 0)
 mesh = SubResource("SphereMesh_1")
 surface_material_override/0 = SubResource("StandardMaterial3D_1")
 
-[node name="ContactArea" type="Area3D" parent="."]
+[node name="ContactArea" type="Area3D" parent="." unique_id=1698157563]
 collision_layer = 0
-collision_mask = 1
-monitoring = true
 monitorable = false
 
-[node name="ContactShape" type="CollisionShape3D" parent="ContactArea"]
+[node name="ContactShape" type="CollisionShape3D" parent="ContactArea" unique_id=1340129379]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
 shape = SubResource("SphereShape3D_1")
 
-[node name="AmbientAudio" type="AudioStreamPlayer3D" parent="."]
+[node name="AmbientAudio" type="AudioStreamPlayer3D" parent="." unique_id=460539078]
 stream = ExtResource("2")
 volume_db = -12.0
 max_distance = 20.0
-bus = &"EnemySFX"
 
-[node name="TelegraphAudio" type="AudioStreamPlayer3D" parent="."]
+[node name="TelegraphAudio" type="AudioStreamPlayer3D" parent="." unique_id=422479558]
 max_distance = 50.0
-bus = &"EnemySFX"
 
-[node name="DeathAudio" type="AudioStreamPlayer3D" parent="."]
+[node name="DeathAudio" type="AudioStreamPlayer3D" parent="." unique_id=1325039854]
 stream = ExtResource("3")
 max_distance = 30.0
-bus = &"EnemySFX"

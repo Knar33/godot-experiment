@@ -56,8 +56,8 @@ Enemy stats (health, speed, damage) do NOT scale. The enemies themselves are alw
 
 ## Playtest Tuning (Temporary)
 
-While iterating on early-game readability and threat telegraphs, enemy spawns are intentionally spaced out to make targeted testing easier.
+While iterating on early-game readability and threat telegraphs, enemy spawns can be temporarily forced to a fixed interval to make targeted testing easier.
 
-- **Spawn interval**: ~5 seconds between individual enemy spawns (across waves)
+- **Spawn interval**: currently ~0.7 seconds between individual enemy spawns (across waves)
 
 This will be revisited once the early combat loop feels stable.
