@@ -6,6 +6,16 @@ Ordered by priority: core mechanics first, then combat loop, content, scoring, g
 
 
 
+## 12.3. Enemy Contact Damage Reliability
+
+- [ ] Fix Crawler contact kill regression: Crawlers should reliably kill the player on body contact when the player is standing still; audit the Crawler collision shape change (sphere) and collision layers/masks, and align with other enemies that correctly trigger contact death
+- [ ] Add regression coverage for contact damage: add a small automated test or runtime validation that fails loudly if an enemy's contact-damage collision setup can't ever hit the player (layers/masks/shape), specifically covering Crawlers
+
+## 12.4. Respawn / Restart Stability
+
+- [ ] Mitigate respawn poison AoE bug: after restarting, ensure no lingering Spitter poison blobs can immediately kill the player (force-despawn all active hazard AoEs during respawn/restart)
+- [ ] Permanently fix respawn poison AoE bug: root-cause why Spitter poison blobs can persist / still deal damage across respawn; gate hazard damage + lifetime to `GameManager` state and add a regression test
+
 ## 12.5. Enemy Boid Separation System
 
 - [ ] Playtest separation tuning: verify enemies spread visibly without losing their pack/swarm feel, and that no enemy type's core AI is broken by separation forces
